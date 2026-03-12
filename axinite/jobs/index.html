@@ -333,9 +333,10 @@
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
+                    var prev = job.status;
                     job.status = 'cancelled';
                     job.completedAt = 'now';
-                    job.transitions.push({ from: statusLabel[job.status] || job.status, to: 'cancelled', at: 'now' });
+                    job.transitions.push({ from: prev, to: 'cancelled', at: 'now' });
                     renderSummary();
                     renderTable();
                 });
@@ -343,9 +344,10 @@
             if (restartBtn) {
                 restartBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
+                    var prev = job.status;
                     job.status = 'in_progress';
                     job.completedAt = null;
-                    job.transitions.push({ from: statusLabel[job.status] || job.status, to: 'in_progress', at: 'now' });
+                    job.transitions.push({ from: prev, to: 'in_progress', at: 'now' });
                     renderSummary();
                     renderTable();
                 });
@@ -398,11 +400,13 @@
                 job.transitions.forEach(function (t) {
                     var fromSs = statusStyle[t.from] || statusStyle['pending'];
                     var toSs   = statusStyle[t.to]   || statusStyle['pending'];
+                    var fromLabel = statusLabel[t.from] || t.from;
+                    var toLabel   = statusLabel[t.to]   || t.to;
                     body += '<div class="flex items-center gap-2 text-xs">' +
                         '<span class="font-mono text-zinc-500">' + esc(t.at) + '</span>' +
-                        '<span class="' + (fromSs.color || 'text-zinc-400') + '">' + esc(t.from) + '</span>' +
+                        '<span class="' + (fromSs.color || 'text-zinc-400') + '">' + esc(fromLabel) + '</span>' +
                         '<iconify-icon icon="carbon:arrow-right" class="text-[10px] text-zinc-600"></iconify-icon>' +
-                        '<span class="' + (toSs.color || 'text-zinc-400') + '">' + esc(t.to) + '</span>' +
+                        '<span class="' + (toSs.color || 'text-zinc-400') + '">' + esc(toLabel) + '</span>' +
                         '</div>';
                 });
                 body += '</div></div>';
@@ -424,9 +428,10 @@
             var cancelBtn  = document.getElementById('modal-cancel');
             if (restartBtn) {
                 restartBtn.addEventListener('click', function () {
+                    var prev = job.status;
                     job.status = 'in_progress';
                     job.completedAt = null;
-                    job.transitions.push({ from: 'restart', to: 'in_progress', at: 'now' });
+                    job.transitions.push({ from: prev, to: 'in_progress', at: 'now' });
                     closeDetail();
                     renderSummary();
                     renderTable();
@@ -434,9 +439,10 @@
             }
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', function () {
+                    var prev = job.status;
                     job.status = 'cancelled';
                     job.completedAt = 'now';
-                    job.transitions.push({ from: statusLabel[job.status] || job.status, to: 'cancelled', at: 'now' });
+                    job.transitions.push({ from: prev, to: 'cancelled', at: 'now' });
                     closeDetail();
                     renderSummary();
                     renderTable();
