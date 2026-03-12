@@ -86,7 +86,7 @@
                                 <th class="pb-2 w-24">Source</th>
                                 <th class="pb-2 w-28">Status</th>
                                 <th class="pb-2 w-36">Created</th>
-                                <th class="pb-2 w-32 text-right pr-3">Actions</th>
+                                <th class="pb-2 pl-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="job-rows"></tbody>
@@ -296,7 +296,7 @@
                     '<td class="py-2.5"><span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + src + '">' + esc(job.source) + '</span></td>' +
                     '<td class="py-2.5"><span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + ss.bg + '">' + sl + '</span></td>' +
                     '<td class="py-2.5 text-xs text-zinc-500">' + esc(job.createdAt) + '</td>' +
-                    '<td class="py-2.5 pr-3 text-right">' + actionButtons(job) + '</td>';
+                    '<td class="py-2.5 pl-3 whitespace-nowrap">' + actionButtons(job) + '</td>';
 
                 tr.querySelector('.btn-title').addEventListener('click', function () {
                     openDetail(job);
