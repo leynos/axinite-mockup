@@ -74,7 +74,9 @@
             <div class="max-w-6xl mx-auto px-6 py-6 space-y-6">
 
                 <!-- Summary cards -->
-                <div id="summary-cards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+                <div class="overflow-x-auto">
+                    <div id="summary-cards" class="grid grid-cols-5 gap-3 min-w-[560px]"></div>
+                </div>
 
                 <!-- Routine table -->
                 <section>
@@ -395,14 +397,14 @@
         /* ── action buttons per routine ───────────────────────── */
         function actionButtons(routine) {
             var btns = '';
-            var base = 'px-2 py-0.5 rounded text-[10px] border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors';
+            var base = 'inline-flex items-center px-2 py-2 md:py-0.5 rounded text-[10px] border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors';
             if (routine.enabled) {
-                btns += '<button class="btn-trigger ' + base + ' mr-1">Trigger</button>';
-                btns += '<button class="btn-toggle ' + base + ' hover:!text-amber-400 hover:!border-amber-500/30 hover:!bg-amber-500/10 mr-1">Disable</button>';
+                btns += '<button class="btn-trigger ' + base + ' mr-1" title="Trigger"><iconify-icon icon="carbon:play-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Trigger</span></button>';
+                btns += '<button class="btn-toggle ' + base + ' hover:!text-amber-400 hover:!border-amber-500/30 hover:!bg-amber-500/10 mr-1" title="Disable"><iconify-icon icon="carbon:pause-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Disable</span></button>';
             } else {
-                btns += '<button class="btn-toggle ' + base + ' mr-1">Enable</button>';
+                btns += '<button class="btn-toggle ' + base + ' mr-1" title="Enable"><iconify-icon icon="carbon:play-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Enable</span></button>';
             }
-            btns += '<button class="btn-detail ' + base + '">Details</button>';
+            btns += '<button class="btn-detail ' + base + '" title="Details"><iconify-icon icon="carbon:information" class="md:hidden"></iconify-icon><span class="hidden md:inline">Details</span></button>';
             return btns;
         }
 

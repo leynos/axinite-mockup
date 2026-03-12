@@ -74,7 +74,9 @@
             <div class="max-w-6xl mx-auto px-6 py-6 space-y-6">
 
                 <!-- Summary cards -->
-                <div id="summary-cards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+                <div class="overflow-x-auto">
+                    <div id="summary-cards" class="grid grid-cols-5 gap-3 min-w-[560px]"></div>
+                </div>
 
                 <!-- Job table -->
                 <section>
@@ -312,14 +314,14 @@
         /* ── action buttons per status ───────────────────────── */
         function actionButtons(job) {
             var btns = '';
-            var base = 'px-2 py-0.5 rounded text-[10px] border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors';
+            var base = 'inline-flex items-center px-2 py-2 md:py-0.5 rounded text-[10px] border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors';
             if (job.status === 'pending' || job.status === 'in_progress' || job.status === 'stuck') {
-                btns += '<button class="btn-cancel ' + base + ' hover:!text-red-400 hover:!border-red-500/30 hover:!bg-red-500/10 mr-1">Cancel</button>';
+                btns += '<button class="btn-cancel ' + base + ' hover:!text-red-400 hover:!border-red-500/30 hover:!bg-red-500/10 mr-1" title="Cancel"><iconify-icon icon="carbon:close-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Cancel</span></button>';
             }
             if (job.status === 'completed' || job.status === 'failed' || job.status === 'stuck' || job.status === 'cancelled') {
-                btns += '<button class="btn-restart ' + base + ' mr-1">Restart</button>';
+                btns += '<button class="btn-restart ' + base + ' mr-1" title="Restart"><iconify-icon icon="carbon:restart" class="md:hidden"></iconify-icon><span class="hidden md:inline">Restart</span></button>';
             }
-            btns += '<button class="btn-detail ' + base + '">Details</button>';
+            btns += '<button class="btn-detail ' + base + '" title="Details"><iconify-icon icon="carbon:information" class="md:hidden"></iconify-icon><span class="hidden md:inline">Details</span></button>';
             return btns;
         }
 
