@@ -90,6 +90,7 @@
         </main>
     </div>
 
+    <script src="../assets/js/sidebar-toggle.js"></script>
     <script>
     (function () {
         /* ── file tree structure ───────────────────────────────── */
@@ -419,39 +420,7 @@ Available tool integrations.\n\
         searchInput.addEventListener('input', function () { renderTree(); });
 
         /* ── sidebar toggle (mobile) ──────────────────────────── */
-        var sidebarEl       = document.getElementById('sidebar');
-        var sidebarToggle   = document.getElementById('sidebar-toggle');
-        var sidebarBackdrop = document.getElementById('sidebar-backdrop');
-        var sidebarClose    = document.getElementById('sidebar-close');
-        var sidebarOpen     = false;
-
-        function openSidebar() {
-            sidebarOpen = true;
-            sidebarEl.classList.remove('hidden', 'relative');
-            sidebarEl.classList.add('flex', 'fixed', 'top-14', 'bottom-0', 'left-0', 'z-30');
-            sidebarBackdrop.classList.remove('hidden');
-        }
-
-        function closeSidebar() {
-            sidebarOpen = false;
-            sidebarEl.classList.remove('flex', 'fixed', 'top-14', 'bottom-0', 'left-0', 'z-30');
-            sidebarEl.classList.add('hidden', 'relative');
-            sidebarBackdrop.classList.add('hidden');
-        }
-
-        sidebarToggle.addEventListener('click', function () {
-            if (sidebarOpen) closeSidebar(); else openSidebar();
-        });
-        sidebarBackdrop.addEventListener('click', closeSidebar);
-        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-
-        window.addEventListener('resize', function () {
-            if (window.innerWidth >= 768 && sidebarOpen) closeSidebar();
-        });
-
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && sidebarOpen) closeSidebar();
-        });
+        initSidebarToggle();
 
         /* ── init ──────────────────────────────────────────────── */
         renderTree();
