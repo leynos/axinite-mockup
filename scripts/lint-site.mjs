@@ -134,7 +134,8 @@ function resolveReference(sourceFilePath, reference) {
   }
 
   const [pathWithQuery, fragment = ""] = reference.split("#", 2);
-  const [rawPath] = pathWithQuery.split("?", 1);
+  const qIdx = pathWithQuery.indexOf("?");
+  const rawPath = qIdx === -1 ? pathWithQuery : pathWithQuery.slice(0, qIdx);
   const sourceDirectory = path.dirname(sourceFilePath);
   const isRootRelative = rawPath.startsWith("/") && !rawPath.startsWith("//");
   let resolvedPath = isRootRelative

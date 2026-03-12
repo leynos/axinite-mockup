@@ -1,4 +1,4 @@
-import { readFile, readdir } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 const ROOT = process.cwd();
@@ -92,7 +92,7 @@ function shouldCheckFile(filePath) {
 
 async function safeStat(targetPath) {
   try {
-    return await import("node:fs/promises").then(({ stat }) => stat(targetPath));
+    return await stat(targetPath);
   } catch {
     return null;
   }
