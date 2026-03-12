@@ -322,15 +322,15 @@
     <div id="archive-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
         <div id="archive-backdrop" class="absolute inset-0 bg-black/60"></div>
         <div class="relative rounded-2xl p-6 w-full max-w-sm mx-4 border border-glass-border" style="background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
-            <h3 class="text-lg font-semibold text-zinc-100 mb-2">Archive conversation</h3>
+            <h3 class="text-lg font-semibold text-zinc-100 mb-2 font-serif">Archive conversation</h3>
             <p class="text-sm text-zinc-400 mb-6">Are you sure you want to archive &ldquo;<span id="archive-chat-name"></span>&rdquo;?</p>
             <label class="flex items-center space-x-2.5 mb-6 text-xs text-zinc-500 cursor-pointer select-none">
                 <input type="checkbox" id="archive-dont-ask" class="rounded border-zinc-600 bg-transparent w-3.5 h-3.5" style="accent-color: #00ff41;">
                 <span>Don't ask again</span>
             </label>
             <div class="flex justify-end space-x-3">
-                <button id="archive-no" class="px-4 py-2 rounded-lg text-sm text-zinc-300 hover:text-zinc-100 hover:bg-glass-200 transition-colors border border-glass-border">No</button>
-                <button id="archive-yes" class="px-4 py-2 rounded-lg text-sm text-[#001a0d] font-medium bg-brand-emerald hover:bg-[#00e639] transition-colors shadow-[0_0_15px_rgba(0,255,65,0.3)]">Yes</button>
+                <button id="archive-yes" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Yes</button>
+                <button id="archive-no" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">No</button>
             </div>
         </div>
     </div>
@@ -339,7 +339,7 @@
     <div id="summarize-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
         <div id="summarize-backdrop" class="absolute inset-0 bg-black/60"></div>
         <div class="relative rounded-2xl p-6 w-full max-w-md mx-4 border border-glass-border" style="background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
-            <h3 class="text-lg font-semibold text-zinc-100 mb-4">Summarize conversation</h3>
+            <h3 class="text-lg font-semibold text-zinc-100 mb-4 font-serif">Summarize conversation</h3>
 
             <div class="space-y-4">
                 <div>
@@ -365,8 +365,8 @@
             </div>
 
             <div class="flex justify-end space-x-3 mt-6">
-                <button id="summarize-cancel" class="px-4 py-2 rounded-lg text-sm text-zinc-300 hover:text-zinc-100 hover:bg-glass-200 transition-colors border border-glass-border">Cancel</button>
-                <button id="summarize-go" class="px-4 py-2 rounded-lg text-sm text-[#001a0d] font-medium bg-brand-emerald hover:bg-[#00e639] transition-colors shadow-[0_0_15px_rgba(0,255,65,0.3)]">Summarize</button>
+                <button id="summarize-go" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Summarize</button>
+                <button id="summarize-cancel" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Cancel</button>
             </div>
         </div>
     </div>
