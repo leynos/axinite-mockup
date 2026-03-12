@@ -78,19 +78,21 @@
 
                 <!-- Job table -->
                 <section>
-                    <table class="w-full">
-                        <thead>
-                            <tr class="text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                                <th class="pb-2 pl-3 w-24">ID</th>
-                                <th class="pb-2">Title</th>
-                                <th class="pb-2 w-24">Source</th>
-                                <th class="pb-2 w-28">Status</th>
-                                <th class="pb-2 w-36">Created</th>
-                                <th class="pb-2 pl-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="job-rows"></tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                    <th class="pb-2 pl-3 w-24">ID</th>
+                                    <th class="pb-2">Title</th>
+                                    <th class="pb-2 w-24">Source</th>
+                                    <th class="pb-2 w-28">Status</th>
+                                    <th class="pb-2 w-36">Created</th>
+                                    <th class="pb-2 pl-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="job-rows"></tbody>
+                        </table>
+                    </div>
                     <p id="empty-msg" class="hidden text-center text-zinc-500 text-sm py-12">No jobs found</p>
                 </section>
 

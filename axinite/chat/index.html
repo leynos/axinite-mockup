@@ -45,6 +45,9 @@
     <!-- Top Navigation -->
     <header id="header" class="glass-topbar w-full h-14 flex items-center justify-between px-4 z-20 shrink-0">
         <div class="flex items-center space-x-6 h-full">
+            <button id="sidebar-toggle" class="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-all" aria-label="Toggle sidebar">
+                <iconify-icon icon="carbon:menu" class="text-lg"></iconify-icon>
+            </button>
             <nav class="flex h-full space-x-1">
                 <a href="../chat/" class="h-full px-4 flex items-center text-brand-emerald border-b-2 border-brand-emerald font-medium">Chat</a>
                 <a href="../memory/" class="h-full px-4 flex items-center text-zinc-400 hover:text-zinc-200 transition-colors">Memory</a>
@@ -79,7 +82,7 @@
                     <iconify-icon icon="carbon:add" class="text-xs"></iconify-icon>
                 </button>
                 <div class="flex-1"></div>
-                <button class="w-8 h-8 rounded-md flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all">
+                <button id="sidebar-close" class="w-8 h-8 rounded-md flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all">
                     <iconify-icon icon="carbon:chevron-left" class="text-xs"></iconify-icon>
                 </button>
             </div>
@@ -100,6 +103,8 @@
 
             </div>
         </aside>
+
+        <div id="sidebar-backdrop" class="fixed inset-0 top-14 bg-black/50 z-[25] hidden md:hidden"></div>
 
         <!-- Main Chat Area -->
         <main id="chat-main" class="flex-1 flex flex-col h-full relative">
@@ -587,10 +592,42 @@
         /* ── global Escape closes everything ───────────────────── */
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
+                if (sidebarOpen) closeSidebar();
                 closeCtxMenu();
                 archiveModal.classList.add('hidden');
                 summarizeModal.classList.add('hidden');
             }
+        });
+
+        /* ── sidebar toggle (mobile) ──────────────────────────── */
+        var sidebarEl       = document.getElementById('sidebar');
+        var sidebarToggle   = document.getElementById('sidebar-toggle');
+        var sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        var sidebarClose    = document.getElementById('sidebar-close');
+        var sidebarOpen     = false;
+
+        function openSidebar() {
+            sidebarOpen = true;
+            sidebarEl.classList.remove('hidden', 'relative');
+            sidebarEl.classList.add('flex', 'fixed', 'top-14', 'bottom-0', 'left-0', 'z-30');
+            sidebarBackdrop.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            sidebarOpen = false;
+            sidebarEl.classList.remove('flex', 'fixed', 'top-14', 'bottom-0', 'left-0', 'z-30');
+            sidebarEl.classList.add('hidden', 'relative');
+            sidebarBackdrop.classList.add('hidden');
+        }
+
+        sidebarToggle.addEventListener('click', function () {
+            if (sidebarOpen) closeSidebar(); else openSidebar();
+        });
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768 && sidebarOpen) closeSidebar();
         });
 
         /* ── init ──────────────────────────────────────────────── */

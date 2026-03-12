@@ -78,21 +78,23 @@
 
                 <!-- Routine table -->
                 <section>
-                    <table class="w-full">
-                        <thead>
-                            <tr class="text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                                <th class="pb-2 pl-3">Name</th>
-                                <th class="pb-2">Trigger</th>
-                                <th class="pb-2">Action</th>
-                                <th class="pb-2">Last Run</th>
-                                <th class="pb-2">Next Run</th>
-                                <th class="pb-2">Runs</th>
-                                <th class="pb-2">Status</th>
-                                <th class="pb-2 pl-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="routine-rows"></tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                                    <th class="pb-2 pl-3">Name</th>
+                                    <th class="pb-2">Trigger</th>
+                                    <th class="pb-2">Action</th>
+                                    <th class="pb-2">Last Run</th>
+                                    <th class="pb-2">Next Run</th>
+                                    <th class="pb-2">Runs</th>
+                                    <th class="pb-2">Status</th>
+                                    <th class="pb-2 pl-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="routine-rows"></tbody>
+                        </table>
+                    </div>
                     <p id="empty-msg" class="hidden text-center text-zinc-500 text-sm py-12">No routines configured. Ask the assistant to create one.</p>
                 </section>
 
