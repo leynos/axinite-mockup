@@ -78,37 +78,52 @@
                     <div id="ext-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 </section>
 
-                <!-- Available WASM Extensions -->
-                <section>
-                    <h2 class="text-base font-semibold text-zinc-200 mb-3">Available WASM Extensions</h2>
-                    <p class="text-zinc-500 text-sm pl-4">No additional WASM extensions available</p>
-                </section>
+                <!-- WASM & MCP panels side by side -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-                <!-- Install WASM Extension -->
-                <section>
-                    <h2 class="text-base font-semibold text-zinc-200 mb-3">Install WASM Extension</h2>
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <label class="text-xs text-zinc-400 shrink-0">Extension name</label>
-                        <input type="text" placeholder="URL or cargo handle" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 w-64">
-                        <button class="px-4 py-1.5 rounded-lg text-sm text-[#001a0d] font-medium bg-brand-emerald hover:bg-[#00e639] transition-colors shadow-[0_0_15px_rgba(0,255,65,0.3)]">Install</button>
+                    <!-- WASM panel -->
+                    <div class="relative bg-glass-100 border border-glass-border rounded-xl p-6 overflow-hidden">
+                        <iconify-icon icon="carbon:data-vis-1" class="absolute -bottom-6 -right-4 text-white pointer-events-none" style="font-size: 11rem; opacity: 0.03;"></iconify-icon>
+
+                        <div class="relative z-10 space-y-6">
+                            <section>
+                                <h2 class="text-base font-semibold text-zinc-200 mb-3">Available WASM Extensions</h2>
+                                <p class="text-zinc-500 text-sm pl-4">No additional WASM extensions available</p>
+                            </section>
+
+                            <section>
+                                <h2 class="text-base font-semibold text-zinc-200 mb-3">Install WASM Extension</h2>
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <label class="text-xs text-zinc-400 shrink-0">Extension name</label>
+                                    <input type="text" placeholder="URL or cargo handle" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 flex-1 min-w-[12rem]">
+                                    <button class="px-4 py-1.5 rounded-lg text-sm text-[#001a0d] font-medium bg-brand-emerald hover:bg-[#00e639] transition-colors shadow-[0_0_15px_rgba(0,255,65,0.3)]">Install</button>
+                                </div>
+                            </section>
+                        </div>
                     </div>
-                </section>
 
-                <!-- MCP Servers -->
-                <section>
-                    <h2 class="text-base font-semibold text-zinc-200 mb-3">MCP Servers</h2>
-                    <p class="text-zinc-500 text-sm pl-4">No MCP servers available</p>
-                </section>
+                    <!-- MCP panel -->
+                    <div class="relative bg-glass-100 border border-glass-border rounded-xl p-6 overflow-hidden">
+                        <iconify-icon icon="carbon:logo-model-context-protocol" class="absolute -bottom-6 -right-4 text-white pointer-events-none" style="font-size: 11rem; opacity: 0.03;"></iconify-icon>
 
-                <!-- Add Custom MCP Server -->
-                <section>
-                    <h2 class="text-base font-semibold text-zinc-200 mb-3">Add Custom MCP Server</h2>
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <label class="text-xs text-zinc-400 shrink-0">Server name</label>
-                        <input type="text" placeholder="MCP server URL (SSE) [...]" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 w-64">
-                        <button class="px-4 py-1.5 rounded-lg text-sm text-[#001a0d] font-medium bg-brand-emerald hover:bg-[#00e639] transition-colors shadow-[0_0_15px_rgba(0,255,65,0.3)]">Add</button>
+                        <div class="relative z-10 space-y-6">
+                            <section>
+                                <h2 class="text-base font-semibold text-zinc-200 mb-3">MCP Servers</h2>
+                                <p class="text-zinc-500 text-sm pl-4">No MCP servers available</p>
+                            </section>
+
+                            <section>
+                                <h2 class="text-base font-semibold text-zinc-200 mb-3">Add Custom MCP Server</h2>
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <label class="text-xs text-zinc-400 shrink-0">Server name</label>
+                                    <input type="text" placeholder="MCP server URL (SSE) [...]" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 flex-1 min-w-[12rem]">
+                                    <button class="px-4 py-1.5 rounded-lg text-sm text-[#001a0d] font-medium bg-brand-emerald hover:bg-[#00e639] transition-colors shadow-[0_0_15px_rgba(0,255,65,0.3)]">Add</button>
+                                </div>
+                            </section>
+                        </div>
                     </div>
-                </section>
+
+                </div>
 
                 <!-- Registered Tools -->
                 <section>
