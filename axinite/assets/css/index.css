@@ -55,6 +55,18 @@ select option {
     color: #e4e4e7;
 }
 
+.btn-primary {
+    background-color: #00ff41;
+    color: #001a0d;
+    font-weight: 500;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    transition: background-color 150ms, box-shadow 150ms;
+}
+.btn-primary:hover {
+    background-color: #00e639;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
 .markdown-body > :first-child {
     margin-top: 0;
 }
