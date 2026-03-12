@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en" class="dark"><head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extensions - Axinite</title>
+    <link rel="stylesheet" href="../assets/css/index.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        glass: {
+                            100: 'rgba(255, 255, 255, 0.03)',
+                            200: 'rgba(255, 255, 255, 0.05)',
+                            300: 'rgba(255, 255, 255, 0.1)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                        },
+                        brand: {
+                            emerald: '#00ff41',
+                            indigo: '#4f46e5',
+                            dark: '#09090b',
+                        }
+                    },
+                    backgroundImage: {
+                        'mesh-gradient': 'radial-gradient(circle at 15% 50%, rgba(0, 255, 65, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(79, 70, 229, 0.08), transparent 25%)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-screen w-full overflow-hidden bg-brand-dark bg-mesh-gradient flex flex-col font-sans text-sm antialiased">
+
+    <!-- Top Navigation -->
+    <header id="header" class="glass-topbar w-full h-14 flex items-center justify-between px-4 z-20 shrink-0">
+        <div class="flex items-center space-x-6 h-full">
+            <nav class="flex h-full space-x-1">
+                <a href="../chat/" class="h-full px-4 flex items-center text-zinc-400 hover:text-zinc-200 transition-colors">Chat</a>
+                <a href="../memory/" class="h-full px-4 flex items-center text-zinc-400 hover:text-zinc-200 transition-colors">Memory</a>
+                <a href="../jobs/" class="h-full px-4 flex items-center text-zinc-400 hover:text-zinc-200 transition-colors">Jobs</a>
+                <a href="../routines/" class="h-full px-4 flex items-center text-zinc-400 hover:text-zinc-200 transition-colors">Routines</a>
+                <a href="../extensions/" class="h-full px-4 flex items-center text-brand-emerald border-b-2 border-brand-emerald font-medium">Extensions</a>
+                <a href="../skills/" class="h-full px-4 flex items-center text-zinc-400 hover:text-zinc-200 transition-colors">Skills</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <button class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
+                Logs
+            </button>
+            <div class="flex items-center space-x-2 text-xs text-zinc-400">
+                <span class="w-2 h-2 rounded-full bg-brand-emerald shadow-[0_0_8px_rgba(0,255,65,0.5)]"></span>
+                <span>Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative z-10">
+        <main class="flex-1 flex flex-col items-center justify-center h-full">
+            <div class="text-center">
+                <i class="fa-solid fa-puzzle-piece text-4xl text-zinc-600 mb-4"></i>
+                <h1 class="text-xl font-semibold text-zinc-300 mb-2">Extensions</h1>
+                <p class="text-zinc-500 text-sm">Installed plugins and integrations</p>
+            </div>
+        </main>
+    </div>
+
+</body></html>
