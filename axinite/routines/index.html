@@ -89,6 +89,7 @@
         </div>
     </div>
 
+    <script src="../assets/js/dashboard.js"></script>
     <script>
     (function () {
         /* ── data ──────────────────────────────────────────────── */
@@ -256,18 +257,13 @@
         var summaryCardsEl = document.getElementById('summary-cards');
         var routineRowsEl  = document.getElementById('routine-rows');
         var emptyMsg       = document.getElementById('empty-msg');
-        var modal          = document.getElementById('detail-modal');
         var modalTitle     = document.getElementById('detail-title');
         var modalMeta      = document.getElementById('detail-meta');
         var modalBody      = document.getElementById('detail-body');
         var modalActions   = document.getElementById('detail-actions');
 
         /* ── helpers ───────────────────────────────────────────── */
-        function esc(s) {
-            var d = document.createElement('div');
-            d.textContent = s;
-            return d.innerHTML;
-        }
+        var esc = escapeHtml;
 
         var statusMap = { 'enabled': 'active', 'disabled': 'disabled', 'failing': 'failing' };
         var today = '2026-03-12';
@@ -289,28 +285,18 @@
             return count;
         }
 
+        function summaryCount(key) {
+            if (key === 'total') return routines.length;
+            if (key === 'runs_today') return countRunsToday();
+            return countByStatus(key);
+        }
+
         /* ── render summary cards ────────────────────────────── */
         function renderSummary() {
-            summaryCardsEl.innerHTML = '';
-            summaryDefs.forEach(function (def) {
-                var count;
-                if (def.key === 'total') count = routines.length;
-                else if (def.key === 'runs_today') count = countRunsToday();
-                else count = countByStatus(def.key);
-
-                var isActive = activeFilter === def.key;
-                var card = document.createElement('div');
-                card.className = 'bg-glass-100 border rounded-xl p-4 text-center cursor-pointer transition-colors hover:bg-glass-200 ' +
-                    (isActive ? 'border-brand-emerald/40' : 'border-glass-border');
-                card.innerHTML =
-                    '<div class="text-3xl font-bold ' + def.color + '">' + count + '</div>' +
-                    '<div class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mt-1">' + def.label + '</div>';
-                card.addEventListener('click', function () {
-                    activeFilter = activeFilter === def.key ? null : def.key;
-                    renderSummary();
-                    renderTable();
-                });
-                summaryCardsEl.appendChild(card);
+            renderSummaryCards(summaryCardsEl, summaryDefs, summaryCount, activeFilter, function (key) {
+                activeFilter = activeFilter === key ? null : key;
+                renderSummary();
+                renderTable();
             });
         }
 
@@ -563,19 +549,11 @@
                 });
             }
 
-            modal.classList.remove('hidden');
+            detailModal.open();
         }
 
-        function closeDetail() {
-            modal.classList.add('hidden');
-        }
-
-        document.getElementById('detail-close').addEventListener('click', closeDetail);
-        document.getElementById('detail-backdrop').addEventListener('click', closeDetail);
-
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeDetail();
-        });
+        var detailModal = initDetailModal();
+        function closeDetail() { detailModal.close(); }
 
         /* ── init ──────────────────────────────────────────────── */
         renderSummary();
