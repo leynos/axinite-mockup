@@ -1,12 +1,10 @@
 <!DOCTYPE html><html lang="en" class="dark"><head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat - Axinite</title>
     <link rel="stylesheet" href="../assets/css/index.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2/dist/iconify-icon.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -71,11 +69,11 @@
             
             <div class="p-4 flex items-center space-x-2 border-b border-glass-border">
                 <button class="w-8 h-8 rounded-md flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-all">
-                    <i class="fa-solid fa-plus text-xs"></i>
+                    <iconify-icon icon="carbon:add" class="text-xs"></iconify-icon>
                 </button>
                 <div class="flex-1"></div>
                 <button class="w-8 h-8 rounded-md flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all">
-                    <i class="fa-solid fa-angles-left text-xs"></i>
+                    <iconify-icon icon="carbon:chevron-left" class="text-xs"></iconify-icon>
                 </button>
             </div>
 
@@ -100,31 +98,31 @@
                                 <span class="truncate pr-2">Heya</span>
                                 <div class="flex items-center space-x-2">
                                     <span class="text-[10px] text-zinc-400">9h ago</span>
-                                    <i class="fa-solid fa-ellipsis text-xs text-zinc-400"></i>
+                                    <iconify-icon icon="carbon:overflow-menu-horizontal" class="text-xs text-zinc-400"></iconify-icon>
                                 </div>
                             </button>
                             
                             <div class="absolute right-0 top-full mt-1 w-48 rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-brand-emerald/20 z-30" style="background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                                 <div class="p-1.5">
                                     <button class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-glass-200 text-zinc-300 hover:text-zinc-100 transition-all group">
-                                        <i class="fa-solid fa-pen text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></i>
+                                        <iconify-icon icon="carbon:edit" class="text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></iconify-icon>
                                         <span class="text-sm">Rename</span>
                                     </button>
                                     <button class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-glass-200 text-zinc-300 hover:text-zinc-100 transition-all group">
-                                        <i class="fa-solid fa-box-archive text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></i>
+                                        <iconify-icon icon="carbon:archive" class="text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></iconify-icon>
                                         <span class="text-sm">Archive</span>
                                     </button>
                                     <button class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-glass-200 text-zinc-300 hover:text-zinc-100 transition-all group">
-                                        <i class="fa-solid fa-wand-magic-sparkles text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></i>
+                                        <iconify-icon icon="carbon:magic-wand-filled" class="text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></iconify-icon>
                                         <span class="text-sm">Summarize</span>
                                     </button>
                                     <button class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-glass-200 text-zinc-300 hover:text-zinc-100 transition-all group">
-                                        <i class="fa-solid fa-copy text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></i>
+                                        <iconify-icon icon="carbon:copy" class="text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></iconify-icon>
                                         <span class="text-sm">Copy chat</span>
                                     </button>
                                     <div class="h-px bg-glass-border my-1.5"></div>
                                     <button class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-glass-200 text-zinc-300 hover:text-zinc-100 transition-all group">
-                                        <i class="fa-solid fa-download text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></i>
+                                        <iconify-icon icon="carbon:download" class="text-xs text-zinc-400 group-hover:text-brand-emerald transition-colors"></iconify-icon>
                                         <span class="text-sm">Export</span>
                                     </button>
                                 </div>
@@ -249,11 +247,11 @@
 
                         <div class="flex items-center space-x-2 px-2 pb-1 shrink-0">
                             <button class="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">
-                                <i class="fa-solid fa-paperclip"></i>
+                                <iconify-icon icon="carbon:attachment"></iconify-icon>
                             </button>
                             <button class="h-10 px-5 rounded-xl bg-brand-emerald hover:bg-[#00e639] text-[#001a0d] font-medium flex items-center justify-center transition-all shadow-[0_0_15px_rgba(0,255,65,0.3)] hover:shadow-[0_0_20px_rgba(0,255,65,0.5)]">
                                 <span>Send</span>
-                                <i class="fa-solid fa-arrow-up ml-2 text-xs"></i>
+                                <iconify-icon icon="carbon:arrow-up" class="ml-2 text-xs"></iconify-icon>
                             </button>
                         </div>
 
