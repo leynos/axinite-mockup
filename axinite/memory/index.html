@@ -9,36 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Buenard:wght@400..700&family=Molengo&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Molengo', 'sans-serif'],
-                        serif: ['Buenard', 'serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
-                    },
-                    colors: {
-                        glass: {
-                            100: 'rgba(255, 255, 255, 0.03)',
-                            200: 'rgba(255, 255, 255, 0.05)',
-                            300: 'rgba(255, 255, 255, 0.1)',
-                            border: 'rgba(255, 255, 255, 0.08)',
-                        },
-                        brand: {
-                            emerald: '#00ff41',
-                            indigo: '#4f46e5',
-                            dark: '#09090b',
-                        }
-                    },
-                    backgroundImage: {
-                        'mesh-gradient': 'radial-gradient(circle at 15% 50%, rgba(0, 255, 65, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(79, 70, 229, 0.08), transparent 25%)',
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="../assets/js/tailwind-config.js"></script>
 </head>
 <body class="h-screen w-full overflow-hidden bg-brand-dark bg-mesh-gradient flex flex-col font-sans text-sm antialiased">
 
