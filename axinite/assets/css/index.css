@@ -50,6 +50,11 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
+select option {
+    background: #18181b;
+    color: #e4e4e7;
+}
+
 .markdown-body h1, .markdown-body h2, .markdown-body h3 {
     color: #ffffff;
     font-weight: 600;
