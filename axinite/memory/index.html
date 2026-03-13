@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <div id="file-tree" role="tree" class="flex-1 overflow-y-auto p-2"></div>
+            <div id="file-tree" class="flex-1 overflow-y-auto p-2"></div>
         </aside>
 
         <div id="sidebar-backdrop" class="fixed inset-0 top-14 bg-black/50 z-[25] hidden md:hidden"></div>
@@ -300,7 +300,6 @@ Available tool integrations.\n\
                     /* children */
                     if (node.open || query) {
                         var childContainer = document.createElement('div');
-                        childContainer.setAttribute('role', 'group');
                         buildTreeNodes(node.children, childContainer, query, depth + 1);
                         folderDiv.appendChild(childContainer);
                     }

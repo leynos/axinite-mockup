@@ -727,12 +727,15 @@
             var chatId = ctxMenuChatId;
             var trigger = document.activeElement;
             closeCtxMenu();
-            archiveDontAsk.checked = false;
-            skipArchiveConfirm = false;
+            if (skipArchiveConfirm) {
+                doArchive(chatId);
+                return;
+            }
 
             var chat = chats.find(function (c) { return c.id === chatId; });
             document.getElementById('archive-chat-name').textContent = chat ? chat.name : '';
             archiveModal.dataset.chatId = chatId;
+            archiveDontAsk.checked = false;
             openModal(archiveModal, trigger, archiveYes);
         });
 
@@ -742,6 +745,7 @@
 
         archiveYes.addEventListener('click', function () {
             var chatId = archiveModal.dataset.chatId;
+            skipArchiveConfirm = archiveDontAsk.checked;
             closeModal(archiveModal);
             doArchive(chatId);
         });

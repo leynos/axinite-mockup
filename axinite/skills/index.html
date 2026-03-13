@@ -264,12 +264,18 @@
         }
 
         function isValidUrl(value) {
+            var parsedUrl;
+
             try {
-                new URL(value);
-                return true;
+                parsedUrl = new URL(value);
+                return parsedUrl.protocol === 'https:';
             } catch {
                 return false;
             }
+        }
+
+        function isSupportedBundleFilename(name) {
+            return /\.(skill|zip)$/i.test(name || '');
         }
 
         function getUrlInstallPayload() {
@@ -290,7 +296,7 @@
                 id: slugify(providedName || derivedName),
                 name: providedName || derivedName,
                 version: 'v1.0.0',
-                format: /\.skill$/i.test(url) ? 'bundle' : 'single',
+                format: /\.(skill|zip)$/i.test(urlObject.pathname) ? 'bundle' : 'single',
                 description: 'Installed from URL: ' + urlObject.hostname + '.',
                 bundleFiles: ['SKILL.md'],
                 content: '# ' + (providedName || derivedName) + '\n\nInstalled from ' + url + '.'
@@ -301,7 +307,7 @@
             var overrideName = uploadNameOverride.value.trim();
             var baseName;
 
-            if (!selectedUploadFileName) {
+            if (!selectedUploadFileName || !isSupportedBundleFilename(selectedUploadFileName)) {
                 return null;
             }
 
@@ -685,6 +691,15 @@
         });
 
         function showUploadFile(name) {
+            if (!isSupportedBundleFilename(name)) {
+                uploadInput.value = '';
+                selectedUploadFileName = '';
+                uploadSelected.classList.add('hidden');
+                uploadZone.classList.remove('hidden');
+                updateInstallButtons();
+                return;
+            }
+
             selectedUploadFileName = name;
             uploadFilename.textContent = name;
             uploadSelected.classList.remove('hidden');
