@@ -1,0 +1,7 @@
+{
+  "name": "axinite-mockup",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-site.mjs"
+  }
+}
