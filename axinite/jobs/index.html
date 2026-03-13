@@ -12,6 +12,7 @@
     <script src="../assets/js/tailwind-config.js"></script>
 </head>
 <body class="h-screen w-full overflow-hidden bg-brand-dark bg-mesh-gradient flex flex-col font-sans text-sm antialiased">
+    <div id="app-shell" class="contents">
 
     <!-- Top Navigation -->
     <header id="header" class="glass-topbar w-full h-14 flex items-center justify-between px-4 z-20 shrink-0">
@@ -73,8 +74,10 @@
         </main>
     </div>
 
+    </div>
+
     <!-- Job detail modal -->
-    <div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" aria-hidden="true" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center">
         <div id="detail-backdrop" class="absolute inset-0 bg-black/60"></div>
         <div class="relative rounded-2xl p-6 w-full max-w-lg mx-4 border border-glass-border max-h-[80vh] flex flex-col" style="background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
             <h3 id="detail-title" class="text-lg font-semibold text-zinc-100 mb-1 font-serif"></h3>

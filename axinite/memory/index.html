@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <div id="file-tree" class="flex-1 overflow-y-auto p-2"></div>
+            <div id="file-tree" role="tree" class="flex-1 overflow-y-auto p-2"></div>
         </aside>
 
         <div id="sidebar-backdrop" class="fixed inset-0 top-14 bg-black/50 z-[25] hidden md:hidden"></div>
@@ -272,9 +272,11 @@ Available tool integrations.\n\
                     var folderDiv = document.createElement('div');
 
                     /* folder header */
-                    var header = document.createElement('div');
-                    header.className = 'flex items-center py-1 rounded cursor-pointer hover:bg-glass-100 text-zinc-300 transition-colors';
+                    var header = document.createElement('button');
+                    header.type = 'button';
+                    header.className = 'w-full flex items-center py-1 rounded text-left hover:bg-glass-100 text-zinc-300 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-emerald/60';
                     header.style.paddingLeft = (depth * 12 + 4) + 'px';
+                    header.setAttribute('aria-expanded', String(node.open));
 
                     var caret = document.createElement('iconify-icon');
                     caret.setAttribute('icon', node.open ? 'carbon:caret-down' : 'carbon:caret-right');
@@ -298,6 +300,7 @@ Available tool integrations.\n\
                     /* children */
                     if (node.open || query) {
                         var childContainer = document.createElement('div');
+                        childContainer.setAttribute('role', 'group');
                         buildTreeNodes(node.children, childContainer, query, depth + 1);
                         folderDiv.appendChild(childContainer);
                     }
@@ -309,25 +312,29 @@ Available tool integrations.\n\
                     if (query && fname.toLowerCase().indexOf(query) === -1) return;
 
                     var isActive = node.path === activeFile;
-                    var fileDiv = document.createElement('div');
-                    fileDiv.className = 'flex items-center py-1 rounded cursor-pointer transition-colors ' +
+                    var fileButton = document.createElement('button');
+                    fileButton.type = 'button';
+                    fileButton.className = 'w-full flex items-center py-1 rounded text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-emerald/60 ' +
                         (isActive ? 'bg-glass-200 text-zinc-200' : 'text-zinc-400 hover:bg-glass-100 hover:text-zinc-200');
-                    fileDiv.style.paddingLeft = (depth * 12 + 20) + 'px';
+                    fileButton.style.paddingLeft = (depth * 12 + 20) + 'px';
+                    if (isActive) {
+                        fileButton.setAttribute('aria-current', 'true');
+                    }
 
                     var nameSpan = document.createElement('span');
                     nameSpan.className = 'text-sm truncate';
                     nameSpan.textContent = fname;
 
-                    fileDiv.appendChild(nameSpan);
+                    fileButton.appendChild(nameSpan);
 
-                    fileDiv.addEventListener('click', function () {
+                    fileButton.addEventListener('click', function () {
                         if (editing) exitEdit(false);
                         activeFile = node.path;
                         showFile();
                         renderTree();
                     });
 
-                    parent.appendChild(fileDiv);
+                    parent.appendChild(fileButton);
                 }
             });
         }

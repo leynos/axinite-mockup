@@ -50,9 +50,13 @@ function renderSummaryCards(containerEl, defs, countFn, activeFilter, onToggle) 
  * Returns { open, close } functions that show/hide the modal.
  */
 function initDetailModal() {
-    var modal    = document.getElementById('detail-modal');
+    var modal = document.getElementById('detail-modal');
     var closeBtn = document.getElementById('detail-close');
     var backdrop = document.getElementById('detail-backdrop');
+    var appShell = document.getElementById('app-shell');
+    var focusableSelector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    var lastFocusedElement = null;
+    var modalKeydownHandler = null;
 
     if (!modal) {
         return {
@@ -65,11 +69,110 @@ function initDetailModal() {
         return !modal.classList.contains('hidden');
     }
 
-    function close() { modal.classList.add('hidden'); }
-    function open()  { modal.classList.remove('hidden'); }
+    function setBackgroundInert(isInert) {
+        if (!appShell) {
+            return;
+        }
 
-    if (closeBtn) closeBtn.addEventListener('click', close);
-    if (backdrop) backdrop.addEventListener('click', close);
+        appShell.inert = isInert;
+        if (isInert) {
+            appShell.setAttribute('aria-hidden', 'true');
+        } else {
+            appShell.removeAttribute('aria-hidden');
+        }
+    }
+
+    function getFocusableInModal() {
+        return Array.prototype.filter.call(
+            modal.querySelectorAll(focusableSelector),
+            function (el) {
+                return !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null;
+            }
+        );
+    }
+
+    function focusModalStart() {
+        var focusable = getFocusableInModal();
+        var target = focusable[0] || modal;
+        target.focus();
+    }
+
+    function handleModalKeydown(e) {
+        var focusable;
+        var first;
+        var last;
+
+        if (!isOpen()) {
+            return;
+        }
+
+        if (e.key !== 'Tab') {
+            return;
+        }
+
+        focusable = getFocusableInModal();
+        first = focusable[0];
+        last = focusable[focusable.length - 1];
+
+        if (!first || !last) {
+            e.preventDefault();
+            modal.focus();
+            return;
+        }
+
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+
+    function close() {
+        if (!isOpen()) {
+            return;
+        }
+
+        setBackgroundInert(false);
+        modal.setAttribute('aria-hidden', 'true');
+        if (modalKeydownHandler) {
+            document.removeEventListener('keydown', modalKeydownHandler);
+            modalKeydownHandler = null;
+        }
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function' && lastFocusedElement.isConnected) {
+            lastFocusedElement.focus();
+        }
+        lastFocusedElement = null;
+        modal.classList.add('hidden');
+    }
+
+    function open() {
+        if (isOpen()) {
+            return;
+        }
+
+        lastFocusedElement = document.activeElement;
+        setBackgroundInert(true);
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+        if (modalKeydownHandler) {
+            document.removeEventListener('keydown', modalKeydownHandler);
+        }
+        modalKeydownHandler = handleModalKeydown;
+        document.addEventListener('keydown', modalKeydownHandler);
+        focusModalStart();
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', close);
+    }
+    if (backdrop) {
+        backdrop.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+        });
+        backdrop.addEventListener('click', close);
+    }
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isOpen()) close();
     });

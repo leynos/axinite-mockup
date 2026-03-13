@@ -119,18 +119,22 @@ function hasDisallowedTab(line, filePath) {
     return true;
   }
 
-  if (!line.startsWith("\t")) {
-    return true;
+  if (line.startsWith("\t")) {
+    return false;
   }
 
-  return line.slice(1).includes("\t");
+  return /^\s*/.exec(line)[0].includes("\t");
 }
 
 async function safeStat(targetPath) {
   try {
     return await stat(targetPath);
-  } catch {
-    return null;
+  } catch (error) {
+    if (error && (error.code === "ENOENT" || error.code === "ENOTDIR")) {
+      return null;
+    }
+
+    throw error;
   }
 }
 

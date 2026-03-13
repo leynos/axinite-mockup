@@ -327,7 +327,11 @@
                 card.querySelector('.btn-remove').addEventListener('click', function () {
                     var idx = extensions.indexOf(ext);
                     if (idx !== -1) extensions.splice(idx, 1);
+                    tools = tools.filter(function (tool) {
+                        return tool.source !== ext.id;
+                    });
                     renderCards();
+                    renderTools();
                 });
 
                 cardsEl.appendChild(card);

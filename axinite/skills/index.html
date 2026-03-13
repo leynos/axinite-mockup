@@ -80,7 +80,7 @@
                                 <label for="url-install-url" class="text-xs text-zinc-400 mb-1.5 block">HTTPS URL</label>
                                 <div class="flex items-center gap-3">
                                     <input id="url-install-url" type="text" placeholder="https://example.com/SKILL.md or .skill" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 min-w-0">
-                                    <button type="button" class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0">Install</button>
+                                    <button type="button" id="url-install-btn" class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0" disabled>Install</button>
                                 </div>
                             </div>
 
@@ -116,7 +116,7 @@
                                 <div class="flex items-center gap-3">
                                     <label for="upload-name-override" class="text-xs text-zinc-400 shrink-0">Name override <span class="text-zinc-600">(optional)</span></label>
                                     <input id="upload-name-override" type="text" placeholder="Derived from archive" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 min-w-0">
-                                    <button type="button" class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0">Install</button>
+                                    <button type="button" id="upload-install-btn" class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0" disabled>Install</button>
                                 </div>
                             </div>
 
@@ -214,6 +214,9 @@
         var cardsEl        = document.getElementById('skill-cards');
         var searchInput    = document.getElementById('search-input');
         var searchResults  = document.getElementById('search-results');
+        var urlSkillNameInput = document.getElementById('url-skill-name');
+        var urlInstallUrlInput = document.getElementById('url-install-url');
+        var urlInstallButton = document.getElementById('url-install-btn');
         var appShell       = document.getElementById('app-shell');
         var modal          = document.getElementById('view-modal');
         var modalClose     = document.getElementById('view-close');
@@ -226,9 +229,13 @@
         var uploadInput    = document.getElementById('upload-input');
         var uploadSelected = document.getElementById('upload-selected');
         var uploadFilename = document.getElementById('upload-filename');
+        var uploadNameOverride = document.getElementById('upload-name-override');
+        var uploadInstallButton = document.getElementById('upload-install-btn');
         var focusableSelector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
         var lastFocusedElement = null;
         var modalKeydownHandler = null;
+        var selectedUploadFileName = '';
+        var installingButton = null;
 
         /* ── helpers ───────────────────────────────────────────── */
         var markdown = window.axiniteMarkdown;
@@ -250,6 +257,111 @@
             if (refs > 0)   parts.push(refs + ' reference' + (refs > 1 ? 's' : ''));
             if (assets > 0) parts.push(assets + ' asset' + (assets > 1 ? 's' : ''));
             return parts.join(' &middot; ');
+        }
+
+        function slugify(value) {
+            return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'new-skill';
+        }
+
+        function isValidUrl(value) {
+            try {
+                new URL(value);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        function getUrlInstallPayload() {
+            var url = urlInstallUrlInput.value.trim();
+            var providedName = urlSkillNameInput.value.trim();
+            var urlObject;
+            var derivedName;
+
+            if (!isValidUrl(url)) {
+                return null;
+            }
+
+            urlObject = new URL(url);
+            derivedName = urlObject.pathname.split('/').filter(Boolean).pop() || urlObject.hostname;
+            derivedName = derivedName.replace(/\.(md|skill|zip)$/i, '');
+
+            return {
+                id: slugify(providedName || derivedName),
+                name: providedName || derivedName,
+                version: 'v1.0.0',
+                format: /\.skill$/i.test(url) ? 'bundle' : 'single',
+                description: 'Installed from URL: ' + urlObject.hostname + '.',
+                bundleFiles: ['SKILL.md'],
+                content: '# ' + (providedName || derivedName) + '\n\nInstalled from ' + url + '.'
+            };
+        }
+
+        function getUploadInstallPayload() {
+            var overrideName = uploadNameOverride.value.trim();
+            var baseName;
+
+            if (!selectedUploadFileName) {
+                return null;
+            }
+
+            baseName = selectedUploadFileName.replace(/\.(skill|zip)$/i, '');
+
+            return {
+                id: slugify(overrideName || baseName),
+                name: overrideName || baseName,
+                version: 'v1.0.0',
+                format: 'bundle',
+                description: 'Installed from uploaded bundle.',
+                bundleFiles: ['SKILL.md'],
+                content: '# ' + (overrideName || baseName) + '\n\nInstalled from uploaded bundle.'
+            };
+        }
+
+        function upsertSkill(skill) {
+            var existingIndex = skills.findIndex(function (existingSkill) {
+                return existingSkill.id === skill.id;
+            });
+
+            if (existingIndex === -1) {
+                skills.push(skill);
+            } else {
+                skills[existingIndex] = skill;
+            }
+            renderCards();
+        }
+
+        function updateInstallButtons() {
+            var urlPayload = getUrlInstallPayload();
+            var uploadPayload = getUploadInstallPayload();
+
+            urlInstallButton.disabled = installingButton !== null || !urlPayload;
+            uploadInstallButton.disabled = installingButton !== null || !uploadPayload;
+        }
+
+        function completeInstall(button, payload, afterInstall) {
+            var originalLabel = button.dataset.defaultLabel;
+
+            upsertSkill(payload);
+            if (typeof afterInstall === 'function') {
+                afterInstall();
+            }
+            installingButton = null;
+            button.textContent = originalLabel;
+            updateInstallButtons();
+        }
+
+        function installSkill(button, payload, afterInstall) {
+            if (!payload || installingButton) {
+                return;
+            }
+
+            installingButton = button.id;
+            button.textContent = 'Installing...';
+            updateInstallButtons();
+            window.setTimeout(function () {
+                completeInstall(button, payload, afterInstall);
+            }, 300);
         }
 
         /* ── render skill cards ──────────────────────────────── */
@@ -511,6 +623,28 @@
             if (e.key === 'Enter') doSearch();
         });
 
+        urlInstallButton.dataset.defaultLabel = urlInstallButton.textContent;
+        uploadInstallButton.dataset.defaultLabel = uploadInstallButton.textContent;
+
+        urlInstallButton.addEventListener('click', function () {
+            installSkill(urlInstallButton, getUrlInstallPayload(), function () {
+                urlSkillNameInput.value = '';
+                urlInstallUrlInput.value = '';
+            });
+        });
+        uploadInstallButton.addEventListener('click', function () {
+            installSkill(uploadInstallButton, getUploadInstallPayload(), function () {
+                uploadInput.value = '';
+                uploadNameOverride.value = '';
+                selectedUploadFileName = '';
+                uploadSelected.classList.add('hidden');
+                uploadZone.classList.remove('hidden');
+            });
+        });
+        urlSkillNameInput.addEventListener('input', updateInstallButtons);
+        urlInstallUrlInput.addEventListener('input', updateInstallButtons);
+        uploadNameOverride.addEventListener('input', updateInstallButtons);
+
         function triggerUploadPicker() {
             uploadInput.click();
         }
@@ -551,18 +685,24 @@
         });
 
         function showUploadFile(name) {
+            selectedUploadFileName = name;
             uploadFilename.textContent = name;
             uploadSelected.classList.remove('hidden');
             uploadZone.classList.add('hidden');
+            updateInstallButtons();
         }
 
         document.getElementById('upload-clear').addEventListener('click', function () {
             uploadInput.value = '';
+            uploadNameOverride.value = '';
+            selectedUploadFileName = '';
             uploadSelected.classList.add('hidden');
             uploadZone.classList.remove('hidden');
+            updateInstallButtons();
         });
         /* ── init ──────────────────────────────────────────────── */
         renderCards();
+        updateInstallButtons();
     })();
     </script>
 
