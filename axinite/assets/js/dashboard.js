@@ -2,13 +2,6 @@
  * Shared helpers for the Jobs and Routines dashboard pages.
  */
 
-/** Safely escape a string for insertion into innerHTML. */
-function escapeHtml(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-}
-
 /**
  * Render summary cards into a container element.
  *
@@ -24,11 +17,16 @@ function renderSummaryCards(containerEl, defs, countFn, activeFilter, onToggle) 
         var count = countFn(def.key);
         var isActive = activeFilter === def.key;
         var card = document.createElement('div');
+        var countEl = document.createElement('div');
+        var labelEl = document.createElement('div');
         card.className = 'bg-glass-100 border rounded-xl p-4 text-center cursor-pointer transition-colors hover:bg-glass-200 ' +
             (isActive ? 'border-brand-emerald/40' : 'border-glass-border');
-        card.innerHTML =
-            '<div class="text-3xl font-bold ' + def.color + '">' + count + '</div>' +
-            '<div class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mt-1">' + def.label + '</div>';
+        countEl.className = 'text-3xl font-bold ' + def.color;
+        countEl.textContent = String(count);
+        labelEl.className = 'text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mt-1';
+        labelEl.textContent = def.label;
+        card.appendChild(countEl);
+        card.appendChild(labelEl);
         card.addEventListener('click', function () {
             onToggle(def.key);
         });
