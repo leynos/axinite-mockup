@@ -17,6 +17,20 @@ function initSidebarToggle() {
     var backdrop = document.getElementById('sidebar-backdrop');
     var close    = document.getElementById('sidebar-close');
     var isOpen   = false;
+    var missing  = [];
+
+    if (!el) missing.push('#sidebar');
+    if (!toggle) missing.push('#sidebar-toggle');
+    if (!backdrop) missing.push('#sidebar-backdrop');
+
+    if (missing.length > 0) {
+        console.warn('initSidebarToggle skipped: missing required element(s) ' + missing.join(', '));
+        return {
+            open: function () {},
+            close: function () {},
+            isOpen: function () { return false; }
+        };
+    }
 
     function open() {
         isOpen = true;

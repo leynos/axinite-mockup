@@ -16,13 +16,13 @@ async function main() {
 
   for (const target of TARGETS) {
     const absoluteTarget = path.join(ROOT, target);
-    const stat = await safeStat(absoluteTarget);
+    const targetStat = await safeStat(absoluteTarget);
 
-    if (!stat) {
+    if (!targetStat) {
       continue;
     }
 
-    if (stat.isDirectory()) {
+    if (targetStat.isDirectory()) {
       await collectFiles(absoluteTarget, files);
       continue;
     }

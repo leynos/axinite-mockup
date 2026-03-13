@@ -12,7 +12,7 @@
     <script src="../assets/js/tailwind-config.js"></script>
 </head>
 <body class="h-screen w-full overflow-hidden bg-brand-dark bg-mesh-gradient flex flex-col font-sans text-sm antialiased">
-
+    <div id="app-shell" class="contents">
     <!-- Top Navigation -->
     <header id="header" class="glass-topbar w-full h-14 flex items-center justify-between px-4 z-20 shrink-0">
         <div class="flex items-center space-x-6 h-full">
@@ -98,10 +98,10 @@
                         <div class="relative z-10 space-y-4">
                             <h2 class="text-base font-semibold text-zinc-200">Upload Skill Bundle</h2>
 
-                            <div id="upload-zone" class="border-2 border-dashed border-glass-border rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-emerald/30 hover:bg-glass-200 transition-colors">
+                            <div id="upload-zone" role="button" tabindex="0" aria-label="Upload a skill bundle" aria-describedby="upload-zone-help upload-zone-format" class="border-2 border-dashed border-glass-border rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-emerald/30 hover:bg-glass-200 transition-colors">
                                 <iconify-icon icon="carbon:document-add" class="text-2xl text-zinc-600 mb-2"></iconify-icon>
-                                <p class="text-sm text-zinc-400">Drop <code class="text-[11px] bg-white/5 border border-white/5 rounded px-1 py-0.5 text-zinc-400">.skill</code> file here or click to browse</p>
-                                <p class="text-xs text-zinc-600 mt-1">ZIP archive with SKILL.md at root</p>
+                                <p id="upload-zone-help" class="text-sm text-zinc-400">Drop <code class="text-[11px] bg-white/5 border border-white/5 rounded px-1 py-0.5 text-zinc-400">.skill</code> file here or click to browse</p>
+                                <p id="upload-zone-format" class="text-xs text-zinc-600 mt-1">ZIP archive with SKILL.md at root</p>
                                 <input id="upload-input" type="file" class="hidden" accept=".skill,.zip">
                             </div>
 
@@ -133,8 +133,10 @@
         </main>
     </div>
 
+    </div>
+
     <!-- View skill modal -->
-    <div id="view-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div id="view-modal" role="dialog" aria-modal="true" aria-labelledby="view-title" aria-hidden="true" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center">
         <div id="view-backdrop" class="absolute inset-0 bg-black/60"></div>
         <div class="relative rounded-2xl p-6 w-full max-w-xl mx-4 border border-glass-border max-h-[80vh] flex flex-col" style="background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
             <h3 id="view-title" class="text-lg font-semibold text-zinc-100 mb-1 font-serif"></h3>
@@ -211,7 +213,10 @@
         var cardsEl        = document.getElementById('skill-cards');
         var searchInput    = document.getElementById('search-input');
         var searchResults  = document.getElementById('search-results');
+        var appShell       = document.getElementById('app-shell');
         var modal          = document.getElementById('view-modal');
+        var modalClose     = document.getElementById('view-close');
+        var modalBackdrop  = document.getElementById('view-backdrop');
         var modalTitle     = document.getElementById('view-title');
         var modalMeta      = document.getElementById('view-meta');
         var modalFiles     = document.getElementById('view-bundle-files');
@@ -220,6 +225,9 @@
         var uploadInput    = document.getElementById('upload-input');
         var uploadSelected = document.getElementById('upload-selected');
         var uploadFilename = document.getElementById('upload-filename');
+        var focusableSelector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        var lastFocusedElement = null;
+        var modalKeydownHandler = null;
 
         /* ── helpers ───────────────────────────────────────────── */
         function esc(s) {
@@ -351,6 +359,65 @@
         }
 
         /* ── view modal ──────────────────────────────────────── */
+        function isViewOpen() {
+            return !modal.classList.contains('hidden');
+        }
+
+        function setBackgroundInert(isInert) {
+            if (!appShell) return;
+            appShell.inert = isInert;
+            if (isInert) {
+                appShell.setAttribute('aria-hidden', 'true');
+            } else {
+                appShell.removeAttribute('aria-hidden');
+            }
+        }
+
+        function getFocusableInModal() {
+            return Array.prototype.filter.call(
+                modal.querySelectorAll(focusableSelector),
+                function (el) {
+                    return !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null;
+                }
+            );
+        }
+
+        function focusModalStart() {
+            var focusable = getFocusableInModal();
+            var target = modalClose || focusable[0] || modal;
+            target.focus();
+        }
+
+        function handleModalKeydown(e) {
+            if (!isViewOpen()) return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeView();
+                return;
+            }
+
+            if (e.key !== 'Tab') return;
+
+            var focusable = getFocusableInModal();
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+
+            if (!first || !last) {
+                e.preventDefault();
+                modal.focus();
+                return;
+            }
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+
         function openView(skill) {
             modalTitle.textContent = skill.name;
 
@@ -377,15 +444,36 @@
 
             /* rendered SKILL.md content */
             modalContent.innerHTML = renderMd(skill.content);
+            lastFocusedElement = document.activeElement;
+            setBackgroundInert(true);
             modal.classList.remove('hidden');
+            modal.setAttribute('aria-hidden', 'false');
+            if (modalKeydownHandler) {
+                document.removeEventListener('keydown', modalKeydownHandler);
+            }
+            modalKeydownHandler = handleModalKeydown;
+            document.addEventListener('keydown', modalKeydownHandler);
+            focusModalStart();
         }
 
         function closeView() {
+            if (!isViewOpen()) return;
+
             modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden', 'true');
+            setBackgroundInert(false);
+            if (modalKeydownHandler) {
+                document.removeEventListener('keydown', modalKeydownHandler);
+                modalKeydownHandler = null;
+            }
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
+            lastFocusedElement = null;
         }
 
-        document.getElementById('view-close').addEventListener('click', closeView);
-        document.getElementById('view-backdrop').addEventListener('click', closeView);
+        modalClose.addEventListener('click', closeView);
+        modalBackdrop.addEventListener('click', closeView);
 
         /* ── search ──────────────────────────────────────────── */
         function doSearch() {
@@ -460,9 +548,20 @@
             if (e.key === 'Enter') doSearch();
         });
 
+        function triggerUploadPicker() {
+            uploadInput.click();
+        }
+
         /* ── upload zone ─────────────────────────────────────── */
         uploadZone.addEventListener('click', function () {
-            uploadInput.click();
+            triggerUploadPicker();
+        });
+
+        uploadZone.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                triggerUploadPicker();
+            }
         });
 
         uploadZone.addEventListener('dragover', function (e) {
@@ -499,12 +598,6 @@
             uploadSelected.classList.add('hidden');
             uploadZone.classList.remove('hidden');
         });
-
-        /* ── global Escape ───────────────────────────────────── */
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeView();
-        });
-
         /* ── init ──────────────────────────────────────────────── */
         renderCards();
     })();

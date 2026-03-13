@@ -45,13 +45,24 @@ function initDetailModal() {
     var closeBtn = document.getElementById('detail-close');
     var backdrop = document.getElementById('detail-backdrop');
 
+    if (!modal) {
+        return {
+            open: function () {},
+            close: function () {}
+        };
+    }
+
+    function isOpen() {
+        return !modal.classList.contains('hidden');
+    }
+
     function close() { modal.classList.add('hidden'); }
     function open()  { modal.classList.remove('hidden'); }
 
-    closeBtn.addEventListener('click', close);
-    backdrop.addEventListener('click', close);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    if (backdrop) backdrop.addEventListener('click', close);
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') close();
+        if (e.key === 'Escape' && isOpen()) close();
     });
 
     return { open: open, close: close };
