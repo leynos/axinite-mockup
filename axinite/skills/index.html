@@ -27,7 +27,7 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <button class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
+            <button type="button" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
                 Logs
             </button>
             <div class="flex items-center space-x-2 text-xs text-zinc-400">
@@ -48,8 +48,9 @@
                 <section>
                     <h2 class="text-base font-semibold text-zinc-200 mb-3">Search ClawHub</h2>
                     <div class="flex items-center gap-3">
+                        <label for="search-input" class="sr-only">Search for skills</label>
                         <input id="search-input" type="text" placeholder="Search for skills..." class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30">
-                        <button id="search-btn" class="px-4 py-1.5 rounded-lg text-sm btn-primary">Search</button>
+                        <button type="button" id="search-btn" class="px-4 py-1.5 rounded-lg text-sm btn-primary">Search</button>
                     </div>
                     <div id="search-results" class="hidden mt-3 space-y-2"></div>
                 </section>
@@ -71,15 +72,15 @@
                             <h2 class="text-base font-semibold text-zinc-200">Install by URL</h2>
 
                             <div>
-                                <label class="text-xs text-zinc-400 mb-1.5 block">Skill name or slug <span class="text-zinc-600">(optional)</span></label>
-                                <input type="text" placeholder="my-skill" class="w-full bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30">
+                                <label for="url-skill-name" class="text-xs text-zinc-400 mb-1.5 block">Skill name or slug <span class="text-zinc-600">(optional)</span></label>
+                                <input id="url-skill-name" type="text" placeholder="my-skill" class="w-full bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30">
                             </div>
 
                             <div>
-                                <label class="text-xs text-zinc-400 mb-1.5 block">HTTPS URL</label>
+                                <label for="url-install-url" class="text-xs text-zinc-400 mb-1.5 block">HTTPS URL</label>
                                 <div class="flex items-center gap-3">
-                                    <input type="text" placeholder="https://example.com/SKILL.md or .skill" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 min-w-0">
-                                    <button class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0">Install</button>
+                                    <input id="url-install-url" type="text" placeholder="https://example.com/SKILL.md or .skill" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 min-w-0">
+                                    <button type="button" class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0">Install</button>
                                 </div>
                             </div>
 
@@ -108,14 +109,14 @@
                                 <div class="flex items-center gap-2 text-sm">
                                     <iconify-icon icon="carbon:document" class="text-brand-emerald"></iconify-icon>
                                     <span id="upload-filename" class="text-zinc-300"></span>
-                                    <button id="upload-clear" class="text-zinc-500 hover:text-zinc-300 transition-colors ml-1">
+                                    <button type="button" id="upload-clear" class="text-zinc-500 hover:text-zinc-300 transition-colors ml-1">
                                         <iconify-icon icon="carbon:close" class="text-xs"></iconify-icon>
                                     </button>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <label class="text-xs text-zinc-400 shrink-0">Name override <span class="text-zinc-600">(optional)</span></label>
-                                    <input type="text" placeholder="Derived from archive" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 min-w-0">
-                                    <button class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0">Install</button>
+                                    <label for="upload-name-override" class="text-xs text-zinc-400 shrink-0">Name override <span class="text-zinc-600">(optional)</span></label>
+                                    <input id="upload-name-override" type="text" placeholder="Derived from archive" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 min-w-0">
+                                    <button type="button" class="px-4 py-1.5 rounded-lg text-sm btn-primary shrink-0">Install</button>
                                 </div>
                             </div>
 
@@ -141,7 +142,7 @@
             <div id="view-bundle-files" class="hidden mb-4"></div>
             <div id="view-content" class="flex-1 overflow-y-auto markdown-body bg-glass-200 rounded-lg p-4 border border-glass-border"></div>
             <div class="flex justify-end mt-4">
-                <button id="view-close" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Close</button>
+                <button type="button" id="view-close" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Close</button>
             </div>
         </div>
     </div>

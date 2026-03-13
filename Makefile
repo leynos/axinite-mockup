@@ -8,6 +8,7 @@ check-fmt:
 
 lint:
 	$(NODE) scripts/lint-site.mjs
+	$(NODE) --check scripts/build-site.mjs
 	$(NODE) --check scripts/check-format.mjs
 	$(NODE) --check scripts/lint-site.mjs
 	$(NODE) --check scripts/test-build.mjs
