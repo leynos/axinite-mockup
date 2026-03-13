@@ -149,6 +149,7 @@
         </div>
     </div>
 
+    <script src="../assets/js/markdown.js"></script>
     <script>
     (function () {
         /* ── data ──────────────────────────────────────────────── */
@@ -230,11 +231,9 @@
         var modalKeydownHandler = null;
 
         /* ── helpers ───────────────────────────────────────────── */
-        function esc(s) {
-            var d = document.createElement('div');
-            d.textContent = s;
-            return d.innerHTML;
-        }
+        var markdown = window.axiniteMarkdown;
+        var esc = markdown.escapeHtml;
+        var renderMd = markdown.renderMarkdown;
 
         function fileCounts(bundleFiles) {
             var refs   = 0;
@@ -251,42 +250,6 @@
             if (refs > 0)   parts.push(refs + ' reference' + (refs > 1 ? 's' : ''));
             if (assets > 0) parts.push(assets + ' asset' + (assets > 1 ? 's' : ''));
             return parts.join(' &middot; ');
-        }
-
-        /* ── simple markdown renderer ─────────────────────────── */
-        function renderMd(src) {
-            var html = '';
-            var lines = src.split('\n');
-            var inList = false;
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-                if (/^### /.test(line)) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h3>' + inlineMd(line.slice(4)) + '</h3>';
-                } else if (/^## /.test(line)) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h2>' + inlineMd(line.slice(3)) + '</h2>';
-                } else if (/^# /.test(line)) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h1>' + inlineMd(line.slice(2)) + '</h1>';
-                } else if (/^- /.test(line)) {
-                    if (!inList) { html += '<ul>'; inList = true; }
-                    html += '<li>' + inlineMd(line.slice(2)) + '</li>';
-                } else if (line.trim() === '') {
-                    if (inList) { html += '</ul>'; inList = false; }
-                } else {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<p>' + inlineMd(line) + '</p>';
-                }
-            }
-            if (inList) html += '</ul>';
-            return html;
-        }
-
-        function inlineMd(s) {
-            return esc(s)
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
         }
 
         /* ── render skill cards ──────────────────────────────── */

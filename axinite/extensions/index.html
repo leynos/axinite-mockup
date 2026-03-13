@@ -12,6 +12,7 @@
     <script src="../assets/js/tailwind-config.js"></script>
 </head>
 <body class="h-screen w-full overflow-hidden bg-brand-dark bg-mesh-gradient flex flex-col font-sans text-sm antialiased">
+    <div id="app-shell" class="contents">
 
     <!-- Top Navigation -->
     <header id="header" class="glass-topbar w-full h-14 flex items-center justify-between px-4 z-20 shrink-0">
@@ -107,8 +108,10 @@
         </main>
     </div>
 
+    </div>
+
     <!-- Configure extension modal -->
-    <div id="configure-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div id="configure-modal" role="dialog" aria-modal="true" aria-labelledby="configure-title" aria-hidden="true" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center">
         <div id="configure-backdrop" class="absolute inset-0 bg-black/60"></div>
         <div class="relative rounded-2xl p-6 w-full max-w-lg mx-4 border border-glass-border" style="background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
             <h3 id="configure-title" class="text-lg font-semibold text-zinc-100 mb-4 font-serif"></h3>
@@ -194,17 +197,83 @@
         };
 
         /* ── elements ──────────────────────────────────────────── */
-        var cardsEl       = document.getElementById('ext-cards');
-        var toolsListEl   = document.getElementById('tools-list');
-        var modal         = document.getElementById('configure-modal');
-        var modalTitle    = document.getElementById('configure-title');
-        var modalFields   = document.getElementById('configure-fields');
+        var cardsEl           = document.getElementById('ext-cards');
+        var toolsListEl       = document.getElementById('tools-list');
+        var appShell          = document.getElementById('app-shell');
+        var modal             = document.getElementById('configure-modal');
+        var modalBackdrop     = document.getElementById('configure-backdrop');
+        var modalTitle        = document.getElementById('configure-title');
+        var modalFields       = document.getElementById('configure-fields');
+        var modalSave         = document.getElementById('configure-save');
+        var modalCancel       = document.getElementById('configure-cancel');
+        var focusableSelector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        var lastFocusedElement = null;
+        var modalKeydownHandler = null;
 
         /* ── helpers ───────────────────────────────────────────── */
         function esc(s) {
             var d = document.createElement('div');
             d.textContent = s;
             return d.innerHTML;
+        }
+
+        function isConfigureOpen() {
+            return !modal.classList.contains('hidden');
+        }
+
+        function setBackgroundInert(isInert) {
+            if (!appShell) return;
+            appShell.inert = isInert;
+            if (isInert) {
+                appShell.setAttribute('aria-hidden', 'true');
+            } else {
+                appShell.removeAttribute('aria-hidden');
+            }
+        }
+
+        function getFocusableInModal() {
+            return Array.prototype.filter.call(
+                modal.querySelectorAll(focusableSelector),
+                function (el) {
+                    return !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null;
+                }
+            );
+        }
+
+        function focusModalStart() {
+            var focusable = getFocusableInModal();
+            var target = focusable[0] || modal;
+            target.focus();
+        }
+
+        function handleModalKeydown(e) {
+            if (!isConfigureOpen()) return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeConfigure();
+                return;
+            }
+
+            if (e.key !== 'Tab') return;
+
+            var focusable = getFocusableInModal();
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+
+            if (!first || !last) {
+                e.preventDefault();
+                modal.focus();
+                return;
+            }
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
 
         /* ── render extension cards ────────────────────────────── */
@@ -297,20 +366,37 @@
                 modalFields.appendChild(fieldDiv);
             });
 
+            lastFocusedElement = document.activeElement;
+            setBackgroundInert(true);
             modal.classList.remove('hidden');
+            modal.setAttribute('aria-hidden', 'false');
+            if (modalKeydownHandler) {
+                document.removeEventListener('keydown', modalKeydownHandler);
+            }
+            modalKeydownHandler = handleModalKeydown;
+            document.addEventListener('keydown', modalKeydownHandler);
+            focusModalStart();
         }
 
         function closeConfigure() {
+            if (!isConfigureOpen()) return;
+
             modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden', 'true');
+            setBackgroundInert(false);
+            if (modalKeydownHandler) {
+                document.removeEventListener('keydown', modalKeydownHandler);
+                modalKeydownHandler = null;
+            }
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
+            lastFocusedElement = null;
         }
 
-        document.getElementById('configure-save').addEventListener('click', closeConfigure);
-        document.getElementById('configure-cancel').addEventListener('click', closeConfigure);
-        document.getElementById('configure-backdrop').addEventListener('click', closeConfigure);
-
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeConfigure();
-        });
+        modalSave.addEventListener('click', closeConfigure);
+        modalCancel.addEventListener('click', closeConfigure);
+        modalBackdrop.addEventListener('click', closeConfigure);
 
         /* ── init ──────────────────────────────────────────────── */
         renderCards();

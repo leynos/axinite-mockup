@@ -92,6 +92,7 @@
     </div>
 
     <script src="../assets/js/sidebar-toggle.js"></script>
+    <script src="../assets/js/markdown.js"></script>
     <script>
     (function () {
         /* ── file tree structure ───────────────────────────────── */
@@ -236,47 +237,9 @@ Available tool integrations.\n\
         var btnSave     = document.getElementById('btn-save');
 
         /* ── minimal markdown renderer ─────────────────────────── */
-        function esc(s) {
-            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-
-        function inlineMd(s) {
-            return esc(s)
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-        }
-
-        function renderMd(src) {
-            var lines  = src.split('\n');
-            var html   = '';
-            var inList = false;
-
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-
-                if (/^### /.test(line)) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h3>' + inlineMd(line.slice(4)) + '</h3>';
-                } else if (/^## /.test(line)) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h2>' + inlineMd(line.slice(3)) + '</h2>';
-                } else if (/^# /.test(line)) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h1>' + inlineMd(line.slice(2)) + '</h1>';
-                } else if (/^[-*] /.test(line)) {
-                    if (!inList) { html += '<ul>'; inList = true; }
-                    html += '<li>' + inlineMd(line.slice(2)) + '</li>';
-                } else if (line.trim() === '') {
-                    if (inList) { html += '</ul>'; inList = false; }
-                } else {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<p>' + inlineMd(line) + '</p>';
-                }
-            }
-            if (inList) html += '</ul>';
-            return html;
-        }
+        var markdown = window.axiniteMarkdown;
+        var esc = markdown.escapeHtml;
+        var renderMd = markdown.renderMarkdown;
 
         /* ── breadcrumb ────────────────────────────────────────── */
         function updateBreadcrumb() {

@@ -265,8 +265,6 @@
         /* ── helpers ───────────────────────────────────────────── */
         var esc = escapeHtml;
 
-        var statusMap = { 'enabled': 'active', 'disabled': 'disabled', 'failing': 'failing' };
-
         function getTodayDate() {
             var now = new Date();
             var month = String(now.getMonth() + 1).padStart(2, '0');
@@ -280,28 +278,18 @@
             routine.recentRuns.unshift({ startedAt: 'now', completedAt: 'now', status: 'ok', tokensUsed: 0 });
         }
 
-        function countByStatus(key) {
-            var mapped = statusMap[key] || key;
-            return routines.filter(function (r) { return r.status === mapped; }).length;
-        }
-
-        function countRunsToday() {
-            var count = 0;
+        function wasRunToday(routine) {
             var today = getTodayDate();
-            routines.forEach(function (r) {
-                if (r.lastRunAt && r.lastRunAt.indexOf(today) === 0) {
-                    r.recentRuns.forEach(function (run) {
-                        if (run.startedAt.indexOf('(') === -1) count++;
-                    });
-                }
-            });
-            return count;
+            return Boolean(routine.lastRunAt && routine.lastRunAt.indexOf(today) === 0);
         }
 
         function summaryCount(key) {
             if (key === 'total') return routines.length;
-            if (key === 'runs_today') return countRunsToday();
-            return countByStatus(key);
+            if (key === 'enabled') return routines.filter(function (routine) { return routine.enabled; }).length;
+            if (key === 'disabled') return routines.filter(function (routine) { return !routine.enabled; }).length;
+            if (key === 'failing') return routines.filter(function (routine) { return routine.status === 'failing'; }).length;
+            if (key === 'runs_today') return routines.filter(wasRunToday).length;
+            return 0;
         }
 
         /* ── render summary cards ────────────────────────────── */
@@ -320,13 +308,13 @@
 
             if (activeFilter && activeFilter !== 'total') {
                 if (activeFilter === 'runs_today') {
-                    var today = getTodayDate();
-                    filtered = routines.filter(function (r) {
-                        return r.lastRunAt && r.lastRunAt.indexOf(today) === 0;
-                    });
+                    filtered = routines.filter(wasRunToday);
+                } else if (activeFilter === 'enabled') {
+                    filtered = routines.filter(function (routine) { return routine.enabled; });
+                } else if (activeFilter === 'disabled') {
+                    filtered = routines.filter(function (routine) { return !routine.enabled; });
                 } else {
-                    var target = statusMap[activeFilter] || activeFilter;
-                    filtered = routines.filter(function (r) { return r.status === target; });
+                    filtered = routines.filter(function (routine) { return routine.status === activeFilter; });
                 }
             }
 

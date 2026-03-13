@@ -69,6 +69,10 @@ async function main() {
 }
 
 async function collectFiles(directoryPath, files) {
+  if (isVendoredAssetDirectory(directoryPath)) {
+    return;
+  }
+
   const entries = await readdir(directoryPath, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -86,11 +90,24 @@ async function collectFiles(directoryPath, files) {
 }
 
 function shouldCheckFile(filePath) {
+  if (isVendoredAsset(filePath)) {
+    return false;
+  }
+
   return isMakefile(filePath) || EXTENSIONS.has(path.extname(filePath));
 }
 
 function isMakefile(filePath) {
   return path.basename(filePath) === "Makefile";
+}
+
+function isVendoredAsset(filePath) {
+  const relativePath = path.relative(ROOT, filePath).replace(/\\/g, "/");
+  return relativePath.startsWith("axinite/assets/vendor/");
+}
+
+function isVendoredAssetDirectory(directoryPath) {
+  return isVendoredAsset(path.join(directoryPath, "placeholder"));
 }
 
 function hasDisallowedTab(line, filePath) {
