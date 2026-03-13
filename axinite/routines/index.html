@@ -4,8 +4,8 @@
     <link rel="icon" href="../assets/icons/axinite32.ico" sizes="32x32">
     <title>Routines - Axinite</title>
     <link rel="stylesheet" href="../assets/css/index.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2/dist/iconify-icon.min.js"></script>
+    <script src="../assets/vendor/tailwindcss-browser-4.2.1.js"></script>
+    <script src="../assets/vendor/iconify-icon-3.0.2.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Buenard:wght@400..700&family=Molengo&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <button class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
+            <button type="button" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
                 Logs
             </button>
             <div class="flex items-center space-x-2 text-xs text-zinc-400">
@@ -84,7 +84,7 @@
             <div id="detail-body" class="flex-1 overflow-y-auto space-y-4"></div>
             <div class="flex justify-end space-x-3 mt-4">
                 <span id="detail-actions"></span>
-                <button id="detail-close" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Close</button>
+                <button type="button" id="detail-close" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Close</button>
             </div>
         </div>
     </div>
@@ -266,7 +266,19 @@
         var esc = escapeHtml;
 
         var statusMap = { 'enabled': 'active', 'disabled': 'disabled', 'failing': 'failing' };
-        var today = '2026-03-12';
+
+        function getTodayDate() {
+            var now = new Date();
+            var month = String(now.getMonth() + 1).padStart(2, '0');
+            var day = String(now.getDate()).padStart(2, '0');
+            return now.getFullYear() + '-' + month + '-' + day;
+        }
+
+        function triggerRoutine(routine) {
+            routine.runCount++;
+            routine.lastRunAt = getTodayDate() + ' now';
+            routine.recentRuns.unshift({ startedAt: 'now', completedAt: 'now', status: 'ok', tokensUsed: 0 });
+        }
 
         function countByStatus(key) {
             var mapped = statusMap[key] || key;
@@ -275,6 +287,7 @@
 
         function countRunsToday() {
             var count = 0;
+            var today = getTodayDate();
             routines.forEach(function (r) {
                 if (r.lastRunAt && r.lastRunAt.indexOf(today) === 0) {
                     r.recentRuns.forEach(function (run) {
@@ -307,6 +320,7 @@
 
             if (activeFilter && activeFilter !== 'total') {
                 if (activeFilter === 'runs_today') {
+                    var today = getTodayDate();
                     filtered = routines.filter(function (r) {
                         return r.lastRunAt && r.lastRunAt.indexOf(today) === 0;
                     });
@@ -333,7 +347,7 @@
                 var tr = document.createElement('tr');
                 tr.className = 'border-b border-glass-border hover:bg-glass-100 transition-colors';
                 tr.innerHTML =
-                    '<td class="py-2.5 pl-3"><button class="btn-title text-zinc-200 hover:text-brand-emerald transition-colors text-left">' + esc(routine.name) + '</button></td>' +
+                    '<td class="py-2.5 pl-3"><button type="button" class="btn-title text-zinc-200 hover:text-brand-emerald transition-colors text-left">' + esc(routine.name) + '</button></td>' +
                     '<td class="py-2.5"><span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + ts + '">' + esc(tl) + '</span></td>' +
                     '<td class="py-2.5"><span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + as + '">' + esc(al) + '</span></td>' +
                     '<td class="py-2.5 text-xs text-zinc-500">' + (routine.lastRunAt ? esc(routine.lastRunAt) : '<span class="text-zinc-600">\u2014</span>') + '</td>' +
@@ -356,12 +370,12 @@
             var btns = '';
             var base = 'inline-flex items-center px-2 py-2 md:py-0.5 rounded text-[10px] border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors';
             if (routine.enabled) {
-                btns += '<button class="btn-trigger ' + base + ' mr-1" title="Trigger"><iconify-icon icon="carbon:play-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Trigger</span></button>';
-                btns += '<button class="btn-toggle ' + base + ' hover:!text-amber-400 hover:!border-amber-500/30 hover:!bg-amber-500/10 mr-1" title="Disable"><iconify-icon icon="carbon:pause-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Disable</span></button>';
+                btns += '<button type="button" class="btn-trigger ' + base + ' mr-1" title="Trigger"><iconify-icon icon="carbon:play-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Trigger</span></button>';
+                btns += '<button type="button" class="btn-toggle ' + base + ' hover:!text-amber-400 hover:!border-amber-500/30 hover:!bg-amber-500/10 mr-1" title="Disable"><iconify-icon icon="carbon:pause-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Disable</span></button>';
             } else {
-                btns += '<button class="btn-toggle ' + base + ' mr-1" title="Enable"><iconify-icon icon="carbon:play-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Enable</span></button>';
+                btns += '<button type="button" class="btn-toggle ' + base + ' mr-1" title="Enable"><iconify-icon icon="carbon:play-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Enable</span></button>';
             }
-            btns += '<button class="btn-detail ' + base + '" title="Details"><iconify-icon icon="carbon:information" class="md:hidden"></iconify-icon><span class="hidden md:inline">Details</span></button>';
+            btns += '<button type="button" class="btn-detail ' + base + '" title="Details"><iconify-icon icon="carbon:information" class="md:hidden"></iconify-icon><span class="hidden md:inline">Details</span></button>';
             return btns;
         }
 
@@ -373,9 +387,7 @@
             if (triggerBtn) {
                 triggerBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
-                    routine.runCount++;
-                    routine.lastRunAt = today + ' now';
-                    routine.recentRuns.unshift({ startedAt: 'now', completedAt: 'now', status: 'ok', tokensUsed: 0 });
+                    triggerRoutine(routine);
                     renderSummary();
                     renderTable();
                 });
@@ -503,12 +515,12 @@
             /* modal actions */
             var acts = '';
             if (routine.enabled) {
-                acts += '<button id="modal-trigger" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Trigger</button>';
-                acts += '<button id="modal-toggle" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-amber-500/60 hover:bg-amber-500/10">Disable</button>';
+                acts += '<button type="button" id="modal-trigger" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Trigger</button>';
+                acts += '<button type="button" id="modal-toggle" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-amber-500/60 hover:bg-amber-500/10">Disable</button>';
             } else {
-                acts += '<button id="modal-toggle" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Enable</button>';
+                acts += '<button type="button" id="modal-toggle" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Enable</button>';
             }
-            acts += '<button id="modal-delete" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Delete</button>';
+            acts += '<button type="button" id="modal-delete" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Delete</button>';
             modalActions.innerHTML = acts;
 
             var trigBtn = document.getElementById('modal-trigger');
@@ -517,9 +529,7 @@
 
             if (trigBtn) {
                 trigBtn.addEventListener('click', function () {
-                    routine.runCount++;
-                    routine.lastRunAt = today + ' now';
-                    routine.recentRuns.unshift({ startedAt: 'now', completedAt: 'now', status: 'ok', tokensUsed: 0 });
+                    triggerRoutine(routine);
                     closeDetail();
                     renderSummary();
                     renderTable();

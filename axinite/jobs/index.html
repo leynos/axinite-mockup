@@ -4,8 +4,8 @@
     <link rel="icon" href="../assets/icons/axinite32.ico" sizes="32x32">
     <title>Jobs - Axinite</title>
     <link rel="stylesheet" href="../assets/css/index.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2/dist/iconify-icon.min.js"></script>
+    <script src="../assets/vendor/tailwindcss-browser-4.2.1.js"></script>
+    <script src="../assets/vendor/iconify-icon-3.0.2.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Buenard:wght@400..700&family=Molengo&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <button class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
+            <button type="button" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
                 Logs
             </button>
             <div class="flex items-center space-x-2 text-xs text-zinc-400">
@@ -82,7 +82,7 @@
             <div id="detail-body" class="flex-1 overflow-y-auto space-y-4"></div>
             <div class="flex justify-end space-x-3 mt-4">
                 <span id="detail-actions"></span>
-                <button id="detail-close" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Close</button>
+                <button type="button" id="detail-close" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Close</button>
             </div>
         </div>
     </div>
@@ -255,7 +255,7 @@
                 tr.className = 'border-b border-glass-border hover:bg-glass-100 transition-colors';
                 tr.innerHTML =
                     '<td class="py-2.5 pl-3 font-mono text-xs text-zinc-500">' + esc(job.shortId) + '</td>' +
-                    '<td class="py-2.5"><button class="btn-title text-zinc-200 hover:text-brand-emerald transition-colors text-left">' + esc(job.title) + '</button></td>' +
+                    '<td class="py-2.5"><button type="button" class="btn-title text-zinc-200 hover:text-brand-emerald transition-colors text-left">' + esc(job.title) + '</button></td>' +
                     '<td class="py-2.5"><span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + src + '">' + esc(job.source) + '</span></td>' +
                     '<td class="py-2.5"><span class="text-[10px] px-1.5 py-0.5 rounded font-medium ' + ss.bg + '">' + sl + '</span></td>' +
                     '<td class="py-2.5 text-xs text-zinc-500">' + esc(job.createdAt) + '</td>' +
@@ -275,12 +275,12 @@
             var btns = '';
             var base = 'inline-flex items-center px-2 py-2 md:py-0.5 rounded text-[10px] border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors';
             if (job.status === 'pending' || job.status === 'in_progress' || job.status === 'stuck') {
-                btns += '<button class="btn-cancel ' + base + ' hover:!text-red-400 hover:!border-red-500/30 hover:!bg-red-500/10 mr-1" title="Cancel"><iconify-icon icon="carbon:close-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Cancel</span></button>';
+                btns += '<button type="button" class="btn-cancel ' + base + ' hover:!text-red-400 hover:!border-red-500/30 hover:!bg-red-500/10 mr-1" title="Cancel"><iconify-icon icon="carbon:close-filled" class="md:hidden"></iconify-icon><span class="hidden md:inline">Cancel</span></button>';
             }
             if (job.status === 'completed' || job.status === 'failed' || job.status === 'stuck' || job.status === 'cancelled') {
-                btns += '<button class="btn-restart ' + base + ' mr-1" title="Restart"><iconify-icon icon="carbon:restart" class="md:hidden"></iconify-icon><span class="hidden md:inline">Restart</span></button>';
+                btns += '<button type="button" class="btn-restart ' + base + ' mr-1" title="Restart"><iconify-icon icon="carbon:restart" class="md:hidden"></iconify-icon><span class="hidden md:inline">Restart</span></button>';
             }
-            btns += '<button class="btn-detail ' + base + '" title="Details"><iconify-icon icon="carbon:information" class="md:hidden"></iconify-icon><span class="hidden md:inline">Details</span></button>';
+            btns += '<button type="button" class="btn-detail ' + base + '" title="Details"><iconify-icon icon="carbon:information" class="md:hidden"></iconify-icon><span class="hidden md:inline">Details</span></button>';
             return btns;
         }
 
@@ -376,10 +376,10 @@
             /* modal actions */
             var acts = '';
             if (job.status === 'completed' || job.status === 'failed' || job.status === 'stuck' || job.status === 'cancelled') {
-                acts += '<button id="modal-restart" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Restart</button>';
+                acts += '<button type="button" id="modal-restart" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Restart</button>';
             }
             if (job.status === 'pending' || job.status === 'in_progress' || job.status === 'stuck') {
-                acts += '<button id="modal-cancel" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Cancel</button>';
+                acts += '<button type="button" id="modal-cancel" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Cancel</button>';
             }
             modalActions.innerHTML = acts;
 

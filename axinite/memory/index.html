@@ -4,8 +4,8 @@
     <link rel="icon" href="../assets/icons/axinite32.ico" sizes="32x32">
     <title>Memory - Axinite</title>
     <link rel="stylesheet" href="../assets/css/index.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2/dist/iconify-icon.min.js"></script>
+    <script src="../assets/vendor/tailwindcss-browser-4.2.1.js"></script>
+    <script src="../assets/vendor/iconify-icon-3.0.2.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Buenard:wght@400..700&family=Molengo&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     <!-- Top Navigation -->
     <header id="header" class="glass-topbar w-full h-14 flex items-center justify-between px-4 z-20 shrink-0">
         <div class="flex items-center space-x-6 h-full">
-            <button id="sidebar-toggle" class="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-all" aria-label="Toggle sidebar">
+            <button type="button" id="sidebar-toggle" class="md:hidden w-8 h-8 rounded-md flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-all" aria-label="Toggle sidebar">
                 <iconify-icon icon="carbon:menu" class="text-lg"></iconify-icon>
             </button>
             <nav class="flex h-full space-x-1">
@@ -30,7 +30,7 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <button class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
+            <button type="button" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
                 Logs
             </button>
             <div class="flex items-center space-x-2 text-xs text-zinc-400">
@@ -50,8 +50,9 @@
 
             <div class="p-3 border-b border-glass-border">
                 <div class="flex items-center gap-2">
+                    <label for="search-input" class="sr-only">Search memory files</label>
                     <input id="search-input" type="text" placeholder="Search memory..." class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30">
-                    <button id="sidebar-close" class="md:hidden w-8 h-8 shrink-0 rounded-md flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all" aria-label="Close sidebar">
+                    <button type="button" id="sidebar-close" class="md:hidden w-8 h-8 shrink-0 rounded-md flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all" aria-label="Close sidebar">
                         <iconify-icon icon="carbon:chevron-left" class="text-xs"></iconify-icon>
                     </button>
                 </div>
@@ -69,11 +70,11 @@
             <div class="flex items-center justify-between px-6 py-3 shrink-0 border-b border-glass-border">
                 <div id="breadcrumb" class="text-sm text-brand-emerald"></div>
                 <div id="toolbar">
-                    <button id="btn-edit" class="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Edit</button>
+                    <button type="button" id="btn-edit" class="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Edit</button>
                 </div>
                 <div id="toolbar-edit" class="hidden flex items-center space-x-3">
-                    <button id="btn-cancel" class="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Cancel</button>
-                    <button id="btn-save" class="text-sm px-3 py-1 rounded-lg btn-primary">Save</button>
+                    <button type="button" id="btn-cancel" class="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Cancel</button>
+                    <button type="button" id="btn-save" class="text-sm px-3 py-1 rounded-lg btn-primary">Save</button>
                 </div>
             </div>
 
@@ -236,7 +237,7 @@ Available tool integrations.\n\
 
         /* ── minimal markdown renderer ─────────────────────────── */
         function esc(s) {
-            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
         function inlineMd(s) {

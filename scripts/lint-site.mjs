@@ -73,7 +73,7 @@ async function collectIds(filePath) {
   const html = await readFile(filePath, "utf8");
   const ids = new Set();
 
-  for (const match of html.matchAll(/\sid=(["'])(.*?)\1/g)) {
+  for (const match of html.matchAll(/\sid=(["'])([^"'\s]+)\1/g)) {
     ids.add(match[2]);
   }
 

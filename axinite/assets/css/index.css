@@ -1,13 +1,13 @@
 body {
     background-color: #09090b;
     color: #e4e4e7;
-    font-family: "Molengo", sans-serif;
+    font-family: Molengo, sans-serif;
     font-weight: 400;
     font-style: normal;
 }
 
 .markdown-body {
-    font-family: "Buenard", serif;
+    font-family: Buenard, serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;

@@ -4,8 +4,8 @@
     <link rel="icon" href="../assets/icons/axinite32.ico" sizes="32x32">
     <title>Skills - Axinite</title>
     <link rel="stylesheet" href="../assets/css/index.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2/dist/iconify-icon.min.js"></script>
+    <script src="../assets/vendor/tailwindcss-browser-4.2.1.js"></script>
+    <script src="../assets/vendor/iconify-icon-3.0.2.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Buenard:wght@400..700&family=Molengo&display=swap" rel="stylesheet">
@@ -329,9 +329,9 @@
 
                 /* action buttons */
                 var actions = '<div class="flex gap-2 mt-auto text-xs">' +
-                    '<button class="btn-view px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">View</button>' +
-                    '<button class="btn-toggle px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">' + (skill.active ? 'Disable' : 'Enable') + '</button>' +
-                    '<button class="btn-remove px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition-colors">Remove</button>' +
+                    '<button type="button" class="btn-view px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">View</button>' +
+                    '<button type="button" class="btn-toggle px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">' + (skill.active ? 'Disable' : 'Enable') + '</button>' +
+                    '<button type="button" class="btn-remove px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition-colors">Remove</button>' +
                     '</div>';
 
                 card.innerHTML = header + desc + bundle + actions;
@@ -486,7 +486,7 @@
             searchResults.innerHTML = '';
 
             var hits = clawhubResults.filter(function (r) {
-                return r.name.indexOf(q) !== -1 || r.description.toLowerCase().indexOf(q) !== -1;
+                return r.name.toLowerCase().indexOf(q) !== -1 || r.description.toLowerCase().indexOf(q) !== -1;
             });
 
             if (hits.length === 0) {
@@ -520,7 +520,7 @@
                     '</div>' +
                     (already
                         ? '<span class="px-3 py-1 text-xs text-zinc-500 font-medium shrink-0 ml-3">Installed</span>'
-                        : '<button class="btn-install-result px-3 py-1 rounded-md text-xs border border-brand-emerald/60 text-zinc-300 hover:bg-brand-emerald/10 transition-colors font-medium shrink-0 ml-3">Install</button>');
+                        : '<button type="button" class="btn-install-result px-3 py-1 rounded-md text-xs border border-brand-emerald/60 text-zinc-300 hover:bg-brand-emerald/10 transition-colors font-medium shrink-0 ml-3">Install</button>');
 
                 if (!already) {
                     row.querySelector('.btn-install-result').addEventListener('click', function () {

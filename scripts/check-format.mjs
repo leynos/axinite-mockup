@@ -37,14 +37,13 @@ async function main() {
   for (const filePath of files) {
     const content = await readFile(filePath, "utf8");
     const relativePath = path.relative(ROOT, filePath).replace(/\\/g, "/");
-
-    if (content.includes("\t")) {
-      failures.push(`${relativePath}: contains tab characters`);
-    }
-
     const lines = content.split("\n");
 
     for (let index = 0; index < lines.length; index += 1) {
+      if (hasDisallowedTab(lines[index], filePath)) {
+        failures.push(`${relativePath}:${index + 1}: contains disallowed tab characters`);
+      }
+
       if (/[ \t]+$/.test(lines[index])) {
         failures.push(`${relativePath}:${index + 1}: trailing whitespace`);
       }
@@ -87,7 +86,27 @@ async function collectFiles(directoryPath, files) {
 }
 
 function shouldCheckFile(filePath) {
-  return EXTENSIONS.has(path.extname(filePath));
+  return isMakefile(filePath) || EXTENSIONS.has(path.extname(filePath));
+}
+
+function isMakefile(filePath) {
+  return path.basename(filePath) === "Makefile";
+}
+
+function hasDisallowedTab(line, filePath) {
+  if (!line.includes("\t")) {
+    return false;
+  }
+
+  if (!isMakefile(filePath)) {
+    return true;
+  }
+
+  if (!line.startsWith("\t")) {
+    return true;
+  }
+
+  return line.slice(1).includes("\t");
 }
 
 async function safeStat(targetPath) {

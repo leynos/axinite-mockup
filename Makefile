@@ -1,15 +1,20 @@
 NODE := node
 NPM := npm
 
-.PHONY: check-fmt lint test dev
+.PHONY: all clean check-fmt lint test dev
+
+all: lint test
+
+clean:
+	rm -rf dist
 
 check-fmt:
 	$(NODE) scripts/check-format.mjs
 
 lint:
+	$(MAKE) check-fmt
 	$(NODE) scripts/lint-site.mjs
 	$(NODE) --check scripts/build-site.mjs
-	$(NODE) --check scripts/check-format.mjs
 	$(NODE) --check scripts/lint-site.mjs
 	$(NODE) --check scripts/test-build.mjs
 

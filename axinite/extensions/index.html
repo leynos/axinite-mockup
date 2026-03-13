@@ -4,8 +4,8 @@
     <link rel="icon" href="../assets/icons/axinite32.ico" sizes="32x32">
     <title>Extensions - Axinite</title>
     <link rel="stylesheet" href="../assets/css/index.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2/dist/iconify-icon.min.js"></script>
+    <script src="../assets/vendor/tailwindcss-browser-4.2.1.js"></script>
+    <script src="../assets/vendor/iconify-icon-3.0.2.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Buenard:wght@400..700&family=Molengo&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <button class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
+            <button type="button" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-md hover:bg-glass-100 transition-colors border border-glass-border">
                 Logs
             </button>
             <div class="flex items-center space-x-2 text-xs text-zinc-400">
@@ -66,9 +66,9 @@
                             <section>
                                 <h2 class="text-base font-semibold text-zinc-200 mb-3">Install WASM Extension</h2>
                                 <div class="flex items-center gap-3 flex-wrap">
-                                    <label class="text-xs text-zinc-400 shrink-0">Extension name</label>
-                                    <input type="text" placeholder="URL or cargo handle" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 flex-1 min-w-[12rem]">
-                                    <button class="px-4 py-1.5 rounded-lg text-sm btn-primary">Install</button>
+                                    <label for="wasm-extension-input" class="text-xs text-zinc-400 shrink-0">Extension name</label>
+                                    <input id="wasm-extension-input" type="text" placeholder="URL or cargo handle" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 flex-1 min-w-[12rem]">
+                                    <button type="button" class="px-4 py-1.5 rounded-lg text-sm btn-primary">Install</button>
                                 </div>
                             </section>
                         </div>
@@ -87,9 +87,9 @@
                             <section>
                                 <h2 class="text-base font-semibold text-zinc-200 mb-3">Add Custom MCP Server</h2>
                                 <div class="flex items-center gap-3 flex-wrap">
-                                    <label class="text-xs text-zinc-400 shrink-0">Server name</label>
-                                    <input type="text" placeholder="MCP server URL (SSE) [...]" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 flex-1 min-w-[12rem]">
-                                    <button class="px-4 py-1.5 rounded-lg text-sm btn-primary">Add</button>
+                                    <label for="mcp-server-input" class="text-xs text-zinc-400 shrink-0">Server name</label>
+                                    <input id="mcp-server-input" type="text" placeholder="MCP server URL (SSE) [...]" class="bg-glass-200 border border-glass-border rounded-lg px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30 flex-1 min-w-[12rem]">
+                                    <button type="button" class="px-4 py-1.5 rounded-lg text-sm btn-primary">Add</button>
                                 </div>
                             </section>
                         </div>
@@ -114,8 +114,8 @@
             <h3 id="configure-title" class="text-lg font-semibold text-zinc-100 mb-4 font-serif"></h3>
             <div id="configure-fields" class="space-y-4"></div>
             <div class="flex justify-end space-x-3 mt-6">
-                <button id="configure-save" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Save</button>
-                <button id="configure-cancel" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Cancel</button>
+                <button type="button" id="configure-save" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-brand-emerald/60 hover:bg-brand-emerald/10">Save</button>
+                <button type="button" id="configure-cancel" class="px-4 py-2 rounded-lg text-sm text-zinc-300 font-medium transition-colors border border-red-500/60 hover:bg-red-500/10">Cancel</button>
             </div>
         </div>
     </div>
@@ -236,9 +236,9 @@
 
                 /* action buttons */
                 var actions = '<div class="flex gap-2 mt-auto text-xs">' +
-                    '<button class="btn-configure px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">Configure</button>' +
-                    '<button class="btn-toggle px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">' + (ext.active ? 'Disable' : 'Enable') + '</button>' +
-                    '<button class="btn-remove px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition-colors">Remove</button>' +
+                    '<button type="button" class="btn-configure px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">Configure</button>' +
+                    '<button type="button" class="btn-toggle px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-zinc-200 hover:bg-glass-200 transition-colors">' + (ext.active ? 'Disable' : 'Enable') + '</button>' +
+                    '<button type="button" class="btn-remove px-2.5 py-1 rounded-md border border-glass-border text-zinc-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition-colors">Remove</button>' +
                     '</div>';
 
                 card.innerHTML = header + url + tags + actions;
@@ -283,12 +283,13 @@
             modalTitle.textContent = 'Configure ' + ext.name;
             modalFields.innerHTML = '';
 
-            ext.config.forEach(function (cfg) {
+            ext.config.forEach(function (cfg, index) {
+                var fieldId = 'configure-field-' + index;
                 var fieldDiv = document.createElement('div');
                 fieldDiv.innerHTML =
-                    '<label class="block text-sm text-zinc-400 mb-2">' + esc(cfg.label) + '</label>' +
+                    '<label for="' + fieldId + '" class="block text-sm text-zinc-400 mb-2">' + esc(cfg.label) + '</label>' +
                     '<div class="flex items-center gap-2">' +
-                        '<input type="text" placeholder="' + esc(cfg.placeholder) + '" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30">' +
+                        '<input id="' + fieldId + '" type="text" placeholder="' + esc(cfg.placeholder) + '" class="flex-1 bg-glass-200 border border-glass-border rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-brand-emerald/50 focus:border-brand-emerald/30">' +
                         (cfg.set
                             ? '<iconify-icon icon="carbon:checkmark-filled" class="text-brand-emerald text-lg shrink-0"></iconify-icon>'
                             : '') +

@@ -16,10 +16,12 @@ function renderSummaryCards(containerEl, defs, countFn, activeFilter, onToggle) 
     defs.forEach(function (def) {
         var count = countFn(def.key);
         var isActive = activeFilter === def.key;
-        var card = document.createElement('div');
+        var card = document.createElement('button');
         var countEl = document.createElement('div');
         var labelEl = document.createElement('div');
-        card.className = 'bg-glass-100 border rounded-xl p-4 text-center cursor-pointer transition-colors hover:bg-glass-200 ' +
+        card.type = 'button';
+        card.setAttribute('aria-pressed', String(isActive));
+        card.className = 'bg-glass-100 border rounded-xl p-4 text-center cursor-pointer transition-colors hover:bg-glass-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-emerald/60 ' +
             (isActive ? 'border-brand-emerald/40' : 'border-glass-border');
         countEl.className = 'text-3xl font-bold ' + def.color;
         countEl.textContent = String(count);
