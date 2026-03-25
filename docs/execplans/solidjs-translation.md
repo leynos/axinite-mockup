@@ -653,6 +653,11 @@ following are true:
   `make ff`, `make build`, `node scripts/test-build.mjs`, Playwright against
   `/axinite-mockup/chat`, and `css-view` confirming `direction: rtl` on the
   prefixed Arabic route.
+- [x] 2026-03-25 23:54 GMT: Committed the base-path fix as `058478e`
+  (`Configure the GitHub Pages base path explicitly`).
+- [x] 2026-03-25 23:54 GMT: Pushed `solidjs-translation` to
+  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  URL.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
