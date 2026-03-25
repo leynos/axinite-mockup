@@ -605,12 +605,17 @@ following are true:
 - [x] 2026-03-25 21:12 GMT: Revalidated the first restoration slice with
   `make ff`, Playwright browser screenshots of Chat and Memory, and `css-view`
   snapshots showing the restored glass chrome and sidebar surfaces under RTL.
+- [x] 2026-03-25 21:13 GMT: Committed the first restoration slice as `7bd0954`
+  (`Restore the original shell, chat, and memory design`).
+- [x] 2026-03-25 21:13 GMT: Pushed `solidjs-translation` to
+  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  URL.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
   that match the original static pages more closely than the generic route
   cards.
-- [ ] Commit and push the first restoration slice before
+- [x] Commit and push the first restoration slice before
   continuing to Jobs, Routines, Extensions, and Skills.
 - [x] Commit and push the gated implementation changes.
 - [x] Replace the static runtime with a Vite-based Solid SPA inside `axinite/`.
@@ -770,5 +775,6 @@ following are true:
 - Before backend integration, tighten the remaining mocked gateway seams, then
   decide whether the Rust host will serve the generated SPA directly or adopt a
   different history-fallback strategy than the current static route copies.
-- This section is incomplete again while the visual-restoration stream is in
-  progress. Update it after the first route-restoration slice lands.
+- The first route-restoration slice landed in commit `7bd0954`, but the
+  visual-restoration stream remains open until Jobs, Routines, Extensions, and
+  Skills are translated away from the generic fallback layout.
