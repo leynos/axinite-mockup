@@ -621,6 +621,11 @@ following are true:
   `make ff`, `make markdownlint`, `make nixie`, Playwright screenshots of Jobs
   and Routines, and `css-view` captures confirming `direction: rtl` on the
   Arabic routes plus the restored dashboard grid and glass panel surfaces.
+- [x] 2026-03-25 21:47 GMT: Committed the second restoration slice as
+  `38edcc5` (`Restore the original jobs and routines design`).
+- [x] 2026-03-25 21:48 GMT: Pushed `solidjs-translation` to
+  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  URL.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
