@@ -5,7 +5,7 @@ This ExecPlan (execution plan) is a living document. The sections
 `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work
 proceeds.
 
-Status: COMPLETE
+Status: IN PROGRESS
 
 ## Purpose / big picture
 
@@ -32,6 +32,21 @@ accessibility, and end-to-end tests.
 This plan was approved for implementation by the user on 2026-03-25. The work
 below therefore serves as both the execution guide and the live implementation
 record.
+
+## Visual restoration follow-up
+
+The runtime migration is complete, but the current SolidJS shell still loses
+too much of the original mock-up's route-specific design. This follow-up stream
+reopens the plan to restore the original shared chrome, page structure, and
+visual hierarchy inside the SPA rather than treating the generic hero/card
+layout as the final design.
+
+The restoration order is:
+
+1. shared shell chrome and watermark treatment
+2. Chat and Memory, because they are the most visually distinctive
+3. Jobs and Routines, because they share a dashboard/table design family
+4. Extensions and Skills, because they share a catalogue/panel design family
 
 ## Repository and system orientation
 
@@ -576,6 +591,27 @@ following are true:
 - [x] 2026-03-25 20:48 GMT: Pushed `solidjs-translation` to
   `github.com:leynos/axinite-mockup`. The push output did not include a web
   URL.
+- [x] 2026-03-25 21:04 GMT: Verified the user design-regression report against
+  the current code. The original static route pages still exist in
+  `axinite/*/index.html`, while the SPA currently renders a generic route hero
+  and card grid that discards most of the source layout.
+- [x] 2026-03-25 21:11 GMT: Restored the shared shell chrome to a closer match
+  for the original mock-up by bringing back the flatter glass topbar, underline
+  nav treatment, denser control strip, mesh background, and route watermark
+  atmosphere.
+- [x] 2026-03-25 21:12 GMT: Ported the Chat and Memory routes to dedicated
+  Solid preview components with the original sidebar/composer and
+  tree/breadcrumb grammar instead of the generic hero/card layout.
+- [x] 2026-03-25 21:12 GMT: Revalidated the first restoration slice with
+  `make ff`, Playwright browser screenshots of Chat and Memory, and `css-view`
+  snapshots showing the restored glass chrome and sidebar surfaces under RTL.
+- [x] Restore the original shared shell chrome and route watermark treatment in
+  the SolidJS app.
+- [x] Port the Chat and Memory layouts into dedicated Solid preview components
+  that match the original static pages more closely than the generic route
+  cards.
+- [ ] Commit and push the first restoration slice before
+  continuing to Jobs, Routines, Extensions, and Skills.
 - [x] Commit and push the gated implementation changes.
 - [x] Replace the static runtime with a Vite-based Solid SPA inside `axinite/`.
 - [x] Wire i18next plus Fluent, the supported-locale registry, document
@@ -625,6 +661,19 @@ following are true:
 - `css-view` confirmed that the Arabic route applies computed `direction: rtl`
   through the document root and key shell containers such as `.shell-topbar`,
   `.shell-nav`, and `.shell-controls`, with logical paddings preserved.
+- The original visual design is still recoverable from source, because the
+  legacy static pages and shared stylesheet remain in `axinite/`.
+- The biggest design regression is structural rather than purely stylistic: the
+  first Solid pass replaced six different route bodies with one generic layout.
+- The remaining route families decompose naturally after Chat and Memory:
+  Jobs/Routines share one dashboard grammar, and Extensions/Skills share one
+  catalogue grammar.
+- Restoring the shared chrome first had an outsized visual effect. The flatter
+  topbar, left rail, and watermark treatment immediately make the SPA read like
+  the original prototype again even before all route bodies are ported.
+- The first restoration slice can keep the Solid/i18n/runtime seams intact. The
+  old layout grammar translated cleanly into dedicated route components without
+  reopening the earlier router or feature-flag work.
 
 ## Decision Log
 
@@ -679,6 +728,20 @@ following are true:
   tree, so leaving `publicDir` at the repository root silently broke runtime
   localization fetches.
 
+- Decision: reopen the execplan after the runtime migration shipped.
+  Rationale: the user correctly identified that visual parity with the original
+  mock-up still needs explicit tracked work rather than an informal follow-up.
+
+- Decision: restore shared shell chrome and the Chat/Memory routes first.
+  Rationale: those surfaces carry the strongest original identity and provide
+  the clearest test of whether the SPA can preserve the source design language.
+
+- Decision: keep the remaining four route families on the generic fallback for
+  this first restoration slice.
+  Rationale: the shared chrome plus Chat/Memory restoration is already enough
+  to prove the translation approach, and it keeps the first recovery commit
+  small enough to validate and review cleanly.
+
 ## Outcomes & Retrospective
 
 - Shipped a Vite-based Solid SPA under `axinite/` with typed TanStack Router
@@ -707,3 +770,5 @@ following are true:
 - Before backend integration, tighten the remaining mocked gateway seams, then
   decide whether the Rust host will serve the generated SPA directly or adopt a
   different history-fallback strategy than the current static route copies.
+- This section is incomplete again while the visual-restoration stream is in
+  progress. Update it after the first route-restoration slice lands.

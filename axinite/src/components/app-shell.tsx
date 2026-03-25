@@ -29,41 +29,44 @@ export const ShellChrome: ParentComponent<ShellChromeProps> = (props) => {
     <div class="shell-frame">
       <div class="shell-backdrop" />
       <header class="shell-topbar">
-        <div class="shell-topbar__brand">
-          <div class="shell-topbar__mark" />
-          <div>
-            <p class="shell-topbar__eyebrow">{t("shellEyebrow")}</p>
-            <h1 class="shell-topbar__title">{t("shellTitle")}</h1>
+        <div class="shell-topbar__leading">
+          <div class="shell-topbar__brand">
+            <div class="shell-topbar__mark" />
+            <div>
+              <p class="shell-topbar__eyebrow">{t("shellEyebrow")}</p>
+              <h1 class="shell-topbar__title">{t("shellTitle")}</h1>
+            </div>
           </div>
+
+          <nav aria-label={t("shellNavigationLabel")} class="shell-nav">
+            <For each={ROUTE_ORDER}>
+              {(routeId) =>
+                props.usePlainLinks ? (
+                  <a
+                    class={
+                      props.activePath === `/${routeId}`
+                        ? "shell-nav__link shell-nav__link--active"
+                        : "shell-nav__link"
+                    }
+                    href={`/${routeId}`}
+                  >
+                    {t(`route-${routeId}-label`)}
+                  </a>
+                ) : (
+                  <Link
+                    to={`/${routeId}`}
+                    activeProps={{
+                      class: "shell-nav__link shell-nav__link--active",
+                    }}
+                    inactiveProps={{ class: "shell-nav__link" }}
+                  >
+                    {t(`route-${routeId}-label`)}
+                  </Link>
+                )
+              }
+            </For>
+          </nav>
         </div>
-        <nav aria-label={t("shellNavigationLabel")} class="shell-nav">
-          <For each={ROUTE_ORDER}>
-            {(routeId) =>
-              props.usePlainLinks ? (
-                <a
-                  class={
-                    props.activePath === `/${routeId}`
-                      ? "shell-nav__link shell-nav__link--active"
-                      : "shell-nav__link"
-                  }
-                  href={`/${routeId}`}
-                >
-                  {t(`route-${routeId}-label`)}
-                </a>
-              ) : (
-                <Link
-                  to={`/${routeId}`}
-                  activeProps={{
-                    class: "shell-nav__link shell-nav__link--active",
-                  }}
-                  inactiveProps={{ class: "shell-nav__link" }}
-                >
-                  {t(`route-${routeId}-label`)}
-                </Link>
-              )
-            }
-          </For>
-        </nav>
         <div class="shell-controls">
           <LocalePicker />
           <Show when={flags.isRouteVisible("panel_logs")}>

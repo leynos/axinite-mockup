@@ -1,4 +1,7 @@
 import { For, Show } from "solid-js";
+
+import { ChatPreview } from "@/components/chat-preview";
+import { MemoryPreview } from "@/components/memory-preview";
 import { useFeatureFlags } from "@/lib/feature-flags/runtime";
 import { useI18n } from "@/lib/i18n/provider";
 import type { RouteId } from "@/lib/route-config";
@@ -12,19 +15,14 @@ export const RoutePage = (props: RoutePageProps) => {
   const flags = useFeatureFlags();
   const { t } = useI18n();
   const details = () => ROUTE_DETAILS[props.routeId];
-
-  return (
-    <section class="route-page">
+  const renderGenericPreview = () => (
+    <>
       <header class="route-page__hero">
         <div class="route-page__eyebrow">{t("routeHeroEyebrow")}</div>
         <div class="route-page__hero-grid">
           <div>
-            <h2 class="route-page__title">
-              {t(`route-${props.routeId}-label`)}
-            </h2>
-            <p class="route-page__summary">
-              {t(`page-${props.routeId}-summary`)}
-            </p>
+            <h2 class="route-page__title">{t(`route-${props.routeId}-label`)}</h2>
+            <p class="route-page__summary">{t(`page-${props.routeId}-summary`)}</p>
           </div>
           <div class="route-page__meta">
             <div class="route-page__meta-card">
@@ -43,6 +41,39 @@ export const RoutePage = (props: RoutePageProps) => {
         </div>
       </header>
 
+      <div class="route-page__cards">
+        <For each={details().cardKeys}>
+          {(cardKey) => (
+            <article class="route-card">
+              <p class="route-card__kicker">{t("routeCardKicker")}</p>
+              <h3 class="route-card__title">
+                {t(`page-${props.routeId}-${cardKey}-title`)}
+              </h3>
+              <p class="route-card__body">
+                {t(`page-${props.routeId}-${cardKey}-body`)}
+              </p>
+            </article>
+          )}
+        </For>
+      </div>
+
+      <section class="route-page__agenda">
+        <div>
+          <h3 class="route-page__section-title">{t("routeAgendaTitle")}</h3>
+          <p class="route-page__section-body">{t(`page-${props.routeId}-agenda`)}</p>
+        </div>
+        <div>
+          <h3 class="route-page__section-title">{t("routeGuardrailTitle")}</h3>
+          <p class="route-page__section-body">
+            {t(`page-${props.routeId}-guardrail`)}
+          </p>
+        </div>
+      </section>
+    </>
+  );
+
+  return (
+    <section class="route-page">
       <Show
         when={flags.isRouteVisible(details().flagName)}
         fallback={
@@ -52,38 +83,13 @@ export const RoutePage = (props: RoutePageProps) => {
           </div>
         }
       >
-        <div class="route-page__cards">
-          <For each={details().cardKeys}>
-            {(cardKey) => (
-              <article class="route-card">
-                <p class="route-card__kicker">{t("routeCardKicker")}</p>
-                <h3 class="route-card__title">
-                  {t(`page-${props.routeId}-${cardKey}-title`)}
-                </h3>
-                <p class="route-card__body">
-                  {t(`page-${props.routeId}-${cardKey}-body`)}
-                </p>
-              </article>
-            )}
-          </For>
-        </div>
-
-        <section class="route-page__agenda">
-          <div>
-            <h3 class="route-page__section-title">{t("routeAgendaTitle")}</h3>
-            <p class="route-page__section-body">
-              {t(`page-${props.routeId}-agenda`)}
-            </p>
-          </div>
-          <div>
-            <h3 class="route-page__section-title">
-              {t("routeGuardrailTitle")}
-            </h3>
-            <p class="route-page__section-body">
-              {t(`page-${props.routeId}-guardrail`)}
-            </p>
-          </div>
-        </section>
+        {props.routeId === "chat" ? (
+          <ChatPreview />
+        ) : props.routeId === "memory" ? (
+          <MemoryPreview />
+        ) : (
+          renderGenericPreview()
+        )}
       </Show>
     </section>
   );
