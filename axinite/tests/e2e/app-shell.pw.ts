@@ -6,6 +6,15 @@ test("navigates routes and flips to rtl", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Chat", level: 2 })).toBeVisible();
   await page.getByRole("link", { name: "Memory" }).click();
   await expect(page).toHaveURL(/\/memory$/);
+  await expect(page.getByRole("heading", { name: "Memory", level: 2 })).toBeVisible();
+
+  await page.getByRole("link", { name: "Jobs" }).click();
+  await expect(page).toHaveURL(/\/jobs$/);
+  await expect(page.getByRole("heading", { name: "Jobs", level: 2 })).toBeVisible();
+
+  await page.getByRole("link", { name: "Routines" }).click();
+  await expect(page).toHaveURL(/\/routines$/);
+  await expect(page.getByRole("heading", { name: "Routines", level: 2 })).toBeVisible();
 
   await page.getByRole("button", { name: "Logs" }).click();
   await expect(page.getByRole("heading", { name: "Logs" })).toBeVisible();

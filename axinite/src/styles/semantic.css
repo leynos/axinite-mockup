@@ -213,6 +213,217 @@
   min-height: calc(100vh - 3.5rem);
 }
 
+.dashboard-preview {
+  position: relative;
+  z-index: 1;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.dashboard-preview__intro {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-summary {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-summary__card,
+.dashboard-panel,
+.dashboard-detail {
+  padding: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 1rem;
+  background: rgb(15 15 20 / 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.45);
+}
+
+.dashboard-summary__label,
+.dashboard-table th,
+.dashboard-detail__eyebrow {
+  margin: 0 0 0.4rem;
+  color: #71717a;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.dashboard-summary__value {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2vw, 2.15rem);
+}
+
+.dashboard-panel {
+  margin-bottom: 1rem;
+}
+
+.dashboard-panel__header,
+.dashboard-detail__header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dashboard-panel__title,
+.dashboard-detail__title {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+}
+
+.dashboard-panel__body,
+.dashboard-detail__body,
+.dashboard-table__meta,
+.dashboard-detail__meta-grid dt {
+  color: #a1a1aa;
+}
+
+.dashboard-table-wrap {
+  overflow-x: auto;
+}
+
+.dashboard-table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+}
+
+.dashboard-table th {
+  padding: 0 0.75rem 0.65rem;
+  text-align: left;
+}
+
+.dashboard-table td {
+  padding: 0.8rem 0.75rem;
+  border-top: 1px solid rgb(255 255 255 / 0.06);
+  vertical-align: middle;
+}
+
+.dashboard-table__row {
+  transition: background 160ms ease;
+}
+
+.dashboard-table__row:hover,
+.dashboard-table__row--active {
+  background: rgb(255 255 255 / 0.04);
+}
+
+.dashboard-table__mono {
+  color: #71717a;
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+}
+
+.dashboard-table__title-button,
+.dashboard-table__action,
+.dashboard-detail__ghost {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dashboard-table__title-button {
+  padding: 0;
+  color: #f4f4f5;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dashboard-table__action,
+.dashboard-detail__ghost {
+  color: #00ff41;
+}
+
+.dashboard-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.dashboard-pill--neutral {
+  background: rgb(113 113 122 / 0.2);
+  color: #d4d4d8;
+}
+
+.dashboard-pill--success {
+  background: rgb(16 185 129 / 0.15);
+  color: #34d399;
+}
+
+.dashboard-pill--danger {
+  background: rgb(239 68 68 / 0.15);
+  color: #f87171;
+}
+
+.dashboard-pill--warning {
+  background: rgb(245 158 11 / 0.15);
+  color: #fbbf24;
+}
+
+.dashboard-pill--info {
+  background: rgb(59 130 246 / 0.15);
+  color: #60a5fa;
+}
+
+.dashboard-pill--violet {
+  background: rgb(139 92 246 / 0.15);
+  color: #a78bfa;
+}
+
+.dashboard-detail__pills,
+.dashboard-detail__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-detail__body {
+  max-width: 48rem;
+  margin: 0 0 1rem;
+  line-height: 1.65;
+}
+
+.dashboard-detail__meta-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.dashboard-detail__meta-grid dt,
+.dashboard-detail__meta-grid dd {
+  margin: 0;
+}
+
+.dashboard-detail__meta-grid dd {
+  color: #f4f4f5;
+}
+
+.dashboard-detail__ghost {
+  min-height: 2.25rem;
+  padding: 0 0.9rem;
+  border-radius: 0.7rem;
+  background: rgb(255 255 255 / 0.04);
+}
+
+.dashboard-detail__ghost[disabled] {
+  color: #71717a;
+  cursor: not-allowed;
+}
+
 .route-sidebar {
   background: rgb(15 15 20 / 0.6);
   backdrop-filter: blur(20px);
@@ -683,6 +894,14 @@
     display: flex;
   }
 
+  .dashboard-summary {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .dashboard-detail__meta-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .route-page__hero-grid,
   .route-page__agenda,
   .route-page__cards {
@@ -721,5 +940,14 @@
   .memory-preview__toolbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .dashboard-preview {
+    padding: 1rem;
+  }
+
+  .dashboard-panel__header,
+  .dashboard-detail__header {
+    flex-direction: column;
   }
 }

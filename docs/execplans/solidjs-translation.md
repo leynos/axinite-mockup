@@ -610,11 +610,25 @@ following are true:
 - [x] 2026-03-25 21:13 GMT: Pushed `solidjs-translation` to
   `github.com:leynos/axinite-mockup`. The push output did not include a web
   URL.
+- [x] 2026-03-25 21:28 GMT: Audited the original `jobs/` and `routines/`
+  static pages against the current SPA and confirmed both routes were still
+  falling back to the generic hero/card preview.
+- [x] 2026-03-25 21:34 GMT: Ported Jobs and Routines into dedicated Solid
+  dashboard previews with summary cards, semantic data tables, and detail
+  panels that preserve the original operator-facing hierarchy more closely than
+  the generic route template.
+- [x] 2026-03-25 21:44 GMT: Revalidated the second restoration slice with
+  `make ff`, `make markdownlint`, `make nixie`, Playwright screenshots of Jobs
+  and Routines, and `css-view` captures confirming `direction: rtl` on the
+  Arabic routes plus the restored dashboard grid and glass panel surfaces.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
   that match the original static pages more closely than the generic route
   cards.
+- [x] Revalidate the Jobs and Routines restoration slice with `make ff`,
+  Playwright screenshots, and `css-view`, then commit and push before moving to
+  Extensions and Skills.
 - [x] Commit and push the first restoration slice before
   continuing to Jobs, Routines, Extensions, and Skills.
 - [x] Commit and push the gated implementation changes.
@@ -679,6 +693,9 @@ following are true:
 - The first restoration slice can keep the Solid/i18n/runtime seams intact. The
   old layout grammar translated cleanly into dedicated route components without
   reopening the earlier router or feature-flag work.
+- Jobs and Routines are structurally close enough that one shared dashboard
+  styling grammar works well, but they still need separate route components
+  because their table semantics and detail emphasis differ.
 
 ## Decision Log
 
@@ -746,6 +763,12 @@ following are true:
   Rationale: the shared chrome plus Chat/Memory restoration is already enough
   to prove the translation approach, and it keeps the first recovery commit
   small enough to validate and review cleanly.
+
+- Decision: use one shared dashboard/table semantic CSS layer for Jobs and
+  Routines, but keep route-specific Solid components.
+  Rationale: the two routes share summary-card and dense-table framing, but
+  their column meaning, status labelling, and detail emphasis are different
+  enough that another generic abstraction would repeat the first regression.
 
 ## Outcomes & Retrospective
 
