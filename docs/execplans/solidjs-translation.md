@@ -5,7 +5,7 @@ This ExecPlan (execution plan) is a living document. The sections
 `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work
 proceeds.
 
-Status: IN PROGRESS
+Status: COMPLETE
 
 ## Purpose / big picture
 
@@ -571,7 +571,12 @@ following are true:
 - [x] 2026-03-25 20:42 GMT: Validated the rendered SPA with Playwright route,
   dialog, and RTL coverage; validated computed RTL shell cascade values with
   `css-view`; and passed `make ff`, `make markdownlint`, and `make nixie`.
-- [ ] Commit and push the gated implementation changes.
+- [x] 2026-03-25 20:47 GMT: Committed the migration as `0cd73d5`
+  (`Translate the Axinite mockup into a Solid SPA`).
+- [x] 2026-03-25 20:48 GMT: Pushed `solidjs-translation` to
+  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  URL.
+- [x] Commit and push the gated implementation changes.
 - [x] Replace the static runtime with a Vite-based Solid SPA inside `axinite/`.
 - [x] Wire i18next plus Fluent, the supported-locale registry, document
   direction handling, and locale-aware route copy.
@@ -676,11 +681,29 @@ following are true:
 
 ## Outcomes & Retrospective
 
-This section remains intentionally incomplete until implementation is approved
-and executed. When work begins, update it with:
-
-- what was actually shipped
-- where the plan was correct or wrong
-- which risks materialised
-- which validation gates were most valuable
-- what should change before the backend integration phase
+- Shipped a Vite-based Solid SPA under `axinite/` with typed TanStack Router
+  routes for Chat, Memory, Jobs, Routines, Extensions, and Skills; Kobalte
+  shell primitives; semantic CSS; typed feature-flag seams; and gateway status
+  polling placeholders.
+- Shipped Fluent locale bundles for the required ten-language set, including
+  Arabic RTL, plus document `lang`/`dir` updates, a locale picker, and route
+  copy that stays behind localisation resources instead of hardcoded strings.
+- Shipped Bun, Biome, Vitest, Playwright, Semgrep, Stylelint, and Fluent
+  linting integration at the repository root, following the imported `ff`
+  pipeline shape from `../wildside-mockup-v2a/package.json`.
+- The plan was right to treat static-host deep links and feature-flag honesty as
+  first-order concerns. `scripts/postbuild-routes.mjs` was needed immediately
+  for static route copies, and the feature provider made it possible to keep
+  hidden runtime surfaces explicit.
+- The plan under-estimated first-paint localisation risk. The implementation
+  needed both a corrected Vite `publicDir` and a render gate on `i18nReady` to
+  avoid raw Fluent message IDs leaking into visible text and accessible names.
+- No tracked risk required escalation during this pass. The main residual risk
+  is still backend integration: the shell currently uses honest preview seams
+  and status placeholders where live contracts do not yet exist.
+- The most valuable validation gates were `make ff` for the integrated Bun
+  quality stack, Playwright for translated route/dialog/RTL behaviour, and
+  `css-view` for confirming computed RTL cascade values on the live shell.
+- Before backend integration, tighten the remaining mocked gateway seams, then
+  decide whether the Rust host will serve the generated SPA directly or adopt a
+  different history-fallback strategy than the current static route copies.
