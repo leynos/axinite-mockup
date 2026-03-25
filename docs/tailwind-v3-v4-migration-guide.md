@@ -41,7 +41,7 @@
     - The default colour palette leverages OKLCH for more vibrant, perceptually
       uniform colours out-of-the-box.
 
-### II. Build & Integration
+## II. Build & Integration
 
 1. **Simplified Imports:**
     - The `@tailwind base; @tailwind components; @tailwind utilities;`
@@ -59,7 +59,7 @@
       separate dependencies. Tailwind v4 handles CSS bundling and vendor
       prefixing (via Lightning CSS) internally.
 
-### III. Key Migration Considerations & API Changes (v3 -> v4)
+## III. Key Migration Considerations & API Changes (v3 -> v4)
 
 1. **Configuration File Shift:**
     - While `tailwind.config.js` can still be used for plugin definitions or
@@ -125,7 +125,7 @@
       `bg-(--my-brand-color)` instead of `bg-[--my-brand-color]`. This resolves
       ambiguity with other arbitrary value types.
 
-### IV. Advanced Capabilities & Modern CSS Integration
+## IV. Advanced Capabilities & Modern CSS Integration
 
 1. **Enhanced Variant System:**
     - Comprehensive support for ARIA attributes (`aria-checked:`,
@@ -149,7 +149,7 @@
     - Tailwind v4 is built upon and encourages the use of native CSS variables,
       nesting (processed by Lightning CSS), `color-mix()`, `calc()`, etc.
 
-### V. Workflow Adjustments & Deprecations
+## V. Workflow Adjustments & Deprecations
 
 1. **Preprocessors (Sass/Less/Stylus):**
     - Not designed for use with Tailwind v4. Tailwind itself, with its

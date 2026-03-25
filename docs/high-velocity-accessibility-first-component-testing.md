@@ -70,7 +70,7 @@ cases that require `axe-core`. This dual setup provides the “best of both
 worlds”:
 
 - **Fast feedback for logic and UI structure:** Bun’s test runner with Happy DOM
-  provides near-instant execution for tests that verify component behavior,
+  provides near-instant execution for tests that verify component behaviour,
   state management, and basic rendering structure. Immediate feedback stays in
   the inner loop without waiting on a heavy browser simulation.
 
@@ -113,8 +113,8 @@ accessibility rules are beyond its scope.
 
 The official Axe documentation notes "limited support for JSDOM" and advises
 disabling rules that are known to yield false results in a headless DOM.[^3] The
-most prominent example is the **color contrast** rule. Verifying color contrast
-requires computing rendered text colors against background pixels – something
+most prominent example is the **colour contrast** rule. Verifying colour contrast
+requires computing rendered text colours against background pixels – something
 impossible without an actual rendering engine (JSDOM has no concept of pixels or
 CSS cascade in effect). Any `axe-core` rule that depends on actual rendering or
 CSS will fail or produce irrelevant results under JSDOM. Besides
@@ -142,7 +142,7 @@ keyboard navigation test should cover it in the E2E suite.
 Understanding these limits reinforces the need for the **outer test loop**. The
 inner loop (Bun + Node/axe tests) catches semantic issues such as missing ARIA
 labels, improper roles, and missing alt text, but it **cannot fully guarantee**
-things like proper color contrast, focus order on actual UI, or dynamic content
+things like proper colour contrast, focus order on actual UI, or dynamic content
 announcements. **Real browser testing with Playwright** covers those gaps. This
 separation of concerns prevents a false sense of security from the fast tests
 and makes it clear which checks occur later in the pipeline.
@@ -461,7 +461,7 @@ guidelines:
   adhere to accessible-first querying. Over time this becomes second nature.
 
 By combining tooling (axe scans, proper libraries) with conventions (only use
-accessible queries, assert on ARIA/focus behaviors), the inner loop becomes a
+accessible queries, assert on ARIA/focus behaviours), the inner loop becomes a
 strong quality gate. A component that is functionally perfect but accessibly
 flawed cannot pass unnoticed.
 
@@ -481,7 +481,7 @@ assertions, parallelization, and rich reporting. This section outlines how
 Playwright supports various accessibility-focused E2E tasks:
 
 - **3.1 In-Browser Axe Scans:** Running `axe-core` in a **real browser** context
-  to catch issues like color contrast, focus order, and other things JSDOM can’t
+  to catch issues like colour contrast, focus order, and other things JSDOM can’t
   detect.
 
 - **3.2 Advanced Interaction Tests:** Simulating keyboard navigation, verifying
@@ -570,7 +570,7 @@ should occur only where they yield new information. The principle is: **treat
 accessibility scans as assertions, not as a blanket afterthought**. This keeps
 the E2E tests fast enough for CI while still covering critical scenarios.
 
-### 3.2 Interactive Behavior and Focus Management
+### 3.2 Interactive Behaviour and Focus Management
 
 Automated accessibility testing must extend beyond static analysis. Many
 accessibility issues are only apparent when users actually interact with the UI.
@@ -773,7 +773,7 @@ components and pages. They serve as a guardrail for semantic consistency.
 ### 3.4 Visual Regression Testing across Breakpoints and Themes
 
 Accessibility is not just about screen readers and keyboard navigation; visual
-presentation matters too. Issues like text getting cut off, color contrast in
+presentation matters too. Issues like text getting cut off, colour contrast in
 different themes, or layout breakage on small screens can dramatically affect
 usability. To catch these, the framework includes **visual regression tests** in
 the Playwright suite.
@@ -789,7 +789,7 @@ include:
 
 - **Light and Dark themes:** Since the application supports theme switching
   (e.g., `wildside-day` vs `wildside-night` themes), each mode should be
-  captured in screenshots. This helps verify color contrast in each theme and
+  captured in screenshots. This helps verify colour contrast in each theme and
   catches theme-specific asset issues.
 
 - **Critical pages/components:** Focus should remain on pages like the home
@@ -912,7 +912,7 @@ using Playwright’s test config. For instance, some critical E2E tests can be
 duplicated under a fixture where the context is launched with
 `{ locale: 'es-ES' }`. That way, the locale toggle is not the only path under
 test; the Spanish version of various flows can also be checked for axe
-violations and parity with English behavior.
+violations and parity with English behaviour.
 
 By treating localization as a first-class aspect of testing, the
 **understandability** aspect of accessibility is safeguarded for all supported

@@ -32,7 +32,7 @@ bun create solid
 During the prompts:
 
 1. Choose a project name.
-2. Select a non-SolidStart app unless you explicitly need server rendering.
+2. Select a non-SolidStart app unless server rendering is explicitly required.
 3. Choose `ts-tailwindcss` for a Bun + Vite + Tailwind starting point.
 
 For projects started directly from Vite, Bun's Vite guide also supports this
@@ -165,7 +165,7 @@ Cloudflare Pages, S3, or any other static host.
 bun run preview
 ```
 
-If your template does not ship a preview script yet, add one:
+If the template does not ship a preview script yet, add one:
 
 ```json
 {

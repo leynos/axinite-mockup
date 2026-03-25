@@ -8,7 +8,7 @@ This is a pragmatic layering recipe for building accessible, themeable UIs with
 
 ## 0) Setup (Tailwind v4 + daisyUI v5)
 
-Create a single entry stylesheet (e.g., `app.css`).
+A single entry stylesheet (e.g., `app.css`) should be used.
 
 ```css
 /* app.css */
@@ -29,7 +29,7 @@ Create a single entry stylesheet (e.g., `app.css`).
 }
 ```
 
-When components are stored in unusual places, add explicit sources:
+When components are stored in unusual places, explicit sources should be added:
 
 ```css
 /* Tailwind v4: help the scanner find templates when needed */
@@ -39,16 +39,16 @@ When components are stored in unusual places, add explicit sources:
 > **Tip:** daisyUI v5 exposes theme variables like `--color-primary`,
 > `--color-base-100`, plus utilities such as `bg-primary`,
 > `text-primary-content`, and size tokens like `rounded-box`/`rounded-field`.
-> These are theme-aware, so prefer them to raw colours for brand‑consistent
-> styling.
+> These are theme-aware, so they should be preferred to raw colours for
+> brand‑consistent styling.
 
 ---
 
 ## 1) Mental model: five layers
 
-1. **Semantic HTML**: use the correct element for the job (e.g., `<nav>`,
-   `<button>`, `<section>`). Add ARIA only to clarify, never to replace
-   semantics.
+1. **Semantic HTML**: the correct element should be used for the job (e.g.,
+   `<nav>`, `<button>`, `<section>`). ARIA should be added only to clarify,
+   never to replace semantics.
 2. **Headless behaviour**: Kobalte primitives provide accessibility and state
    via attributes like `data-state`, `data-disabled`, and `aria-expanded`.
 3. **Component classes**: daisyUI gives structural styles (`btn`, `card`,
@@ -86,16 +86,17 @@ styles. That keeps local adjustments easy.
 </main>
 ```
 
-Use native elements first. Where a button is needed, use `<button>`; for
-navigation, use `<nav>`. This improves keyboard behaviour, form semantics, and
-SR (screen reader) output without extra ceremony.
+Native elements should be used first. Where a button is needed, `<button>`
+should be used; for navigation, `<nav>` should be used. This improves keyboard
+behaviour, form semantics, and SR (screen reader) output without extra
+ceremony.
 
 ---
 
 ## 3) Semantic class names: where they help
 
-Create **domain‑level** classes only when they encode reused intent (CTA
-buttons, product cards, page headers) or when bridging third‑party markup.
+**Domain‑level** classes should be created only when they encode reused intent
+(CTA buttons, product cards, page headers) or when bridging third‑party markup.
 
 ```css
 /* app.css */
@@ -115,7 +116,7 @@ buttons, product cards, page headers) or when bridging third‑party markup.
 }
 ```
 
-Use them in markup where repetition would otherwise get silly:
+These belong in markup where repetition would otherwise become excessive:
 
 ```html
 <button class="cta">Buy now</button>
@@ -380,8 +381,9 @@ export function PlanCard() {
 
 - `@apply` inside CSS Modules/Svelte/Vue: add `@reference "../../app.css";` at
   the top of the scoped style block so Tailwind can resolve tokens/utilities.
-- Variant prefixes won’t apply to non‑utility classes: use utilities in the
-  variant (e.g., `data-[state=open]:bg-primary`) or compute classes in JS/TS.
+- Variant prefixes won’t apply to non‑utility classes: utilities should be used
+  in the variant (e.g., `data-[state=open]:bg-primary`) or classes should be
+  computed in JS/TS.
 - If a class isn’t generated, ensure the literal string exists in project source
   files or is safelisted via `@source inline("class-name")`.
 

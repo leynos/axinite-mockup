@@ -208,10 +208,10 @@ Keep the split disciplined:
 ### Practical recommendation
 
 For SolidJS, keep `i18next` as the core engine and expose it through a
-Solid-compatible binding layer. `solid-i18next` is a reasonable option when you
-want a familiar provider-and-hook model. If the repo needs tighter control, wrap
-the `i18next` instance in a small Solid context and expose only the translation
-helpers you actually want the app to use.
+Solid-compatible binding layer. `solid-i18next` is a reasonable option when a
+familiar provider-and-hook model is preferred. If the repo needs tighter
+control, wrap the `i18next` instance in a small Solid context and expose only
+the translation helpers the application should use.
 
 ## 7) Accessibility expectations
 

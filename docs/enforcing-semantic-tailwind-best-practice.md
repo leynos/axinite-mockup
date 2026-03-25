@@ -428,7 +428,7 @@ pnpm add -D stylelint stylelint-declaration-strict-value
 module.exports = {
   plugins: ["stylelint-declaration-strict-value"],
   rules: {
-    // Disallow hex/named colors; require tokens or Tailwind classes
+    // Disallow hex/named colours; require tokens or Tailwind classes
     "color-no-hex": true,
     "color-named": "never",
 
@@ -475,13 +475,13 @@ uv tool install semgrep
 
 ```yaml
 rules:
-  # Raw Tailwind color utilities instead of semantic roles
+  # Raw Tailwind colour utilities instead of semantic roles
   - id: tailwind-raw-color-class
     patterns:
       - pattern-regex: "\\b(text|bg|border)-(red|blue|green|gray|slate|zinc|stone|amber|rose)-[0-9]{2,3}\\b"
     message:
       "Prefer DaisyUI role classes (e.g., bg-primary, text-base-content) over
-      raw Tailwind color scale."
+      raw Tailwind colour scale."
     languages: [javascript, typescript, jsx, tsx, html]
     severity: WARNING
 
@@ -616,7 +616,7 @@ semantic fixes over ad hoc opt-outs.
 - For bespoke patterns: BEM‑ish and role‑based, e.g. `.walk-card`,
   `.walk-card__title`; or `.nav__link--active`.
 - Prefer **role tokens** (`primary`, `secondary`, `accent`, `success`, `error`)
-  to color words.
+  to colour words.
 
 ---
 
@@ -633,9 +633,9 @@ semantic fixes over ad hoc opt-outs.
   - `input`/`select`/`textarea` use matching DaisyUI classes.
 
 - **Design tokens**
-  - No hex/named colors in CSS.
+  - No hex/named colours in CSS.
   - Prefer role utilities (`bg-primary`, `text-base-content`) over raw Tailwind
-    color scales.
+    colour scales.
 
 - **Repetition & readability**
   - Warn on long/repeated class chunks → extract with `@apply` into
@@ -670,13 +670,14 @@ semantic fixes over ad hoc opt-outs.
 A: Only repeated patterns are extracted. Tailwind still tree‑shakes class‑based
 styles; the few semantic classes added remain minimal and intentionally reused.
 
-**Q: When is it _okay_ to keep utilities inline?**  
+**Q: When is it appropriate to keep utilities inline?**
 A: One‑offs, quick prototypes, and tiny adjustments local to a component. Once
 the same chunk appears twice, prefer extracting it.
 
 **Q: How strict are thresholds?**  
-A: Configurable. Start with `repeatMinClasses=4`, `repeatMinOccurrences=2`.
-Tighten as the design system matures.
+A: A sensible starting point is `repeatMinClasses=4`,
+`repeatMinOccurrences=2`. The thresholds can be tightened as the design system
+matures.
 
 ---
 
