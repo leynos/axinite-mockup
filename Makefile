@@ -1,40 +1,45 @@
-NODE := node
-NPM := npm
 MDLINT ?= markdownlint-cli2
-MDLINT_FALLBACK := $(HOME)/.bun/bin/markdownlint-cli2
-ifneq ($(wildcard $(MDLINT_FALLBACK)),)
-  ifneq ($(shell command -v $(MDLINT) >/dev/null 2>&1; echo $$?),0)
-    MDLINT := $(MDLINT_FALLBACK)
-  endif
-endif
 NIXIE ?= nixie
 
-.PHONY: all clean check-fmt lint test dev markdownlint nixie
+.PHONY: all build fmt check-fmt lint typecheck test test-a11y test-e2e lint-ftl-vars semantic ff markdownlint nixie
 
-all: lint test
+all: check-fmt lint typecheck test
 
-clean:
-	rm -rf dist
+build:
+	bun run build
+
+fmt:
+	bun run fmt
 
 check-fmt:
-	$(NODE) scripts/check-format.mjs
+	bun run check:fmt
 
 lint:
-	$(MAKE) check-fmt
-	$(NODE) scripts/lint-site.mjs
-	$(NODE) --check scripts/build-site.mjs
-	$(NODE) --check scripts/lint-site.mjs
-	$(NODE) --check scripts/test-build.mjs
+	bun run lint
+
+typecheck:
+	bun run check:types
 
 test:
-	$(NPM) run build
-	$(NODE) scripts/test-build.mjs
+	bun run test
+
+test-a11y:
+	bun run test:a11y
+
+test-e2e:
+	bun run test:e2e
+
+lint-ftl-vars:
+	bun run lint:ftl-vars
+
+semantic:
+	bun run semantic
+
+ff:
+	bun run ff
 
 markdownlint:
 	$(MDLINT) '**/*.md'
 
 nixie:
 	$(NIXIE) --no-sandbox
-
-dev:
-	caddy file-server --browse --listen :2020

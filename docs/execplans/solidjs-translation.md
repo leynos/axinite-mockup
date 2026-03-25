@@ -5,7 +5,7 @@ This ExecPlan (execution plan) is a living document. The sections
 `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work
 proceeds.
 
-Status: DRAFT
+Status: IN PROGRESS
 
 ## Purpose / big picture
 
@@ -29,8 +29,9 @@ WCAG 2.2 conformant, must prefer semantic classes over utility sprawl, must
 compile with full TypeScript checking, and must be covered by unit, behaviour,
 accessibility, and end-to-end tests.
 
-This plan is intentionally at draft scope only. It defines the delivery path
-but does not authorise implementation until the user explicitly approves it.
+This plan was approved for implementation by the user on 2026-03-25. The work
+below therefore serves as both the execution guide and the live implementation
+record.
 
 ## Repository and system orientation
 
@@ -548,7 +549,38 @@ following are true:
   Tailwind CSS v4, and Fluent.
 - [x] 2026-03-25 19:43 GMT: Authored the first draft of this execution plan in
   `docs/execplans/solidjs-translation.md`.
-- [ ] Await user review and approval before implementation.
+- [x] 2026-03-25 20:05 GMT: User approved execution by asking to proceed with
+  implementation of this plan, to use `css-view` and Playwright for
+  validation, and to import the `ff` test and lint pipeline pattern from
+  `../wildside-mockup-v2a/package.json`.
+- [x] 2026-03-25 20:11 GMT: Re-verified that the repository still contains only
+  the original static prototype and no pre-existing Solid or Bun workspace to
+  preserve.
+- [x] 2026-03-25 20:34 GMT: Replaced the static prototype runtime with a
+  Vite-based Solid SPA rooted in `axinite/`, preserving the existing route
+  inventory as typed SPA routes and semantic shell components.
+- [x] 2026-03-25 20:35 GMT: Wired i18next plus Fluent locale bundles for
+  `en-GB`, `fr`, `de`, `it`, `nl`, `pl`, `hi`, `ja`, `zh-CN`, and `ar`, and
+  added document-level `lang`/`dir` handling plus an in-shell locale picker.
+- [x] 2026-03-25 20:36 GMT: Added typed feature-flag loading, local debug
+  overrides, a logs dialog, and gateway-status polling seams so hidden runtime
+  surfaces remain explicit instead of implied.
+- [x] 2026-03-25 20:38 GMT: Imported the Bun-based `ff` validation pipeline
+  shape from `../wildside-mockup-v2a/package.json` and adapted the repository
+  scripts, tests, semantic checks, and top-level `Makefile` targets to the SPA.
+- [x] 2026-03-25 20:42 GMT: Validated the rendered SPA with Playwright route,
+  dialog, and RTL coverage; validated computed RTL shell cascade values with
+  `css-view`; and passed `make ff`, `make markdownlint`, and `make nixie`.
+- [ ] Commit and push the gated implementation changes.
+- [x] Replace the static runtime with a Vite-based Solid SPA inside `axinite/`.
+- [x] Wire i18next plus Fluent, the supported-locale registry, document
+  direction handling, and locale-aware route copy.
+- [x] Add typed feature-flag loading plus debug overrides and expose them in
+  the shell.
+- [x] Import the Bun-based `ff` validation pipeline shape and adapt the repo
+  scripts, tests, and Makefile targets to the new SPA.
+- [ ] Validate the rendered SPA with Playwright and `css-view`, then gate,
+  commit, and push the implementation changes.
 
 ## Surprises & Discoveries
 
@@ -569,6 +601,25 @@ following are true:
 - Kobalte's own introduction frames it as an accessible SolidJS UI toolkit with
   unstyled primitives, which confirms the intended split: Kobalte for behaviour,
   daisyUI for visual system.
+- The current repository scripts are still static-site copies and smoke tests.
+  Importing the `ff` pipeline therefore means replacing the build, lint, and
+  test wiring rather than layering new targets on top of an existing SPA stack.
+- Keeping route identity on a purely static preview host still needs extra
+  build output. A history-based SPA served from static hosting will otherwise
+  404 on deep links, so the build must emit route-folder `index.html` copies or
+  an equivalent fallback strategy.
+- The initial SPA render exposed a real localisation race: static locale assets
+  were not being served because Vite's `publicDir` still pointed at the
+  repository root, and shell primitives mounted before `i18nReady` kept their
+  raw Fluent message IDs. Pointing `publicDir` at `axinite/public/` and waiting
+  for `i18nReady` before the first render removed that untranslated first-paint
+  state.
+- The repo's original `.gitignore` only covered `dist/` and screenshots. A Bun
+  and Playwright workflow also needs `node_modules/`, `test-results/`, and
+  `tmp/` ignored, otherwise a routine install/test cycle pollutes the worktree.
+- `css-view` confirmed that the Arabic route applies computed `direction: rtl`
+  through the document root and key shell containers such as `.shell-topbar`,
+  `.shell-nav`, and `.shell-controls`, with logical paddings preserved.
 
 ## Decision Log
 
@@ -598,6 +649,30 @@ following are true:
 - Decision: split streaming state from TanStack Query state.
   Rationale: chat and logs use SSE-like flows. Trying to force those into plain
   query semantics would create unnecessary indirection and stale-state bugs.
+
+- Decision: implement the first executable delivery as a route-preserving SPA
+  foundation rather than attempting live backend parity for every control in
+  one patch.
+  Rationale: the repository starts from static HTML only. The first honest
+  milestone is a typed, localised, validated Solid runtime that preserves the
+  product areas, shell behaviour, direction handling, and feature-flag seams so
+  backend integration can follow without another front-end rewrite.
+
+- Decision: keep the existing static HTML documents as short-term migration
+  references during this first implementation pass.
+  Rationale: they still contain the product copy, layout cues, and control
+  inventory needed to preserve route intent while the Solid code path becomes
+  the runtime.
+
+- Decision: block the first client render on `i18nReady`.
+  Rationale: several shell primitives mounted before the locale bundles were
+  available and kept raw Fluent IDs in accessible names, which broke both first
+  paint quality and Playwright addressability.
+
+- Decision: point Vite `publicDir` at `axinite/public/`.
+  Rationale: locale bundles and static assets are part of the `axinite/` source
+  tree, so leaving `publicDir` at the repository root silently broke runtime
+  localisation fetches.
 
 ## Outcomes & Retrospective
 

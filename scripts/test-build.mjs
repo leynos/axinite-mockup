@@ -3,15 +3,15 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const REQUIRED_OUTPUTS = [
+  "dist/index.html",
   "dist/.nojekyll",
-  "dist/assets/css/index.css",
-  "dist/assets/js/tailwind-config.js",
   "dist/chat/index.html",
-  "dist/extensions/index.html",
-  "dist/jobs/index.html",
   "dist/memory/index.html",
+  "dist/jobs/index.html",
   "dist/routines/index.html",
+  "dist/extensions/index.html",
   "dist/skills/index.html",
+  "dist/manifest.webmanifest",
 ];
 
 async function main() {
@@ -24,7 +24,7 @@ async function main() {
       if (!fileStat.isFile()) {
         throw new Error("not a file");
       }
-    } catch (error) {
+    } catch {
       console.error(`Missing required build output: ${relativePath}`);
       process.exitCode = 1;
       return;
