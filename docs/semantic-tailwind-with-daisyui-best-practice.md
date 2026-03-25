@@ -273,6 +273,7 @@ Instead, combine `@apply` (for the static bits) with explicit selectors for
 stateful styles. This keeps the markup clean _and_ ensures Kobalte data
 attributes toggle the look correctly:
 
+<!-- markdownlint-disable MD013 -->
 ```css
 .interest-chip {
   @apply inline-flex items-center gap-2 rounded-full border border-base-300/60 bg-base-200/60 px-4 py-2 text-sm font-medium text-base-content/70 transition;
@@ -286,6 +287,7 @@ attributes toggle the look correctly:
   @apply text-base-content;
 }
 ```
+<!-- markdownlint-enable MD013 -->
 
 Markup stays semantic:
 

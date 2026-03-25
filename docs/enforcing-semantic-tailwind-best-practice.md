@@ -508,6 +508,7 @@ rules:
 
 **`package.json`** (current scripts)
 
+<!-- markdownlint-disable MD013 -->
 ```json
 {
   "scripts": {
@@ -518,6 +519,7 @@ rules:
   }
 }
 ```
+<!-- markdownlint-enable MD013 -->
 
 - **Local dev:** `bun semantic` runs Biome + Grit, class length,
   near-duplicate + loop/sibling/concept checks, Semgrep, and Stylelint.
