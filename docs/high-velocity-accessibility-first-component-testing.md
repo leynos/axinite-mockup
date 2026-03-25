@@ -1254,7 +1254,7 @@ system provides continuous coverage.
   how components should behave (for example, “Modal should return focus to
   opener on close – see test X”). This knowledge sharing is invaluable.
 
-- **Compliance and Confidence:** Conformance to standards (such as WCAG 2.1 AA)
+- **Compliance and Confidence:** Conformance to standards (such as WCAG 2.2 AA)
   can be asserted with confidence because automated checks cover many criteria
   (contrast, focus order, semantics, etc.). This mitigates risk from a
   legal/compliance standpoint and broadens user reach.

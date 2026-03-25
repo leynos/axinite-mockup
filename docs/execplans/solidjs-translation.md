@@ -254,7 +254,7 @@ v5 and Tailwind CSS v4 should provide the skin, tokens, and layout system.
 Semantic classes should wrap the final rendered structure so the codebase reads
 like product UI rather than a wall of inline utility tokens.
 
-## Internationalisation and localisation design
+## Internationalization and localization design
 
 The SPA must ship with these locales from the first production-ready release:
 
@@ -320,9 +320,9 @@ preview environment lacks the subsystem entirely.
 
 Flag categories should be route-level and action-level. Candidate early flags
 include route visibility for Jobs, Routines, Extensions, Skills, and logs, plus
-action-level flags for editable memory, restart controls, summarisation flows,
+action-level flags for editable memory, restart controls, summarization flows,
 TEE attestation surfaces, and any catalogue or installation workflow that the
-backend has not stabilised yet. Final flag names must respect the RFC naming
+backend has not stabilized yet. Final flag names must respect the RFC naming
 constraints: lowercase ASCII, digits, and underscores.
 
 Production behaviour must never depend on local debug overrides. Debug mode is a
@@ -427,7 +427,7 @@ identity and semantics:
    model best preserves keyboard navigation and route clarity.
 
 Each migrated route must reach behavioural parity before the next route family
-begins. "Parity" means navigation, keyboard flow, localisation, semantics,
+begins. "Parity" means navigation, keyboard flow, localization, semantics,
 feature gating, and test coverage, not just visual resemblance.
 
 ### Stream 4: Connect to backend contracts cleanly
@@ -454,12 +454,12 @@ RFC.
 
 After route parity is achieved, remove the obsolete multi-page HTML runtime and
 leave one canonical Solid code path. Add or extend repository gates so the app
-cannot regress on typing, semantics, localisation, accessibility, or route
+cannot regress on typing, semantics, localization, accessibility, or route
 behaviour.
 
 This stream is only done when the old page-specific HTML implementation is no
 longer the runtime path, the new tests are authoritative, and the repository
-quality gates fail correctly when semantic or localisation regressions are
+quality gates fail correctly when semantic or localization regressions are
 introduced.
 
 ## Validation and enforcement
@@ -613,7 +613,7 @@ following are true:
   build output. A history-based SPA served from static hosting will otherwise
   404 on deep links, so the build must emit route-folder `index.html` copies or
   an equivalent fallback strategy.
-- The initial SPA render exposed a real localisation race: static locale assets
+- The initial SPA render exposed a real localization race: static locale assets
   were not being served because Vite's `publicDir` still pointed at the
   repository root, and shell primitives mounted before `i18nReady` kept their
   raw Fluent message IDs. Pointing `publicDir` at `axinite/public/` and waiting
@@ -648,7 +648,7 @@ following are true:
   flags as infrastructure prevents the frontend from drifting away from reality.
 
 - Decision: require Fluent for all locale resources rather than mixing formats.
-  Rationale: one message format keeps localisation consistent and supports the
+  Rationale: one message format keeps localization consistent and supports the
   required language set better than ad hoc string tables.
 
 - Decision: split streaming state from TanStack Query state.
@@ -659,7 +659,7 @@ following are true:
   foundation rather than attempting live backend parity for every control in
   one patch.
   Rationale: the repository starts from static HTML only. The first honest
-  milestone is a typed, localised, validated Solid runtime that preserves the
+  milestone is a typed, localized, validated Solid runtime that preserves the
   product areas, shell behaviour, direction handling, and feature-flag seams so
   backend integration can follow without another front-end rewrite.
 
@@ -677,7 +677,7 @@ following are true:
 - Decision: point Vite `publicDir` at `axinite/public/`.
   Rationale: locale bundles and static assets are part of the `axinite/` source
   tree, so leaving `publicDir` at the repository root silently broke runtime
-  localisation fetches.
+  localization fetches.
 
 ## Outcomes & Retrospective
 
@@ -687,7 +687,7 @@ following are true:
   polling placeholders.
 - Shipped Fluent locale bundles for the required ten-language set, including
   Arabic RTL, plus document `lang`/`dir` updates, a locale picker, and route
-  copy that stays behind localisation resources instead of hardcoded strings.
+  copy that stays behind localization resources instead of hardcoded strings.
 - Shipped Bun, Biome, Vitest, Playwright, Semgrep, Stylelint, and Fluent
   linting integration at the repository root, following the imported `ff`
   pipeline shape from `../wildside-mockup-v2a/package.json`.
@@ -695,7 +695,7 @@ following are true:
   first-order concerns. `scripts/postbuild-routes.mjs` was needed immediately
   for static route copies, and the feature provider made it possible to keep
   hidden runtime surfaces explicit.
-- The plan under-estimated first-paint localisation risk. The implementation
+- The plan under-estimated first-paint localization risk. The implementation
   needed both a corrected Vite `publicDir` and a render gate on `i18nReady` to
   avoid raw Fluent message IDs leaking into visible text and accessible names.
 - No tracked risk required escalation during this pass. The main residual risk

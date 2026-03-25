@@ -15,9 +15,12 @@ common UI components
 [install guide](https://daisyui.com/docs/install/)
 
 1. daisyUI 5 requires Tailwind CSS 4
-2. `tailwind.config.js` file is deprecated in Tailwind CSS v4. do not use
-   `tailwind.config.js`. Tailwind CSS v4 only needs `@import "tailwindcss";` in
-   the CSS file if it's a node dependency.
+2. Tailwind CSS v4 prefers a CSS-first configuration using directives such as
+   `@import "tailwindcss";` and `@theme`, but it still supports JavaScript
+   config files for backward compatibility. Legacy projects can keep using
+   `tailwind.config.js` during migration by adding
+   `@config "./tailwind.config.js";` before `@import "tailwindcss";` in the CSS
+   entrypoint.
 3. daisyUI 5 can be installed using `npm i -D daisyui@5` and then adding
    `@plugin "daisyui";` to the CSS file
 4. daisyUI is suggested to be installed as a dependency, but to use it from CDN,
