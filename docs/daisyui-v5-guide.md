@@ -200,8 +200,8 @@ disabled
 2. daisyUI color names can be used in utility classes, like other Tailwind CSS
    color names. for example, `bg-primary` will use the primary color for the
    background
-3. daisyUI color names include variables as value so they can change based the
-   theme
+3. daisyUI color names include variables as values so they can change based on
+   the theme
 4. There's no need to use `dark:` for daisyUI color names
 5. Ideally only daisyUI color names should be used for colors so the colors can
    change automatically based on the theme
@@ -756,8 +756,8 @@ where content is a list of buttons:
 
 - {MODIFIER} is optional and can have one of the size class names
 - To make a button active, add `dock-active` class to the button
-- add `<meta name="viewport" content="viewport-fit=cover">` is required for
-  responsiveness of the dock in iOS
+- To ensure responsiveness of the dock in iOS, add
+  `<meta name="viewport" content="viewport-fit=cover">`
 
 ### drawer
 
@@ -977,7 +977,7 @@ or a flower shape (quarter circle)
 
 #### Syntax
 
-A single FAB in the corder of screen
+A single FAB in the corner of the screen
 
 ```html
 <div class="fab">

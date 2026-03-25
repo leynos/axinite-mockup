@@ -35,7 +35,7 @@ During the prompts:
 2. Select a non-SolidStart app unless you explicitly need server rendering.
 3. Choose `ts-tailwindcss` for a Bun + Vite + Tailwind starting point.
 
-If you prefer to start from Vite directly, Bun's Vite guide also supports this
+For projects started directly from Vite, Bun's Vite guide also supports this
 flow:
 
 ```bash
@@ -54,7 +54,7 @@ Use the project's existing Vite script through Bun:
 bun run dev
 ```
 
-This gives you:
+This setup provides:
 
 - Vite's Solid-aware module pipeline,
 - fast rebuilds during development, and
