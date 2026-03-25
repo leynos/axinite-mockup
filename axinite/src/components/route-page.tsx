@@ -1,9 +1,11 @@
 import { For, Show } from "solid-js";
 
 import { ChatPreview } from "@/components/chat-preview";
+import { ExtensionsPreview } from "@/components/extensions-preview";
 import { JobsPreview } from "@/components/jobs-preview";
 import { MemoryPreview } from "@/components/memory-preview";
 import { RoutinesPreview } from "@/components/routines-preview";
+import { SkillsPreview } from "@/components/skills-preview";
 import { useFeatureFlags } from "@/lib/feature-flags/runtime";
 import { useI18n } from "@/lib/i18n/provider";
 import type { RouteId } from "@/lib/route-config";
@@ -93,6 +95,10 @@ export const RoutePage = (props: RoutePageProps) => {
           <JobsPreview />
         ) : props.routeId === "routines" ? (
           <RoutinesPreview />
+        ) : props.routeId === "extensions" ? (
+          <ExtensionsPreview />
+        ) : props.routeId === "skills" ? (
+          <SkillsPreview />
         ) : (
           renderGenericPreview()
         )}

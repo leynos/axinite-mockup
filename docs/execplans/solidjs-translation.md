@@ -626,6 +626,17 @@ following are true:
 - [x] 2026-03-25 21:48 GMT: Pushed `solidjs-translation` to
   `github.com:leynos/axinite-mockup`. The push output did not include a web
   URL.
+- [x] 2026-03-25 21:55 GMT: Audited the original `extensions/` and `skills/`
+  static pages against the current SPA and confirmed both routes still
+  rendered through the generic hero/card fallback.
+- [x] 2026-03-25 22:02 GMT: Ported Extensions and Skills into dedicated Solid
+  catalogue previews with installed-card grids, intake panels, inventory
+  lists, and a bundled-skill detail view that preserve the original route
+  family shape more closely than the generic route template.
+- [x] 2026-03-25 22:11 GMT: Revalidated the final restoration slice with
+  `make ff`, `make markdownlint`, `make nixie`, Playwright screenshots of
+  Extensions and Skills, and `css-view` captures confirming `direction: rtl`
+  on the Arabic routes plus the restored catalogue grids and intake panels.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
@@ -634,6 +645,9 @@ following are true:
 - [x] Revalidate the Jobs and Routines restoration slice with `make ff`,
   Playwright screenshots, and `css-view`, then commit and push before moving to
   Extensions and Skills.
+- [x] Revalidate the Extensions and Skills restoration slice with `make ff`,
+  Playwright screenshots, and `css-view`, then commit and push the final route
+  restoration work.
 - [x] Commit and push the first restoration slice before
   continuing to Jobs, Routines, Extensions, and Skills.
 - [x] Commit and push the gated implementation changes.
@@ -701,6 +715,8 @@ following are true:
 - Jobs and Routines are structurally close enough that one shared dashboard
   styling grammar works well, but they still need separate route components
   because their table semantics and detail emphasis differ.
+- Extensions and Skills likewise share a route family, but the shared grammar
+  is catalogue-plus-intake rather than dashboard-plus-detail.
 
 ## Decision Log
 
@@ -774,6 +790,12 @@ following are true:
   Rationale: the two routes share summary-card and dense-table framing, but
   their column meaning, status labelling, and detail emphasis are different
   enough that another generic abstraction would repeat the first regression.
+
+- Decision: use one shared catalogue/intake semantic CSS layer for Extensions
+  and Skills, but keep route-specific Solid components.
+  Rationale: both routes combine installed inventory with install/search
+  surfaces, yet Extensions centers on external capability registration while
+  Skills centers on catalogue discovery and bundle inspection.
 
 ## Outcomes & Retrospective
 
