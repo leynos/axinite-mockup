@@ -5,9 +5,13 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
 
+import { GITHUB_PAGES_BASE_PATH } from "./axinite/src/lib/base-path";
+
 const projectRoot = resolve(__dirname, "axinite");
+const deployBasePath = GITHUB_PAGES_BASE_PATH;
 
 export default defineConfig({
+  base: deployBasePath,
   root: projectRoot,
   publicDir: resolve(projectRoot, "public"),
   plugins: [
@@ -19,9 +23,10 @@ export default defineConfig({
       includeAssets: ["assets/icons/axinite32.ico"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,svg,webmanifest,ftl}"],
-        navigateFallback: "/index.html",
+        navigateFallback: `${deployBasePath}index.html`,
       },
       manifest: {
+        id: deployBasePath,
         name: "Axinite",
         short_name: "Axinite",
         description:
@@ -30,10 +35,11 @@ export default defineConfig({
         background_color: "#0b1116",
         display: "standalone",
         lang: "en-GB",
-        start_url: "/chat",
+        scope: deployBasePath,
+        start_url: `${deployBasePath}chat`,
         icons: [
           {
-            src: "/assets/icons/axinite32.ico",
+            src: `${deployBasePath}assets/icons/axinite32.ico`,
             sizes: "32x32",
             type: "image/x-icon",
           },

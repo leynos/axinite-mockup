@@ -7,6 +7,7 @@ import { DebugFlagPanel } from "@/components/debug-flag-panel";
 import { LocalePicker } from "@/components/locale-picker";
 import { LogsDialog } from "@/components/logs-dialog";
 import { fetchGatewayStatus } from "@/lib/api/gateway";
+import { buildAppPath } from "@/lib/base-path";
 import { useFeatureFlags } from "@/lib/feature-flags/runtime";
 import { useI18n } from "@/lib/i18n/provider";
 import { ROUTE_ORDER } from "@/lib/route-config";
@@ -19,6 +20,7 @@ type ShellChromeProps = {
 export const ShellChrome: ParentComponent<ShellChromeProps> = (props) => {
   const { t } = useI18n();
   const flags = useFeatureFlags();
+  const basePath = import.meta.env.BASE_URL as string | undefined;
   const gatewayStatus = createQuery(() => ({
     queryKey: ["gateway-status"],
     queryFn: fetchGatewayStatus,
@@ -48,7 +50,7 @@ export const ShellChrome: ParentComponent<ShellChromeProps> = (props) => {
                         ? "shell-nav__link shell-nav__link--active"
                         : "shell-nav__link"
                     }
-                    href={`/${routeId}`}
+                    href={buildAppPath(basePath, routeId)}
                   >
                     {t(`route-${routeId}-label`)}
                   </a>

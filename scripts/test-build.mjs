@@ -1,7 +1,8 @@
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 const ROOT = process.cwd();
+const DEPLOY_BASE = "/axinite-mockup/";
 const REQUIRED_OUTPUTS = [
   "dist/index.html",
   "dist/.nojekyll",
@@ -29,6 +30,40 @@ async function main() {
       process.exitCode = 1;
       return;
     }
+  }
+
+  const manifestPath = path.join(ROOT, "dist", "manifest.webmanifest");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+
+  if (manifest.scope !== DEPLOY_BASE) {
+    console.error(`Manifest scope must be ${DEPLOY_BASE}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (manifest.start_url !== `${DEPLOY_BASE}chat`) {
+    console.error(`Manifest start_url must be ${DEPLOY_BASE}chat`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const iconSrc = manifest.icons?.[0]?.src;
+  if (iconSrc !== `${DEPLOY_BASE}assets/icons/axinite32.ico`) {
+    console.error(
+      `Manifest icon path must be ${DEPLOY_BASE}assets/icons/axinite32.ico`
+    );
+    process.exitCode = 1;
+    return;
+  }
+
+  const indexHtml = await readFile(path.join(ROOT, "dist", "index.html"), "utf8");
+  if (
+    !indexHtml.includes('src="/axinite-mockup/assets/') ||
+    !indexHtml.includes('href="/axinite-mockup/assets/')
+  ) {
+    console.error("Built index.html must reference assets under /axinite-mockup/");
+    process.exitCode = 1;
+    return;
   }
 
   console.log("Build smoke test passed.");

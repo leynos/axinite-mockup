@@ -642,6 +642,17 @@ following are true:
 - [x] 2026-03-25 22:14 GMT: Pushed `solidjs-translation` to
   `github.com:leynos/axinite-mockup`. The push output did not include a web
   URL.
+- [x] 2026-03-25 23:44 GMT: Verified that the deployed SPA still assumed a
+  root base path. `vite.config.ts` used Vite's default `/`, the router still
+  relied on root-absolute redirects, and prefixed GitHub Pages deploys would
+  therefore break route and asset resolution.
+- [x] 2026-03-25 23:47 GMT: Wired an explicit `/axinite-mockup/` base path
+  through Vite, the router, shell link generation, and the generated PWA
+  manifest/workbox configuration.
+- [x] 2026-03-25 23:52 GMT: Revalidated the prefixed deploy path with
+  `make ff`, `make build`, `node scripts/test-build.mjs`, Playwright against
+  `/axinite-mockup/chat`, and `css-view` confirming `direction: rtl` on the
+  prefixed Arabic route.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
@@ -722,6 +733,9 @@ following are true:
   because their table semantics and detail emphasis differ.
 - Extensions and Skills likewise share a route family, but the shared grammar
   is catalogue-plus-intake rather than dashboard-plus-detail.
+- The GitHub Pages deployment seam is broader than just Vite `base`: the shell
+  can still escape the prefix if fallback links, router redirects, or generated
+  manifest URLs remain root-absolute.
 
 ## Decision Log
 
@@ -801,6 +815,13 @@ following are true:
   Rationale: both routes combine installed inventory with install/search
   surfaces, yet Extensions centers on external capability registration while
   Skills centers on catalogue discovery and bundle inspection.
+
+- Decision: hardcode `/axinite-mockup/` as the Vite and runtime base path for
+  this repository's deploy target, and derive router/shell/PWA URLs from that
+  same source.
+  Rationale: the repo is intended for GitHub Pages sharing as a project page,
+  so treating the non-root prefix as optional leaves navigation and assets one
+  config drift away from breaking.
 
 ## Outcomes & Retrospective
 

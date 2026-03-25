@@ -3,6 +3,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import Fluent from "i18next-fluent";
 import FluentBackend from "i18next-fluent-backend";
 
+import { normaliseBasePath } from "@/lib/base-path";
 import {
   DEFAULT_LOCALE,
   DETECTION_ORDER,
@@ -68,12 +69,6 @@ function fetchAjax(
         statusText: typedError.message,
       });
     });
-}
-
-export function normaliseBasePath(rawBase: string | undefined): string {
-  const candidate = rawBase && rawBase.length > 0 ? rawBase : "/";
-  const withLeading = candidate.startsWith("/") ? candidate : `/${candidate}`;
-  return withLeading.endsWith("/") ? withLeading : `${withLeading}/`;
 }
 
 export function buildFluentLoadPath(rawBase: string | undefined): string {

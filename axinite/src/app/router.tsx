@@ -8,7 +8,12 @@ import {
 } from "@tanstack/solid-router";
 
 import { AppShell } from "@/components/app-shell";
+import { normaliseBasePath } from "@/lib/base-path";
 import { RoutePage } from "@/components/route-page";
+
+const routerBasePath = normaliseBasePath(
+  import.meta.env.BASE_URL as string | undefined
+);
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -72,6 +77,7 @@ const routeTree = rootRoute.addChildren([
 
 const router = createRouter({
   routeTree,
+  basepath: routerBasePath,
   defaultPreload: "intent",
   defaultNotFoundComponent: () => <Navigate to="/chat" />,
 });
