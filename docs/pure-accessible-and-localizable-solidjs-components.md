@@ -4,8 +4,8 @@
 
 This document defines a SolidJS-first component architecture for the v2a
 front-end family. The goal is straightforward: components should be easy to
-reason about, easy to test, accessible by default, and safe to localize
-without turning UI code into a translation dump or a side-effect nest.
+reason about, easy to test, accessible by default, and safe to localize without
+turning UI code into a translation dump or a side-effect nest.
 
 The recommended stack is layered on purpose:
 
@@ -71,7 +71,7 @@ export function StatusBadge(props: StatusBadgeProps) {
   return (
     <span
       classList={{
-        "badge": true,
+        badge: true,
         "badge-ghost": props.tone === "neutral",
         "badge-success": props.tone === "success",
         "badge-warning": props.tone === "warning",
@@ -98,9 +98,8 @@ Kobalte is the preferred interaction layer for SolidJS because it is:
 
 Representative guarantees from the official docs:
 
-- **Dialog:** modal and non-modal modes, focus trapping, Escape to close,
-  scroll locking, and screen-reader announcements through title and
-  description.
+- **Dialog:** modal and non-modal modes, focus trapping, Escape to close, scroll
+  locking, and screen-reader announcements through title and description.
 - **Tabs:** semantic tab-to-panel linking, automatic or manual activation, and
   RTL/LTR keyboard navigation.
 - **Select:** listbox semantics, typeahead, focus management, and hidden native
@@ -183,8 +182,8 @@ const [filters, setFilters] = createStore({
 ### Server state
 
 For async server state, use TanStack Query Solid instead of hand-rolled
-loading/error caches. The Solid adapter exists specifically to handle
-fetching, caching, synchronization, and updates in Solid applications.
+loading/error caches. The Solid adapter exists specifically to handle fetching,
+caching, synchronization, and updates in Solid applications.
 
 This avoids three recurring mistakes:
 
@@ -209,15 +208,15 @@ Keep the split disciplined:
 ### Practical recommendation
 
 For SolidJS, keep `i18next` as the core engine and expose it through a
-Solid-compatible binding layer. `solid-i18next` is a reasonable option when
-you want a familiar provider-and-hook model. If the repo needs tighter control,
-wrap the `i18next` instance in a small Solid context and expose only the
-translation helpers you actually want the app to use.
+Solid-compatible binding layer. `solid-i18next` is a reasonable option when you
+want a familiar provider-and-hook model. If the repo needs tighter control, wrap
+the `i18next` instance in a small Solid context and expose only the translation
+helpers you actually want the app to use.
 
 ## 7) Accessibility expectations
 
-Every component intended for reuse should be testable through accessible
-queries and should preserve these guarantees:
+Every component intended for reuse should be testable through accessible queries
+and should preserve these guarantees:
 
 - correct native element choice before ARIA,
 - visible and logical keyboard interaction,
@@ -261,5 +260,4 @@ Use these defaults unless there is a strong reason not to:
 - Kobalte introduction: `https://kobalte.dev/docs/core/overview/introduction/`
 - TanStack Query Solid overview:
   `https://tanstack.com/query/v5/docs/framework/solid/overview`
-- `solid-i18next` repository:
-  `https://github.com/mbarzda/solid-i18next`
+- `solid-i18next` repository: `https://github.com/mbarzda/solid-i18next`

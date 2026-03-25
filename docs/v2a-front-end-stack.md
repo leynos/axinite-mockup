@@ -3,15 +3,15 @@
 This document describes the df12 Productions v2a front-end stack for the
 Wildside and Corbusier mockups in two layers:
 
-- the target stack for the mockup as it moves from static prototype markup to
-  an application runtime, and
+- the target stack for the mockup as it moves from static prototype markup to an
+  application runtime, and
 - the fuller v2a application stack described elsewhere in this repository’s
   design and architecture documents.
 
-That distinction matters because the prototype already exercises much of the
-UI, styling, routing, localization, and map stack, while the broader product
-architecture adds local-first data and orchestration tooling that can sit on
-top of the UI layer without changing the rendering model.
+That distinction matters because the prototype already exercises much of the UI,
+styling, routing, localization, and map stack, while the broader product
+architecture adds local-first data and orchestration tooling that can sit on top
+of the UI layer without changing the rendering model.
 
 The current repository still ships a static prototype under `axinite/`. Treat
 the file paths and module names below as the intended SPA layout for the
@@ -27,9 +27,9 @@ components, i18next with Fluent translation bundles for localization, and a
 common data-model-driven card architecture for presenting domain entities.
 
 The map canvas, tile rendering, and location-aware UI are specific to the
-Wildside product domain. They are part of the Wildside mockup because it
-models a map-based exploration application, not because every front-end in
-this repo family would need them.
+Wildside product domain. They are part of the Wildside mockup because it models
+a map-based exploration application, not because every front-end in this repo
+family would need them.
 
 ## Stack layers at a glance
 
@@ -50,8 +50,7 @@ The current documented mockup direction uses:
 
 ### Full v2a application stack
 
-The fuller v2a stack described across the repo’s architecture
-documents adds:
+The fuller v2a stack described across the repo’s architecture documents adds:
 
 - **Zustand** for interactive client and UI state,
 - **TanStack Query** for server-state fetching, caching, and synchronization,
@@ -72,8 +71,8 @@ data architecture.
   server.
 - **Solid integration:** `vite-plugin-solid` handles JSX compilation and Solid
   development ergonomics under Vite.
-- **Tailwind integration:** Tailwind v4 runs through `postcss.config.cjs`,
-  which Vite uses during both development and production builds.
+- **Tailwind integration:** Tailwind v4 runs through `postcss.config.cjs`, which
+  Vite uses during both development and production builds.
 - **Module format:** The project is ESM-only (`"type": "module"` in
   `package.json`).
 - **Base-path handling:** `vite.config.ts`, `src/i18n.ts`, and
@@ -114,8 +113,7 @@ safety-accessibility flows.
 ### State management
 
 In the currently documented mockup, there is no requirement for a heavyweight
-global client-state library in the baseline UI layer. State is managed
-through:
+global client-state library in the baseline UI layer. State is managed through:
 
 - Solid signals and stores,
 - small context providers for cross-cutting concerns such as theme or locale,
@@ -129,8 +127,8 @@ For the fuller v2a application stack, the state split is broader:
 
 - **Zustand** owns interactive client and UI state,
 - **TanStack Query** owns server and synchronized domain state, and
-- **XState** is the right fit for explicit multistep workflows or
-  long-running interaction logic that benefits from a formal state machine.
+- **XState** is the right fit for explicit multistep workflows or long-running
+  interaction logic that benefits from a formal state machine.
 
 ## Styling and design system
 
@@ -165,8 +163,8 @@ Design tokens are a first-class part of the stack.
   reload when they change.
 
 This means the front-end theme layer is not hand-maintained in one place.
-Instead, the design source of truth lives in the token package, and both CSS
-and Tailwind consume generated outputs.
+Instead, the design source of truth lives in the token package, and both CSS and
+Tailwind consume generated outputs.
 
 ### Theme handling
 
@@ -185,21 +183,20 @@ than a separate theme framework:
 
 - `@tailwindcss/postcss`,
 - `autoprefixer`, and
-- a small custom plugin that removes DaisyUI's `@property --radialprogress`
-  rule to avoid Lightning CSS warnings during Vite builds.
+- a small custom plugin that removes DaisyUI's `@property --radialprogress` rule
+  to avoid Lightning CSS warnings during Vite builds.
 
 ## Component primitives and icons
 
 The UI component layer uses Kobalte for interaction primitives, including
 dialogs, tabs, selects, popovers, switches, accordions, and related overlay
 behaviour. Kobalte is intentionally unstyled, built for SolidJS, and follows
-WAI-ARIA authoring practices while handling keyboard support, focus
-management, and assistive-technology wiring. Representative examples from the
-official component docs include:
+WAI-ARIA authoring practices while handling keyboard support, focus management,
+and assistive-technology wiring. Representative examples from the official
+component docs include:
 
-- Dialog support for modal and non-modal modes, focus trapping, Escape to
-  close, scroll blocking, and screen-reader announcements via title and
-  description.
+- Dialog support for modal and non-modal modes, focus trapping, Escape to close,
+  scroll blocking, and screen-reader announcements via title and description.
 - Tabs support for semantic tab-to-panel linking, horizontal or vertical
   orientation, automatic or manual activation, and both LTR and RTL keyboard
   navigation.
@@ -228,9 +225,9 @@ The current detection order is intentionally narrow:
 - `localStorage`.
 
 Navigator-based detection is deliberately excluded to keep first loads more
-deterministic. The runtime also updates `lang`, `dir`, and related attributes
-on the document so right-to-left languages such as Arabic and Hebrew are
-handled correctly.
+deterministic. The runtime also updates `lang`, `dir`, and related attributes on
+the document so right-to-left languages such as Arabic and Hebrew are handled
+correctly.
 
 ## Map stack
 
@@ -241,15 +238,15 @@ map-based application with itinerary, quick-walk, and saved-route flows.
 
 - The fuller map stack is expected to lazy-load `maplibre-gl` and its CSS.
 - OpenMapTiles-backed styling supplies the base map presentation.
-- The integration is expected to register the MapLibre RTL text plugin when
-  the runtime supports it.
+- The integration is expected to register the MapLibre RTL text plugin when the
+  runtime supports it.
 - Shared viewport and layer state should live in a dedicated map-state module.
 
 The map layer is therefore intended to be a real interactive map integration,
 not only a static mockup image.
 
-In the full v2a architecture, map-related persistence is also expected to
-touch the broader local-first stack:
+In the full v2a architecture, map-related persistence is also expected to touch
+the broader local-first stack:
 
 - TanStack Query for route and place data,
 - Dexie for offline bundles, map tile storage, and other heavier offline
@@ -281,8 +278,8 @@ There are two accessibility layers:
 ### End-to-end tests
 
 `playwright.config.ts` launches or reuses a Vite dev server, targets a mobile
-viewport, and runs the browser suite under Chromium. This fits the
-mobile-first nature of the mockup.
+viewport, and runs the browser suite under Chromium. This fits the mobile-first
+nature of the mockup.
 
 ## Linting, type-checking, and semantic checks
 
@@ -307,57 +304,56 @@ The strict TypeScript settings in `tsconfig.json` include:
 
 ## Data model-driven card architecture
 
-All v2a front ends — Wildside and Corbusier alike — share a common pattern
-for presenting domain entities on cards, lists, and detail screens. Entity
-models carry their own localised strings rather than delegating display-text
+All v2a front ends — Wildside and Corbusier alike — share a common pattern for
+presenting domain entities on cards, lists, and detail screens. Entity models
+carry their own localised strings rather than delegating display-text
 responsibility to the Fluent translation bundles. This keeps Fluent bundles
 focused on UI chrome (button labels, ARIA labels, section headings, format
-strings) while letting each entity own its names, descriptions, and badge
-text per locale.
+strings) while letting each entity own its names, descriptions, and badge text
+per locale.
 
 ### Shared primitives
 
 The following types form the shared vocabulary across all v2a front ends:
 
-- **`LocaleCode`** — a branded string identifying a supported locale
-  (e.g. `en-GB`, `ja`).
-- **`LocalizedStringSet`** — a record mapping `LocaleCode` keys to
-  translated display strings.
-- **`EntityLocalizations`** — a per-entity bundle that groups together
-  every `LocalizedStringSet` the entity needs (name, description, badge
-  text, and so on).
-- **`LocalizedAltText`** — a `LocalizedStringSet` specifically for image
-  alt text, kept as a distinct type so that accessibility tooling can
-  enforce its presence.
+- **`LocaleCode`** — a branded string identifying a supported locale (e.g.
+  `en-GB`, `ja`).
+- **`LocalizedStringSet`** — a record mapping `LocaleCode` keys to translated
+  display strings.
+- **`EntityLocalizations`** — a per-entity bundle that groups together every
+  `LocalizedStringSet` the entity needs (name, description, badge text, and so
+  on).
+- **`LocalizedAltText`** — a `LocalizedStringSet` specifically for image alt
+  text, kept as a distinct type so that accessibility tooling can enforce its
+  presence.
 - **`ImageAsset`** — a reference to an image file together with its
   `LocalizedAltText`.
 
 ### Locale resolution
 
-A small pure helper, `pickLocalization(localizations, locale)`, resolves
-a `LocalizedStringSet` for the requested locale. If the exact locale is
-not present, the helper falls back to `en-GB`. This single function is
-the only place where locale-fallback logic lives, keeping the rest of the
-rendering code free of null checks or conditional chains.
+A small pure helper, `pickLocalization(localizations, locale)`, resolves a
+`LocalizedStringSet` for the requested locale. If the exact locale is not
+present, the helper falls back to `en-GB`. This single function is the only
+place where locale-fallback logic lives, keeping the rest of the rendering code
+free of null checks or conditional chains.
 
 ### Descriptor registries
 
-Stable internal identifiers (e.g. `task-status:in-progress`,
-`priority:high`) are resolved to localised display strings through
-descriptor registries. Each registry maps an identifier to a descriptor
-object whose labels are `LocalizedStringSet` values. This means that
-badge colours, icons, and display names for status values, priority
-levels, and similar enumerations are defined once and shared by every
-component that renders them.
+Stable internal identifiers (e.g. `task-status:in-progress`, `priority:high`)
+are resolved to localised display strings through descriptor registries. Each
+registry maps an identifier to a descriptor object whose labels are
+`LocalizedStringSet` values. This means that badge colours, icons, and display
+names for status values, priority levels, and similar enumerations are defined
+once and shared by every component that renders them.
 
 ### Folder layout
 
 The conventional folder layout is:
 
-- `src/app/domain/entities/` — TypeScript interfaces and type aliases
-  for entity models and their localization shapes.
-- `src/data/entities/` — fixture data used during the mockup phase,
-  structured to match the entity interfaces exactly.
+- `src/app/domain/entities/` — TypeScript interfaces and type aliases for entity
+  models and their localization shapes.
+- `src/data/entities/` — fixture data used during the mockup phase, structured
+  to match the entity interfaces exactly.
 - `src/data/registries/` — descriptor registry modules that map stable
   identifiers to localised descriptors.
 
@@ -365,10 +361,10 @@ The conventional folder layout is:
 
 Each application maintains its own
 `docs/data-model-driven-card-architecture.md`, which defines the
-application-specific entity schemas, enumerations, and migration
-roadmap. That document is the authoritative reference for which entities
-exist, what fields they carry, and how the card architecture will evolve
-as the mockup matures toward production data sources.
+application-specific entity schemas, enumerations, and migration roadmap. That
+document is the authoritative reference for which entities exist, what fields
+they carry, and how the card architecture will evolve as the mockup matures
+toward production data sources.
 
 ## Effective stack summary
 
@@ -389,15 +385,15 @@ front-end stack is:
   and
 - Happy DOM, Testing Library, Vitest, Playwright, and axe-core for testing.
 
-For map/location-based applications specifically, add a domain layer atop
-that stack:
+For map/location-based applications specifically, add a domain layer atop that
+stack:
 
 - MapLibre GL JS for interactive maps,
 - OpenMapTiles-backed tile styling, and
 - location-centric UI and state for itinerary and route experiences.
 
-For the shortest accurate summary of the fuller v2a application
-architecture, add:
+For the shortest accurate summary of the fuller v2a application architecture,
+add:
 
 - Zustand for interactive state,
 - TanStack Query for server-state caching and synchronization,
@@ -410,8 +406,8 @@ architecture, add:
 To avoid confusion, the following section refers to the currently checked-in
 mockup on `origin/main`, not the broader architecture described above.
 
-The following common front-end tools are outside the baseline SolidJS +
-Kobalte approach described here:
+The following common front-end tools are outside the baseline SolidJS + Kobalte
+approach described here:
 
 - TanStack Table,
 - Redux,

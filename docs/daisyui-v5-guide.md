@@ -1,8 +1,9 @@
 # daisyUI 5
+
 <!-- markdownlint-disable MD013 MD024 -->
 
-daisyUI 5 is a CSS library for Tailwind CSS 4
-daisyUI 5 provides class names for common UI components
+daisyUI 5 is a CSS library for Tailwind CSS 4 daisyUI 5 provides class names for
+common UI components
 
 - [daisyUI 5 docs](https://daisyui.com)
 - [Guide: How to use this file in LLMs and code editors](https://daisyui.com/docs/editor/)
@@ -14,17 +15,27 @@ daisyUI 5 provides class names for common UI components
 [install guide](https://daisyui.com/docs/install/)
 
 1. daisyUI 5 requires Tailwind CSS 4
-2. `tailwind.config.js` file is deprecated in Tailwind CSS v4. do not use `tailwind.config.js`. Tailwind CSS v4 only needs `@import "tailwindcss";` in the CSS file if it's a node dependency.
-3. daisyUI 5 can be installed using `npm i -D daisyui@5` and then adding `@plugin "daisyui";` to the CSS file
-4. daisyUI is suggested to be installed as a dependency, but to use it from CDN, include Tailwind CSS and daisyUI CDN files:
+2. `tailwind.config.js` file is deprecated in Tailwind CSS v4. do not use
+   `tailwind.config.js`. Tailwind CSS v4 only needs `@import "tailwindcss";` in
+   the CSS file if it's a node dependency.
+3. daisyUI 5 can be installed using `npm i -D daisyui@5` and then adding
+   `@plugin "daisyui";` to the CSS file
+4. daisyUI is suggested to be installed as a dependency, but to use it from CDN,
+   include Tailwind CSS and daisyUI CDN files:
 
 ```html
-<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<link
+  href="https://cdn.jsdelivr.net/npm/daisyui@5"
+  rel="stylesheet"
+  type="text/css"
+/>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 ```
 
 <!-- markdownlint-disable-next-line MD029 -->
-5. A CSS file with Tailwind CSS and daisyUI looks like this (if it's a node dependency)
+
+1. A CSS file with Tailwind CSS and daisyUI looks like this (if it's a node
+   dependency)
 
 ```css
 @import "tailwindcss";
@@ -33,19 +44,33 @@ daisyUI 5 provides class names for common UI components
 
 ## daisyUI 5 usage rules
 
-1. Styles are applied to an HTML element by adding daisyUI class names to it. This includes a component class name, part class names (if available for that component), and modifier class names (if available for that component).
-2. Components can be customized using Tailwind CSS utility classes if the customization is not possible using the existing daisyUI classes. For example `btn px-10` sets custom horizontal padding on a `btn`.
-3. If customization of daisyUI styles using Tailwind CSS utility classes does not work because of CSS specificity issues, use the `!` at the end of the Tailwind CSS utility class to override the existing styles. For example `btn bg-red-500!` sets a custom background colour on a `btn` forcefully. This is a last resort solution and should be used sparingly.
-4. If a specific component or something similar to it does not exist in daisyUI, create a custom component using Tailwind CSS utility classes.
-5. When using Tailwind CSS `flex` and `grid` for layout, it should be responsive using Tailwind CSS responsive utility prefixes.
-6. Only allowed class names are existing daisyUI class names or Tailwind CSS utility classes.
-7. Ideally, custom CSS is rarely necessary. Using daisyUI class names or Tailwind CSS utility classes is preferred.
-8. For placeholder images, use <https://picsum.photos/200/300> with the required size.
+1. Styles are applied to an HTML element by adding daisyUI class names to it.
+   This includes a component class name, part class names (if available for that
+   component), and modifier class names (if available for that component).
+2. Components can be customized using Tailwind CSS utility classes if the
+   customization is not possible using the existing daisyUI classes. For example
+   `btn px-10` sets custom horizontal padding on a `btn`.
+3. If customization of daisyUI styles using Tailwind CSS utility classes does
+   not work because of CSS specificity issues, use the `!` at the end of the
+   Tailwind CSS utility class to override the existing styles. For example
+   `btn bg-red-500!` sets a custom background colour on a `btn` forcefully. This
+   is a last resort solution and should be used sparingly.
+4. If a specific component or something similar to it does not exist in daisyUI,
+   create a custom component using Tailwind CSS utility classes.
+5. When using Tailwind CSS `flex` and `grid` for layout, it should be responsive
+   using Tailwind CSS responsive utility prefixes.
+6. Only allowed class names are existing daisyUI class names or Tailwind CSS
+   utility classes.
+7. Ideally, custom CSS is rarely necessary. Using daisyUI class names or
+   Tailwind CSS utility classes is preferred.
+8. For placeholder images, use <https://picsum.photos/200/300> with the required
+   size.
 9. When designing, avoid adding a custom font unless necessary.
 10. Avoid adding `bg-base-100 text-base-content` to the body unless necessary.
 11. For design decisions, use Refactoring UI book best practices.
 
-daisyUI 5 class names are one of the following categories. These type names are only for reference and are not used in the actual code.
+daisyUI 5 class names are one of the following categories. These type names are
+only for reference and are not used in the actual code.
 
 - `component`: the required component class
 - `part`: a child part of a component
@@ -56,12 +81,13 @@ daisyUI 5 class names are one of the following categories. These type names are 
 - `placement`: sets a specific placement to component or part
 - `direction`: sets a specific direction to component or part
 - `modifier`: modifies the component or part in a specific way
-- `variant`: prefixes for utility classes that conditionally apply styles. Syntax is `variant:utility-class`.
+- `variant`: prefixes for utility classes that conditionally apply styles.
+  Syntax is `variant:utility-class`.
 
 ## Config
 
-daisyUI 5 config docs: <https://daisyui.com/docs/config/>
-daisyUI without config:
+daisyUI 5 config docs: <https://daisyui.com/docs/config/> daisyUI without
+config:
 
 ```css
 @plugin "daisyui";
@@ -79,25 +105,64 @@ daisyUI with all the default configs:
 
 ```css
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark;
+  themes:
+    light --default,
+    dark --prefersdark;
   root: ":root";
-  include: ;
-  exclude: ;
-  prefix: ;
+  include:;
+  exclude:;
+  prefix:;
   logs: true;
 }
 ```
 
-An example config:
-In below config, all the built-in themes are enabled while bumblebee is the default theme and synthwave is the prefersdark theme (default dark mode)
-All the other themes are enabled and can be used by adding `data-theme="THEME_NAME"` to the `<html>` element
-root scrollbar gutter is excluded. `daisy-` prefix is used for all daisyUI classes and console.log is disabled
+An example config: In below config, all the built-in themes are enabled while
+bumblebee is the default theme and synthwave is the prefersdark theme (default
+dark mode) All the other themes are enabled and can be used by adding
+`data-theme="THEME_NAME"` to the `<html>` element root scrollbar gutter is
+excluded. `daisy-` prefix is used for all daisyUI classes and console.log is
+disabled
 
 ```css
 @plugin "daisyui" {
-  themes: light, dark, cupcake, bumblebee --default, emerald, corporate, synthwave --prefersdark, retro, cyberpunk, valentine, halloween, garden, forest, aqua, lofi, pastel, fantasy, wireframe, black, luxury, dracula, cmyk, autumn, business, acid, lemonade, night, coffee, winter, dim, nord, sunset, caramellatte, abyss, silk;
+  themes:
+    light,
+    dark,
+    cupcake,
+    bumblebee --default,
+    emerald,
+    corporate,
+    synthwave --prefersdark,
+    retro,
+    cyberpunk,
+    valentine,
+    halloween,
+    garden,
+    forest,
+    aqua,
+    lofi,
+    pastel,
+    fantasy,
+    wireframe,
+    black,
+    luxury,
+    dracula,
+    cmyk,
+    autumn,
+    business,
+    acid,
+    lemonade,
+    night,
+    coffee,
+    winter,
+    dim,
+    nord,
+    sunset,
+    caramellatte,
+    abyss,
+    silk;
   root: ":root";
-  include: ;
+  include:;
   exclude: rootscrollgutter, checkbox;
   prefix: daisy-;
   logs: false;
@@ -132,19 +197,30 @@ root scrollbar gutter is excluded. `daisy-` prefix is used for all daisyUI class
 ### daisyUI color rules
 
 1. daisyUI adds semantic color names to Tailwind CSS colors
-2. daisyUI color names can be used in utility classes, like other Tailwind CSS color names. for example, `bg-primary` will use the primary color for the background
-3. daisyUI color names include variables as value so they can change based the theme
+2. daisyUI color names can be used in utility classes, like other Tailwind CSS
+   color names. for example, `bg-primary` will use the primary color for the
+   background
+3. daisyUI color names include variables as value so they can change based the
+   theme
 4. There's no need to use `dark:` for daisyUI color names
-5. Ideally only daisyUI color names should be used for colors so the colors can change automatically based on the theme
-6. If a Tailwind CSS color name (like `red-500`) is used, it will be same red color on all themes
-7. If a daisyUI color name (like `primary`) is used, it will change color based on the theme
-8. Using Tailwind CSS color names for text colors should be avoided because Tailwind CSS color `text-gray-800` on `bg-base-100` would be unreadable on a dark theme - because on dark theme, `bg-base-100` is a dark color
-9. `*-content` colors should have a good contrast compared to their associated colors
-10. suggestion - when designing a page use `base-*` colors for majority of the page. use `primary` color for important elements
+5. Ideally only daisyUI color names should be used for colors so the colors can
+   change automatically based on the theme
+6. If a Tailwind CSS color name (like `red-500`) is used, it will be same red
+   color on all themes
+7. If a daisyUI color name (like `primary`) is used, it will change color based
+   on the theme
+8. Using Tailwind CSS color names for text colors should be avoided because
+   Tailwind CSS color `text-gray-800` on `bg-base-100` would be unreadable on a
+   dark theme - because on dark theme, `bg-base-100` is a dark color
+9. `*-content` colors should have a good contrast compared to their associated
+   colors
+10. suggestion - when designing a page use `base-*` colors for majority of the
+    page. use `primary` color for important elements
 
 ### daisyUI custom theme with custom colors
 
-A CSS file with Tailwind CSS, daisyUI and a custom daisyUI theme looks like this:
+A CSS file with Tailwind CSS, daisyUI and a custom daisyUI theme looks like
+this:
 
 ```css
 @import "tailwindcss";
@@ -195,15 +271,18 @@ A CSS file with Tailwind CSS, daisyUI and a custom daisyUI theme looks like this
 
 - All CSS variables above are required
 - Colors can be OKLCH or hex or other formats
-- When generating a custom theme, omit the comments from the example above. Just provide the code.
+- When generating a custom theme, omit the comments from the example above. Just
+  provide the code.
 
-The <https://daisyui.com/theme-generator/> visual tool enables custom theme creation.
+The <https://daisyui.com/theme-generator/> visual tool enables custom theme
+creation.
 
 ## daisyUI 5 components
 
 ### accordion
 
-Accordion is used for showing and hiding content but only one item can stay open at a time
+Accordion is used for showing and hiding content but only one item can stay open
+at a time
 
 [accordion docs](https://daisyui.com/components/accordion/)
 
@@ -230,10 +309,13 @@ where content is:
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier class names
-- Accordion uses radio inputs. All radio inputs with the same name work together and only one of them can be open at a time
-- For more than one set of accordion items on a page, use different names for the radio inputs on each set
+- Accordion uses radio inputs. All radio inputs with the same name work together
+  and only one of them can be open at a time
+- For more than one set of accordion items on a page, use different names for
+  the radio inputs on each set
 - Replace {name} with a unique name for the accordion group
-- Replace `{checked}` with `checked="checked"` to have the accordion open by default
+- Replace `{checked}` with `checked="checked"` to have the accordion open by
+  default
 
 ### alert
 
@@ -256,7 +338,8 @@ Alert informs users about important events
 
 #### Rules
 
-- {MODIFIER} is optional and can have one of each style/color/direction class names
+- {MODIFIER} is optional and can have one of each style/color/direction class
+  names
 - Add `sm:alert-horizontal` for responsive layouts
 
 ### avatar
@@ -298,7 +381,8 @@ Badges are used to inform the user of the status of specific data
 
 - component: `badge`
 - style: `badge-outline`, `badge-dash`, `badge-soft`, `badge-ghost`
-- color: `badge-neutral`, `badge-primary`, `badge-secondary`, `badge-accent`, `badge-info`, `badge-success`, `badge-warning`, `badge-error`
+- color: `badge-neutral`, `badge-primary`, `badge-secondary`, `badge-accent`,
+  `badge-info`, `badge-success`, `badge-warning`, `badge-error`
 - size: `badge-xs`, `badge-sm`, `badge-md`, `badge-lg`, `badge-xl`
 
 #### Syntax
@@ -327,7 +411,9 @@ Breadcrumbs helps users to navigate
 
 ```html
 <div class="breadcrumbs">
-  <ul><li><a>Link</a></li></ul>
+  <ul>
+    <li><a>Link</a></li>
+  </ul>
 </div>
 ```
 
@@ -335,7 +421,8 @@ Breadcrumbs helps users to navigate
 
 - breadcrumbs only has one main class name
 - Can contain icons inside the links
-- If `max-width` is set or the list gets larger than the container, it will scroll
+- If `max-width` is set or the list gets larger than the container, it will
+  scroll
 
 ### button
 
@@ -346,7 +433,8 @@ Buttons allow the user to take actions
 #### Class names
 
 - component: `btn`
-- color: `btn-neutral`, `btn-primary`, `btn-secondary`, `btn-accent`, `btn-info`, `btn-success`, `btn-warning`, `btn-error`
+- color: `btn-neutral`, `btn-primary`, `btn-secondary`, `btn-accent`,
+  `btn-info`, `btn-success`, `btn-warning`, `btn-error`
 - style: `btn-outline`, `btn-dash`, `btn-soft`, `btn-ghost`, `btn-link`
 - behavior: `btn-active`, `btn-disabled`
 - size: `btn-xs`, `btn-sm`, `btn-md`, `btn-lg`, `btn-xl`
@@ -360,10 +448,14 @@ Buttons allow the user to take actions
 
 #### Rules
 
-- {MODIFIER} is optional and can have one of each color/style/behavior/size/modifier class names
+- {MODIFIER} is optional and can have one of each
+  color/style/behavior/size/modifier class names
 - btn can be used on any html tags such as `<button>`, `<a>`, `<input>`
 - btn can have an icon before or after the text
-- Native `<button>` and `<input>` elements should use the native `disabled` attribute. Anchors and other elements should use the `btn-disabled` class together with `aria-disabled="true"` and `tabindex="-1"`, and JS should block click and keyboard activation explicitly
+- Native `<button>` and `<input>` elements should use the native `disabled`
+  attribute. Anchors and other elements should use the `btn-disabled` class
+  together with `aria-disabled="true"` and `tabindex="-1"`, and JS should block
+  click and keyboard activation explicitly
 
 ### calendar
 
@@ -389,7 +481,7 @@ For Cally:
 For Pikaday:
 
 ```html
-<input type="text" class="input pika-single">
+<input type="text" class="input pika-single" />
 ```
 
 For React Day Picker only:
@@ -434,7 +526,9 @@ Cards are used to group and display content
 
 #### Rules
 
-- {MODIFIER} is optional and can have style classes (`card-border`, `card-dash`), modifier classes (`card-side`, `image-full`), and one of the size class names
+- {MODIFIER} is optional and can have style classes (`card-border`,
+  `card-dash`), modifier classes (`card-side`, `image-full`), and one of the
+  size class names
 - `<figure>` and `<div class="card-body">` are optional
 - can use `sm:card-side` for responsive layouts
 - If image is placed after `card-body`, the image will be placed at the bottom
@@ -466,7 +560,8 @@ Carousel show images or content in a scrollable area
 
 ### chat
 
-Chat bubbles are used to show one line of conversation and all its data, including the author image, author name, time, etc
+Chat bubbles are used to show one line of conversation and all its data,
+including the author image, author name, time, etc
 
 [chat docs](https://daisyui.com/components/chat/)
 
@@ -475,7 +570,9 @@ Chat bubbles are used to show one line of conversation and all its data, includi
 - component: `chat`
 - part: `chat-image`, `chat-header`, `chat-footer`, `chat-bubble`
 - placement: `chat-start`, `chat-end`
-- color: `chat-bubble-neutral`, `chat-bubble-primary`, `chat-bubble-secondary`, `chat-bubble-accent`, `chat-bubble-info`, `chat-bubble-success`, `chat-bubble-warning`, `chat-bubble-error`
+- color: `chat-bubble-neutral`, `chat-bubble-primary`, `chat-bubble-secondary`,
+  `chat-bubble-accent`, `chat-bubble-info`, `chat-bubble-success`,
+  `chat-bubble-warning`, `chat-bubble-error`
 
 #### Syntax
 
@@ -492,7 +589,8 @@ Chat bubbles are used to show one line of conversation and all its data, includi
 
 - {PLACEMENT} is required and must be either `chat-start` or `chat-end`
 - {COLOR} is optional and can have one of the color class names
-- To add an avatar, use `<div class="chat-image avatar">` and nest the avatar content inside
+- To add an avatar, use `<div class="chat-image avatar">` and nest the avatar
+  content inside
 
 ### checkbox
 
@@ -503,8 +601,11 @@ Checkboxes are used to select or deselect a value
 #### Class names
 
 - component: `checkbox`
-- color: `checkbox-primary`, `checkbox-secondary`, `checkbox-accent`, `checkbox-neutral`, `checkbox-success`, `checkbox-warning`, `checkbox-info`, `checkbox-error`
-- size: `checkbox-xs`, `checkbox-sm`, `checkbox-md`, `checkbox-lg`, `checkbox-xl`
+- color: `checkbox-primary`, `checkbox-secondary`, `checkbox-accent`,
+  `checkbox-neutral`, `checkbox-success`, `checkbox-warning`, `checkbox-info`,
+  `checkbox-error`
+- size: `checkbox-xs`, `checkbox-sm`, `checkbox-md`, `checkbox-lg`,
+  `checkbox-xl`
 
 #### Syntax
 
@@ -540,7 +641,8 @@ Collapse is used for showing and hiding content
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier class names
-- Instead of `tabindex="0"`, `<input type="checkbox">` can be used as a first child
+- Instead of `tabindex="0"`, `<input type="checkbox">` can be used as a first
+  child
 - Can also be a details/summary tag
 
 ### countdown
@@ -565,7 +667,8 @@ Countdown provides a transition effect when the number changes between 0 and 999
 
 - The `--value` CSS variable and text must be a number between 0 and 999
 - Change the span text and the `--value` CSS variable using JS
-- Add `aria-live="polite"` and `aria-label="{number}"` so screen readers can properly read changes
+- Add `aria-live="polite"` and `aria-label="{number}"` so screen readers can
+  properly read changes
 
 ### diff
 
@@ -590,7 +693,8 @@ Diff component shows a side-by-side comparison of two items
 
 #### Rules
 
-- To maintain aspect ratio, add `aspect-16/9` or other aspect ratio classes to `<figure class="diff">` element
+- To maintain aspect ratio, add `aspect-16/9` or other aspect ratio classes to
+  `<figure class="diff">` element
 
 ### divider
 
@@ -601,7 +705,9 @@ Divider will be used to separate content vertically or horizontally
 #### Class names
 
 - component: `divider`
-- color: `divider-neutral`, `divider-primary`, `divider-secondary`, `divider-accent`, `divider-success`, `divider-warning`, `divider-info`, `divider-error`
+- color: `divider-neutral`, `divider-primary`, `divider-secondary`,
+  `divider-accent`, `divider-success`, `divider-warning`, `divider-info`,
+  `divider-error`
 - direction: `divider-vertical`, `divider-horizontal`
 - placement: `divider-start`, `divider-end`
 
@@ -613,12 +719,14 @@ Divider will be used to separate content vertically or horizontally
 
 #### Rules
 
-- {MODIFIER} is optional and can have one of each direction/color/placement class names
+- {MODIFIER} is optional and can have one of each direction/color/placement
+  class names
 - Omit text for a blank divider
 
 ### dock
 
-Dock (also known as Bottom navigation or Bottom bar) is a UI element that provides navigation options to the user. Dock sticks to the bottom of the screen
+Dock (also known as Bottom navigation or Bottom bar) is a UI element that
+provides navigation options to the user. Dock sticks to the bottom of the screen
 
 [dock docs](https://daisyui.com/components/dock/)
 
@@ -639,8 +747,8 @@ where content is a list of buttons:
 
 ```html
 <button>
-    <svg>{icon}</svg>
-    <span class="dock-label">Text</span>
+  <svg>{icon}</svg>
+  <span class="dock-label">Text</span>
 </button>
 ```
 
@@ -648,11 +756,13 @@ where content is a list of buttons:
 
 - {MODIFIER} is optional and can have one of the size class names
 - To make a button active, add `dock-active` class to the button
-- add `<meta name="viewport" content="viewport-fit=cover">` is required for responsiveness of the dock in iOS
+- add `<meta name="viewport" content="viewport-fit=cover">` is required for
+  responsiveness of the dock in iOS
 
 ### drawer
 
-Drawer is a grid layout that can show/hide a sidebar on the left or right side of the page
+Drawer is a grid layout that can show/hide a sidebar on the left or right side
+of the page
 
 [drawer docs](https://daisyui.com/components/drawer/)
 
@@ -674,8 +784,8 @@ Drawer is a grid layout that can show/hide a sidebar on the left or right side o
 </div>
 ```
 
-where {CONTENT} can be navbar, site content, footer, etc
-and {SIDEBAR} can be a menu like:
+where {CONTENT} can be navbar, site content, footer, etc and {SIDEBAR} can be a
+menu like:
 
 ```html
 <ul class="menu p-4 w-80 min-h-full bg-base-100 text-base-content">
@@ -690,7 +800,8 @@ To open/close the drawer, use a label that points to the `drawer-toggle` input:
 <label for="my-drawer" class="btn drawer-button">Open/close drawer</label>
 ```
 
-Example: This sidebar is always visible on large screen, can be toggled on small screen:
+Example: This sidebar is always visible on large screen, can be toggled on small
+screen:
 
 ```html
 <div class="drawer lg:drawer-open">
@@ -702,7 +813,11 @@ Example: This sidebar is always visible on large screen, can be toggled on small
     </label>
   </div>
   <div class="drawer-side">
-    <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
+    <label
+      for="my-drawer-3"
+      aria-label="close sidebar"
+      class="drawer-overlay"
+    ></label>
     <ul class="menu bg-base-200 min-h-full w-80 p-4">
       <!-- Sidebar content here -->
       <li><button>Sidebar Item 1</button></li>
@@ -712,7 +827,8 @@ Example: This sidebar is always visible on large screen, can be toggled on small
 </div>
 ```
 
-Example: This sidebar is always visible. When it is closed only icons are visible; when it is open icons and text are visible
+Example: This sidebar is always visible. When it is closed only icons are
+visible; when it is open icons and text are visible
 
 ```html
 <div class="drawer lg:drawer-open">
@@ -721,28 +837,46 @@ Example: This sidebar is always visible. When it is closed only icons are visibl
     <!-- Page content here -->
   </div>
   <div class="drawer-side is-drawer-close:overflow-visible">
-    <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-    <div class="is-drawer-close:w-14 is-drawer-open:w-64 bg-base-200 flex flex-col items-start min-h-full">
+    <label
+      for="my-drawer-4"
+      aria-label="close sidebar"
+      class="drawer-overlay"
+    ></label>
+    <div
+      class="is-drawer-close:w-14 is-drawer-open:w-64 bg-base-200 flex flex-col items-start min-h-full"
+    >
       <!-- Sidebar content here -->
       <ul class="menu w-full grow">
         <!-- list item -->
         <li>
-          <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
+          <button
+            class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+            data-tip="Homepage"
+          >
             🏠
             <span class="is-drawer-close:hidden">Homepage</span>
           </button>
         </li>
         <!-- list item -->
         <li>
-          <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Settings">
+          <button
+            class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+            data-tip="Settings"
+          >
             ⚙️
             <span class="is-drawer-close:hidden">Settings</span>
           </button>
         </li>
       </ul>
       <!-- button to open/close drawer -->
-      <div class="m-2 is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Open">
-        <label for="my-drawer-4" class="btn btn-ghost btn-circle drawer-button is-drawer-open:rotate-y-180">
+      <div
+        class="m-2 is-drawer-close:tooltip is-drawer-close:tooltip-right"
+        data-tip="Open"
+      >
+        <label
+          for="my-drawer-4"
+          class="btn btn-ghost btn-circle drawer-button is-drawer-open:rotate-y-180"
+        >
           ↔️
         </label>
       </div>
@@ -754,11 +888,17 @@ Example: This sidebar is always visible. When it is closed only icons are visibl
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier/placement class names
-- `id` is required for the `drawer-toggle` input. Change `my-drawer` to a unique id that matches the context
+- `id` is required for the `drawer-toggle` input. Change `my-drawer` to a unique
+  id that matches the context
 - `lg:drawer-open` can be used to make sidebar visible on larger screens
-- `drawer-toggle` is a hidden checkbox. Use label with "for" attribute to toggle state
-- To open the drawer when a button is clicked, use `<label for="my-drawer" class="btn drawer-button">Open drawer</label>` where `my-drawer` is the id of the `drawer-toggle` input
-- When using drawer, all page content must be inside the `drawer-content` element. For example, navbar, footer, and similar elements should not be outside `drawer`
+- `drawer-toggle` is a hidden checkbox. Use label with "for" attribute to toggle
+  state
+- To open the drawer when a button is clicked, use
+  `<label for="my-drawer" class="btn drawer-button">Open drawer</label>` where
+  `my-drawer` is the id of the `drawer-toggle` input
+- When using drawer, all page content must be inside the `drawer-content`
+  element. For example, navbar, footer, and similar elements should not be
+  outside `drawer`
 
 ### dropdown
 
@@ -770,7 +910,8 @@ Dropdown can open a menu or any other element when the button is clicked
 
 - component: `dropdown`
 - part: `dropdown-content`
-- placement: `dropdown-start`, `dropdown-center`, `dropdown-end`, `dropdown-top`, `dropdown-bottom`, `dropdown-left`, `dropdown-right`
+- placement: `dropdown-start`, `dropdown-center`, `dropdown-end`,
+  `dropdown-top`, `dropdown-bottom`, `dropdown-left`, `dropdown-right`
 - modifier: `dropdown-hover`, `dropdown-open`
 
 #### Syntax
@@ -780,7 +921,9 @@ Using details and summary
 ```html
 <details class="dropdown">
   <summary>Button</summary>
-  <ul class="dropdown-content">{CONTENT}</ul>
+  <ul class="dropdown-content">
+    {CONTENT}
+  </ul>
 </details>
 ```
 
@@ -788,7 +931,14 @@ Using popover API
 
 ```html
 <button popovertarget="{id}" style="anchor-name:--{anchor}">{button}</button>
-<ul class="dropdown-content" popover id="{id}" style="position-anchor:--{anchor}">{CONTENT}</ul>
+<ul
+  class="dropdown-content"
+  popover
+  id="{id}"
+  style="position-anchor:--{anchor}"
+>
+  {CONTENT}
+</ul>
 ```
 
 Using CSS focus
@@ -796,7 +946,9 @@ Using CSS focus
 ```html
 <div class="dropdown">
   <button type="button">Button</button>
-  <ul tabindex="-1" class="dropdown-content">{CONTENT}</ul>
+  <ul tabindex="-1" class="dropdown-content">
+    {CONTENT}
+  </ul>
 </div>
 ```
 
@@ -804,12 +956,16 @@ Using CSS focus
 
 - {MODIFIER} is optional and can have one of the modifier/placement class names
 - replace `{id}` and `{anchor}` with a unique name
-- For CSS focus dropdowns, use a native `<button type="button">` element as the trigger
+- For CSS focus dropdowns, use a native `<button type="button">` element as the
+  trigger
 - The content can be any HTML element (not just `<ul>`)
 
 ### fab
 
-FAB (Floating Action Button) stays in the bottom corner of screen. It includes a focusable and accessible native `<button>` element. Clicking or focusing it shows additional buttons (known as Speed Dial buttons) in a vertical arrangement or a flower shape (quarter circle)
+FAB (Floating Action Button) stays in the bottom corner of screen. It includes a
+focusable and accessible native `<button>` element. Clicking or focusing it
+shows additional buttons (known as Speed Dial buttons) in a vertical arrangement
+or a flower shape (quarter circle)
 
 [fab docs](https://daisyui.com/components/fab/)
 
@@ -833,82 +989,129 @@ A FAB that opens a 3 other buttons in the corner of page vertically
 
 ```html
 <div class="fab">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
   <button type="button" class="btn btn-lg btn-circle">{Icon1}</button>
   <button type="button" class="btn btn-lg btn-circle">{Icon2}</button>
   <button type="button" class="btn btn-lg btn-circle">{Icon3}</button>
 </div>
 ```
 
-A FAB that opens a 3 other buttons in the corner of page vertically and they have label text
+A FAB that opens a 3 other buttons in the corner of page vertically and they
+have label text
 
 ```html
 <div class="fab">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
-  <div>{Label1}<button type="button" class="btn btn-lg btn-circle">{Icon1}</button></div>
-  <div>{Label2}<button type="button" class="btn btn-lg btn-circle">{Icon2}</button></div>
-  <div>{Label3}<button type="button" class="btn btn-lg btn-circle">{Icon3}</button></div>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
+  <div>
+    {Label1}<button type="button" class="btn btn-lg btn-circle">{Icon1}</button>
+  </div>
+  <div>
+    {Label2}<button type="button" class="btn btn-lg btn-circle">{Icon2}</button>
+  </div>
+  <div>
+    {Label3}<button type="button" class="btn btn-lg btn-circle">{Icon3}</button>
+  </div>
 </div>
 ```
 
-FAB with rectangle buttons. These are not circular buttons so they can have more content.
+FAB with rectangle buttons. These are not circular buttons so they can have more
+content.
 
 ```html
 <div class="fab">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
   <button type="button" class="btn btn-lg">{Label1}</button>
   <button type="button" class="btn btn-lg">{Label2}</button>
   <button type="button" class="btn btn-lg">{Label3}</button>
 </div>
 ```
 
-FAB with close button. When FAB is open, the original button is replaced with a close button
+FAB with close button. When FAB is open, the original button is replaced with a
+close button
 
 ```html
 <div class="fab">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
   <div class="fab-close">
     Close
     <button type="button" class="btn btn-circle btn-lg btn-error">✕</button>
   </div>
-  <div>{Label1}<button type="button" class="btn btn-lg btn-circle">{Icon1}</button></div>
-  <div>{Label2}<button type="button" class="btn btn-lg btn-circle">{Icon2}</button></div>
-  <div>{Label3}<button type="button" class="btn btn-lg btn-circle">{Icon3}</button></div>
+  <div>
+    {Label1}<button type="button" class="btn btn-lg btn-circle">{Icon1}</button>
+  </div>
+  <div>
+    {Label2}<button type="button" class="btn btn-lg btn-circle">{Icon2}</button>
+  </div>
+  <div>
+    {Label3}<button type="button" class="btn btn-lg btn-circle">{Icon3}</button>
+  </div>
 </div>
 ```
 
-FAB with Main Action button. When FAB is open, the original button is replaced with a main action button
+FAB with Main Action button. When FAB is open, the original button is replaced
+with a main action button
 
 ```html
 <div class="fab">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
   <div class="fab-main-action">
-    {LabelMainAction}<button type="button" class="btn btn-circle btn-secondary btn-lg">{IconMainAction}</button>
+    {LabelMainAction}<button
+      type="button"
+      class="btn btn-circle btn-secondary btn-lg"
+    >
+      {IconMainAction}
+    </button>
   </div>
-  <div>{Label1}<button type="button" class="btn btn-lg btn-circle">{Icon1}</button></div>
-  <div>{Label2}<button type="button" class="btn btn-lg btn-circle">{Icon2}</button></div>
-  <div>{Label3}<button type="button" class="btn btn-lg btn-circle">{Icon3}</button></div>
+  <div>
+    {Label1}<button type="button" class="btn btn-lg btn-circle">{Icon1}</button>
+  </div>
+  <div>
+    {Label2}<button type="button" class="btn btn-lg btn-circle">{Icon2}</button>
+  </div>
+  <div>
+    {Label3}<button type="button" class="btn btn-lg btn-circle">{Icon3}</button>
+  </div>
 </div>
 ```
 
-FAB Flower. It opens the buttons in a flower shape (quarter circle) arrangement instead of vertical
+FAB Flower. It opens the buttons in a flower shape (quarter circle) arrangement
+instead of vertical
 
 ```html
 <div class="fab fab-flower">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
-  <button type="button" class="fab-main-action btn btn-circle btn-lg">{IconMainAction}</button>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
+  <button type="button" class="fab-main-action btn btn-circle btn-lg">
+    {IconMainAction}
+  </button>
   <button type="button" class="btn btn-lg btn-circle">{Icon1}</button>
   <button type="button" class="btn btn-lg btn-circle">{Icon2}</button>
   <button type="button" class="btn btn-lg btn-circle">{Icon3}</button>
 </div>
 ```
 
-FAB Flower with tooltips. There's no space for a text label in a quarter circle, so tooltips are used to indicate the button's function
+FAB Flower with tooltips. There's no space for a text label in a quarter circle,
+so tooltips are used to indicate the button's function
 
 ```html
 <div class="fab fab-flower">
-  <button type="button" class="btn btn-lg btn-circle btn-primary">{IconOriginal}</button>
-  <button type="button" class="fab-main-action btn btn-circle btn-lg">{IconMainAction}</button>
+  <button type="button" class="btn btn-lg btn-circle btn-primary">
+    {IconOriginal}
+  </button>
+  <button type="button" class="fab-main-action btn btn-circle btn-lg">
+    {IconMainAction}
+  </button>
   <div class="tooltip tooltip-left" data-tip="{Label1}">
     <button type="button" class="btn btn-lg btn-circle">{Icon1}</button>
   </div>
@@ -923,15 +1126,17 @@ FAB Flower with tooltips. There's no space for a text label in a quarter circle,
 
 #### Rules
 
-- {Icon*} should be replaced with the appropriate icon for each button. SVG icons are recommended
+- {Icon\*} should be replaced with the appropriate icon for each button. SVG
+  icons are recommended
 - {IconOriginal} is the icon shown before opening the FAB
 - {IconMainAction} is the icon shown after opening the FAB
 - {Icon1}, {Icon2}, {Icon3} are the icons for the additional buttons
-- {Label*} is the label text for each button
+- {Label\*} is the label text for each button
 
 ### fieldset
 
-Fieldset is a container for grouping related form elements. It includes fieldset-legend as a title and label as a description
+Fieldset is a container for grouping related form elements. It includes
+fieldset-legend as a title and label as a description
 
 [fieldset docs](https://daisyui.com/components/fieldset/)
 
@@ -964,8 +1169,11 @@ File Input is an input field for uploading files
 
 - Component: `file-input`
 - Style: `file-input-ghost`
-- Color: `file-input-neutral`, `file-input-primary`, `file-input-secondary`, `file-input-accent`, `file-input-info`, `file-input-success`, `file-input-warning`, `file-input-error`
-- Size: `file-input-xs`, `file-input-sm`, `file-input-md`, `file-input-lg`, `file-input-xl`
+- Color: `file-input-neutral`, `file-input-primary`, `file-input-secondary`,
+  `file-input-accent`, `file-input-info`, `file-input-success`,
+  `file-input-warning`, `file-input-error`
+- Size: `file-input-xs`, `file-input-sm`, `file-input-md`, `file-input-lg`,
+  `file-input-xl`
 
 #### Syntax
 
@@ -979,7 +1187,8 @@ File Input is an input field for uploading files
 
 ### filter
 
-Filter is a group of radio buttons. Choosing one of the options will hide the others and shows a reset button next to the chosen option
+Filter is a group of radio buttons. Choosing one of the options will hide the
+others and shows a reset button next to the chosen option
 
 [filter docs](https://daisyui.com/components/filter/)
 
@@ -994,9 +1203,9 @@ Using HTML form
 
 ```html
 <form class="filter">
-  <input class="btn btn-square" type="reset" value="×"/>
-  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 1 title"/>
-  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 2 title"/>
+  <input class="btn btn-square" type="reset" value="×" />
+  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 1 title" />
+  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 2 title" />
 </form>
 ```
 
@@ -1004,9 +1213,9 @@ Without HTML form
 
 ```html
 <div class="filter">
-  <input class="btn filter-reset" type="radio" name="{NAME}" aria-label="×"/>
-  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 1 title"/>
-  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 2 title"/>
+  <input class="btn filter-reset" type="radio" name="{NAME}" aria-label="×" />
+  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 1 title" />
+  <input class="btn" type="radio" name="{NAME}" aria-label="Tab 2 title" />
 </div>
 ```
 
@@ -1014,7 +1223,8 @@ Without HTML form
 
 - replace `{NAME}` with proper value, according to the context of the filter
 - Each set of radio inputs must have unique `name` attributes to avoid conflicts
-- Use `<form>` tag when possible and use `<div>` only when an HTML form is not possible
+- Use `<form>` tag when possible and use `<div>` only when an HTML form is not
+  possible
 - Use `filter-reset` class for the reset button
 
 ### footer
@@ -1036,17 +1246,20 @@ Footer can contain logo, copyright notice, and links to other pages
 <footer class="footer {MODIFIER}">{CONTENT}</footer>
 ```
 
-where content can contain several `<nav>` tags with `footer-title` and links inside
+where content can contain several `<nav>` tags with `footer-title` and links
+inside
 
 #### Rules
 
-- {MODIFIER} is optional and can have one of each placement/direction class names
+- {MODIFIER} is optional and can have one of each placement/direction class
+  names
 - try to use `sm:footer-horizontal` to make footer responsive
 - suggestion - use `base-200` for background color
 
 ### hero
 
-Hero is a component for displaying a large box or image with a title and description
+Hero is a component for displaying a large box or image with a title and
+description
 
 [hero docs](https://daisyui.com/components/hero/)
 
@@ -1065,12 +1278,16 @@ Hero is a component for displaying a large box or image with a title and descrip
 
 - {MODIFIER} is optional
 - Use `hero-content` for the text content
-- Use `hero-overlay` inside the hero to overlay the background image with a color
+- Use `hero-overlay` inside the hero to overlay the background image with a
+  color
 - Content can contain a figure
 
 ### hover-gallery
 
-Hover Gallery is a container of images. The first image is visible by default, and hovering horizontally reveals the remaining images. Hover Gallery is useful for product cards in e-commerce sites, portfolios, or image galleries. Hover Gallery can include up to 10 images.
+Hover Gallery is a container of images. The first image is visible by default,
+and hovering horizontally reveals the remaining images. Hover Gallery is useful
+for product cards in e-commerce sites, portfolios, or image galleries. Hover
+Gallery can include up to 10 images.
 
 [hover-gallery docs](https://daisyui.com/components/hover-gallery/)
 
@@ -1082,10 +1299,22 @@ Hover Gallery is a container of images. The first image is visible by default, a
 
 ```html
 <figure class="hover-gallery max-w-60">
-  <img src="https://img.daisyui.com/images/stock/daisyui-hat-1.webp" alt="{alt-text-1}" />
-  <img src="https://img.daisyui.com/images/stock/daisyui-hat-2.webp" alt="{alt-text-2}" />
-  <img src="https://img.daisyui.com/images/stock/daisyui-hat-3.webp" alt="{alt-text-3}" />
-  <img src="https://img.daisyui.com/images/stock/daisyui-hat-4.webp" alt="{alt-text-4}" />
+  <img
+    src="https://img.daisyui.com/images/stock/daisyui-hat-1.webp"
+    alt="{alt-text-1}"
+  />
+  <img
+    src="https://img.daisyui.com/images/stock/daisyui-hat-2.webp"
+    alt="{alt-text-2}"
+  />
+  <img
+    src="https://img.daisyui.com/images/stock/daisyui-hat-3.webp"
+    alt="{alt-text-3}"
+  />
+  <img
+    src="https://img.daisyui.com/images/stock/daisyui-hat-4.webp"
+    alt="{alt-text-4}"
+  />
 </figure>
 ```
 
@@ -1107,7 +1336,8 @@ Indicators are used to place an element on the corner of another element
 
 - component: `indicator`
 - part: `indicator-item`
-- placement: `indicator-start`, `indicator-center`, `indicator-end`, `indicator-top`, `indicator-middle`, `indicator-bottom`
+- placement: `indicator-start`, `indicator-center`, `indicator-end`,
+  `indicator-top`, `indicator-middle`, `indicator-bottom`
 
 #### Syntax
 
@@ -1120,8 +1350,10 @@ Indicators are used to place an element on the corner of another element
 
 #### Rules
 
-- Add all indicator elements (with `indicator-item` class) before the main content
-- {placement} is optional and can have one of each horizontal/vertical class names. default is `indicator-end indicator-top`
+- Add all indicator elements (with `indicator-item` class) before the main
+  content
+- {placement} is optional and can have one of each horizontal/vertical class
+  names. default is `indicator-end indicator-top`
 
 ### input
 
@@ -1133,7 +1365,8 @@ Text Input is a simple input field
 
 - component: `input`
 - style: `input-ghost`
-- color: `input-neutral`, `input-primary`, `input-secondary`, `input-accent`, `input-info`, `input-success`, `input-warning`, `input-error`
+- color: `input-neutral`, `input-primary`, `input-secondary`, `input-accent`,
+  `input-info`, `input-success`, `input-warning`, `input-error`
 - size: `input-xs`, `input-sm`, `input-md`, `input-lg`, `input-xl`
 
 #### Syntax
@@ -1150,7 +1383,9 @@ Text Input is a simple input field
 
 ### join
 
-Join is a container for grouping multiple items, it can be used to group buttons, inputs, etc. Join applies border radius to the first and last item. Join can be used to create a horizontal or vertical list of items
+Join is a container for grouping multiple items, it can be used to group
+buttons, inputs, etc. Join applies border radius to the first and last item.
+Join can be used to create a horizontal or vertical list of items
 
 [join docs](https://daisyui.com/components/join/)
 
@@ -1195,7 +1430,8 @@ Kbd is used to display keyboard shortcuts
 
 ### label
 
-Label is used to provide a name or title for an input field. Label can be placed before or after the field
+Label is used to provide a name or title for an input field. Label can be placed
+before or after the field
 
 [label docs](https://daisyui.com/components/label/)
 
@@ -1225,8 +1461,10 @@ For floating label:
 
 #### Rules
 
-- The `input` class is for styling the parent element which contains the input field and label, so the label does not have the 'input' class
-- Use `floating-label` for the parent of an input field and a span that floats above the input field when the field is focused
+- The `input` class is for styling the parent element which contains the input
+  field and label, so the label does not have the 'input' class
+- Use `floating-label` for the parent of an input field and a span that floats
+  above the input field when the field is focused
 
 ### link
 
@@ -1238,7 +1476,8 @@ Link adds the missing underline style to links
 
 - component: `link`
 - style: `link-hover`
-- color: `link-neutral`, `link-primary`, `link-secondary`, `link-accent`, `link-success`, `link-info`, `link-warning`, `link-error`
+- color: `link-neutral`, `link-primary`, `link-secondary`, `link-accent`,
+  `link-success`, `link-info`, `link-warning`, `link-error`
 
 #### Syntax
 
@@ -1272,7 +1511,8 @@ List is a vertical layout to display information in rows
 #### Rules
 
 - Use `list-row` for each item inside the list
-- By default, the second child of the `list-row` fills the remaining space. Use `list-col-grow` on another child to make it fill the remaining space instead
+- By default, the second child of the `list-row` fills the remaining space. Use
+  `list-col-grow` on another child to make it fill the remaining space instead
 - Use `list-col-wrap` to force an item to wrap to the next line
 
 ### loading
@@ -1284,7 +1524,8 @@ Loading shows an animation to indicate that something is loading
 #### Class names
 
 - component: `loading`
-- style: `loading-spinner`, `loading-dots`, `loading-ring`, `loading-ball`, `loading-bars`, `loading-infinity`
+- style: `loading-spinner`, `loading-dots`, `loading-ring`, `loading-ball`,
+  `loading-bars`, `loading-infinity`
 - size: `loading-xs`, `loading-sm`, `loading-md`, `loading-lg`, `loading-xl`
 
 #### Syntax
@@ -1306,7 +1547,10 @@ Mask crops the content of the element to common shapes
 #### Class names
 
 - component: `mask`
-- style: `mask-squircle`, `mask-heart`, `mask-hexagon`, `mask-hexagon-2`, `mask-decagon`, `mask-pentagon`, `mask-diamond`, `mask-square`, `mask-circle`, `mask-star`, `mask-star-2`, `mask-triangle`, `mask-triangle-2`, `mask-triangle-3`, `mask-triangle-4`
+- style: `mask-squircle`, `mask-heart`, `mask-hexagon`, `mask-hexagon-2`,
+  `mask-decagon`, `mask-pentagon`, `mask-diamond`, `mask-square`, `mask-circle`,
+  `mask-star`, `mask-star-2`, `mask-triangle`, `mask-triangle-2`,
+  `mask-triangle-3`, `mask-triangle-4`
 - modifier: `mask-half-1`, `mask-half-2`
 
 #### Syntax
@@ -1356,7 +1600,8 @@ Horizontal menu:
 
 #### Rules
 
-- {MODIFIER} is optional and can have one of the modifier/size/direction class names
+- {MODIFIER} is optional and can have one of the modifier/size/direction class
+  names
 - Use `lg:menu-horizontal` for responsive layouts
 - Use `menu-title` for list item title
 - Use `<details>` tag to make submenus collapsible
@@ -1377,9 +1622,7 @@ Browser mockup shows a box that looks like a browser window
 
 ```html
 <div class="mockup-browser">
-  <div class="mockup-browser-toolbar">
-    {toolbar content}
-  </div>
+  <div class="mockup-browser-toolbar">{toolbar content}</div>
   <div>{CONTENT}</div>
 </div>
 ```
@@ -1391,7 +1634,8 @@ Browser mockup shows a box that looks like a browser window
 
 ### mockup-code
 
-Code mockup is used to show a block of code in a box that looks like a code editor
+Code mockup is used to show a block of code in a box that looks like a code
+editor
 
 [mockup-code docs](https://daisyui.com/components/mockup-code/)
 
@@ -1466,14 +1710,17 @@ Modal displays a dialog or box on button activation
 - component: `modal`
 - part: `modal-box`, `modal-action`, `modal-backdrop`, `modal-toggle`
 - modifier: `modal-open`
-- placement: `modal-top`, `modal-middle`, `modal-bottom`, `modal-start`, `modal-end`
+- placement: `modal-top`, `modal-middle`, `modal-bottom`, `modal-start`,
+  `modal-end`
 
 #### Syntax
 
 Using HTML dialog element
 
 ```html
-<button type="button" onclick="document.getElementById('my_modal').showModal()">Open modal</button>
+<button type="button" onclick="document.getElementById('my_modal').showModal()">
+  Open modal
+</button>
 <dialog id="my_modal" class="modal">
   <div class="modal-box">{CONTENT}</div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -1505,7 +1752,8 @@ Using anchor links (legacy)
 - {MODIFIER} is optional and can have one of the modifier/placement class names
 - Add `tabindex="0"` to make modal focusable
 - Use unique IDs for each modal
-- For HTML dialog element modals, add `<form method="dialog">` for closing the modal with submit
+- For HTML dialog element modals, add `<form method="dialog">` for closing the
+  modal with submit
 
 ### navbar
 
@@ -1526,7 +1774,8 @@ Navbar is used to show a navigation bar on the top of the page
 
 #### Rules
 
-- use `navbar-start`, `navbar-center`, `navbar-end` to position content horizontally
+- use `navbar-start`, `navbar-center`, `navbar-end` to position content
+  horizontally
 - put anything inside each section
 - suggestion - use `base-200` for background color
 
@@ -1555,14 +1804,17 @@ Pagination is a group of buttons
 
 ### progress
 
-Progress bar can be used to show the progress of a task or to show the passing of time
+Progress bar can be used to show the progress of a task or to show the passing
+of time
 
 [progress docs](https://daisyui.com/components/progress/)
 
 #### Class names
 
 - component: `progress`
-- color: `progress-neutral`, `progress-primary`, `progress-secondary`, `progress-accent`, `progress-info`, `progress-success`, `progress-warning`, `progress-error`
+- color: `progress-neutral`, `progress-primary`, `progress-secondary`,
+  `progress-accent`, `progress-info`, `progress-success`, `progress-warning`,
+  `progress-error`
 
 #### Syntax
 
@@ -1577,7 +1829,8 @@ Progress bar can be used to show the progress of a task or to show the passing o
 
 ### radial-progress
 
-Radial progress can be used to show the progress of a task or to show the passing of time
+Radial progress can be used to show the progress of a task or to show the
+passing of time
 
 [radial-progress docs](https://daisyui.com/components/radial-progress/)
 
@@ -1588,15 +1841,27 @@ Radial progress can be used to show the progress of a task or to show the passin
 #### Syntax
 
 ```html
-<div class="radial-progress" style="--value:70;" aria-label="Progress" aria-valuenow="70" role="progressbar">70%</div>
+<div
+  class="radial-progress"
+  style="--value:70;"
+  aria-label="Progress"
+  aria-valuenow="70"
+  role="progressbar"
+>
+  70%
+</div>
 ```
 
 #### Rules
 
 - The `--value` CSS variable and text must be a number between 0 and 100
-- Add `aria-valuenow="{value}"`, `role="progressbar"`, and an accessible name via `aria-label` or `aria-labelledby` so screen readers can properly read the value and identify the progress element
-- Use `div` instead of progress because browsers can't show text inside progress tag
-- Use `--size` for setting size (default 5rem) and `--thickness` to set how thick the indicator is
+- Add `aria-valuenow="{value}"`, `role="progressbar"`, and an accessible name
+  via `aria-label` or `aria-labelledby` so screen readers can properly read the
+  value and identify the progress element
+- Use `div` instead of progress because browsers can't show text inside progress
+  tag
+- Use `--size` for setting size (default 5rem) and `--thickness` to set how
+  thick the indicator is
 
 ### radio
 
@@ -1607,7 +1872,8 @@ Radio buttons allow the user to select one option
 #### Class names
 
 - component: `radio`
-- color: `radio-neutral`, `radio-primary`, `radio-secondary`, `radio-accent`, `radio-success`, `radio-warning`, `radio-info`, `radio-error`
+- color: `radio-neutral`, `radio-primary`, `radio-secondary`, `radio-accent`,
+  `radio-success`, `radio-warning`, `radio-info`, `radio-error`
 - size: `radio-xs`, `radio-sm`, `radio-md`, `radio-lg`, `radio-xl`
 
 #### Syntax
@@ -1620,7 +1886,8 @@ Radio buttons allow the user to select one option
 
 - {MODIFIER} is optional and can have one of the size/color class names
 - Replace {name} with a unique name for the radio group
-- Each set of radio inputs should have unique `name` attributes to avoid conflicts with other sets of radio inputs on the same page
+- Each set of radio inputs should have unique `name` attributes to avoid
+  conflicts with other sets of radio inputs on the same page
 
 ### range
 
@@ -1631,7 +1898,8 @@ Range slider is used to select a value by sliding a handle
 #### Class names
 
 - component: `range`
-- color: `range-neutral`, `range-primary`, `range-secondary`, `range-accent`, `range-success`, `range-warning`, `range-info`, `range-error`
+- color: `range-neutral`, `range-primary`, `range-secondary`, `range-accent`,
+  `range-success`, `range-warning`, `range-info`, `range-error`
 - size: `range-xs`, `range-sm`, `range-md`, `range-lg`, `range-xl`
 
 #### Syntax
@@ -1668,8 +1936,10 @@ Rating is a set of radio buttons that allow the user to rate something
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier/size class names
-- Each set of rating inputs should have unique `name` attributes to avoid conflicts with other ratings on the same page
-- Add `rating-hidden` for the first radio to make it hidden so user can clear the rating
+- Each set of rating inputs should have unique `name` attributes to avoid
+  conflicts with other ratings on the same page
+- Add `rating-hidden` for the first radio to make it hidden so user can clear
+  the rating
 
 ### select
 
@@ -1681,7 +1951,9 @@ Select is used to pick a value from a list of options
 
 - component: `select`
 - style: `select-ghost`
-- color: `select-neutral`, `select-primary`, `select-secondary`, `select-accent`, `select-info`, `select-success`, `select-warning`, `select-error`
+- color: `select-neutral`, `select-primary`, `select-secondary`,
+  `select-accent`, `select-info`, `select-success`, `select-warning`,
+  `select-error`
 - size: `select-xs`, `select-sm`, `select-md`, `select-lg`, `select-xl`
 
 #### Syntax
@@ -1736,7 +2008,8 @@ Stack visually puts elements on top of each other
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier class names
-- Use `w-*` and `h-*` classes to set the width and height of the stack, making all items the same size
+- Use `w-*` and `h-*` classes to set the width and height of the stack, making
+  all items the same size
 
 ### stat
 
@@ -1747,7 +2020,8 @@ Stat is used to show numbers and data in a block
 #### Class names
 
 - Component: `stats`
-- Part: `stat`, `stat-title`, `stat-value`, `stat-desc`, `stat-figure`, `stat-actions`
+- Part: `stat`, `stat-title`, `stat-value`, `stat-desc`, `stat-figure`,
+  `stat-actions`
 - Direction: `stats-horizontal`, `stats-vertical`
 
 #### Syntax
@@ -1761,19 +2035,23 @@ Stat is used to show numbers and data in a block
 #### Rules
 
 - {MODIFIER} is optional and can have one of the direction class names
-- The default orientation is horizontal; add `stats-vertical` to make it vertical
+- The default orientation is horizontal; add `stats-vertical` to make it
+  vertical
 - Content includes `stat-title`, `stat-value`, `stat-desc` inside a `stat`
 
 ### status
 
-Status is a really small icon to visually show the current status of an element, like online, offline, error, etc
+Status is a really small icon to visually show the current status of an element,
+like online, offline, error, etc
 
 [status docs](https://daisyui.com/components/status/)
 
 #### Class Names
 
 - Component: `status`
-- Color: `status-neutral`, `status-primary`, `status-secondary`, `status-accent`, `status-info`, `status-success`, `status-warning`, `status-error`
+- Color: `status-neutral`, `status-primary`, `status-secondary`,
+  `status-accent`, `status-info`, `status-success`, `status-warning`,
+  `status-error`
 - Size: `status-xs`, `status-sm`, `status-md`, `status-lg`, `status-xl`
 
 #### Syntax
@@ -1785,7 +2063,10 @@ Status is a really small icon to visually show the current status of an element,
 #### Rules
 
 - {MODIFIER} is optional and can have one of the color/size class names
-- This component renders a visible small status dot, and `status-neutral`, `status-primary`, `status-secondary`, `status-accent`, `status-info`, `status-success`, `status-warning`, `status-error`, plus the `status-xs` through `status-xl` size classes adjust its appearance
+- This component renders a visible small status dot, and `status-neutral`,
+  `status-primary`, `status-secondary`, `status-accent`, `status-info`,
+  `status-success`, `status-warning`, `status-error`, plus the `status-xs`
+  through `status-xl` size classes adjust its appearance
 
 ### steps
 
@@ -1797,7 +2078,8 @@ Steps can be used to show a list of steps in a process
 
 - Component: `steps`
 - Part: `step`, `step-icon`
-- Color: `step-neutral`, `step-primary`, `step-secondary`, `step-accent`, `step-info`, `step-success`, `step-warning`, `step-error`
+- Color: `step-neutral`, `step-primary`, `step-secondary`, `step-accent`,
+  `step-info`, `step-success`, `step-warning`, `step-error`
 - Direction: `steps-vertical`, `steps-horizontal`
 
 #### Syntax
@@ -1852,8 +2134,10 @@ Using class name
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier/style class names
-- Use only a hidden checkbox to control swap state or add/remove the `swap-active` class using JS to control state
-- To show something when the checkbox is indeterminate, use `swap-indeterminate` class
+- Use only a hidden checkbox to control swap state or add/remove the
+  `swap-active` class using JS to control state
+- To show something when the checkbox is indeterminate, use `swap-indeterminate`
+  class
 
 ### tab
 
@@ -1889,9 +2173,11 @@ Using radio inputs:
 
 #### Rules
 
-- {MODIFIER} is optional and can have one of the style, modifier, or placement class names
+- {MODIFIER} is optional and can have one of the style, modifier, or placement
+  class names
 - Radio inputs are needed for tab content to work with tab click
-- If tabs gets a background then every tab inside it becomes rounded from both top corners
+- If tabs gets a background then every tab inside it becomes rounded from both
+  top corners
 
 ### table
 
@@ -1927,7 +2213,8 @@ Table can be used to show a list of data in a table format
 #### Rules
 
 - {MODIFIER} is optional and can have one of each modifier/size class names
-- The `overflow-x-auto` class is added to the wrapper div to make the table horizontally scrollable on smaller screens
+- The `overflow-x-auto` class is added to the wrapper div to make the table
+  horizontally scrollable on smaller screens
 
 ### textarea
 
@@ -1939,8 +2226,11 @@ Textarea allows users to enter text in multiple lines
 
 - Component: `textarea`
 - Style: `textarea-ghost`
-- Color: `textarea-neutral`, `textarea-primary`, `textarea-secondary`, `textarea-accent`, `textarea-info`, `textarea-success`, `textarea-warning`, `textarea-error`
-- Size: `textarea-xs`, `textarea-sm`, `textarea-md`, `textarea-lg`, `textarea-xl`
+- Color: `textarea-neutral`, `textarea-primary`, `textarea-secondary`,
+  `textarea-accent`, `textarea-info`, `textarea-success`, `textarea-warning`,
+  `textarea-error`
+- Size: `textarea-xs`, `textarea-sm`, `textarea-md`, `textarea-lg`,
+  `textarea-xl`
 
 #### Syntax
 
@@ -1954,7 +2244,8 @@ Textarea allows users to enter text in multiple lines
 
 ### theme-controller
 
-If a checked checkbox input or a checked radio input with theme-controller class exists in the page, The page will have the same theme as that input's value
+If a checked checkbox input or a checked radio input with theme-controller class
+exists in the page, The page will have the same theme as that input's value
 
 [theme-controller docs](https://daisyui.com/components/theme-controller/)
 
@@ -2000,7 +2291,8 @@ Timeline component shows a list of events in chronological order
 #### Rules
 
 - {MODIFIER} is optional and can have one of the modifier/direction class names
-- To make a vertical timeline, add the `timeline-vertical` class to the `ul` element or just do nothing (because it's the default style.)
+- To make a vertical timeline, add the `timeline-vertical` class to the `ul`
+  element or just do nothing (because it's the default style.)
 - Add `timeline-snap-icon` to snap the icon to the start instead of middle
 - Add the `timeline-compact` class to force all items on one side
 
@@ -2013,7 +2305,8 @@ Toast is a wrapper to stack elements, positioned on the corner of page
 #### Class Names
 
 - Component: `toast`
-- Placement: `toast-start`, `toast-center`, `toast-end`, `toast-top`, `toast-middle`, `toast-bottom`
+- Placement: `toast-start`, `toast-center`, `toast-end`, `toast-top`,
+  `toast-middle`, `toast-bottom`
 
 #### Syntax
 
@@ -2034,7 +2327,9 @@ Toggle is a checkbox that is styled to look like a switch button
 #### Class Names
 
 - Component: `toggle`
-- Color: `toggle-primary`, `toggle-secondary`, `toggle-accent`, `toggle-neutral`, `toggle-success`, `toggle-warning`, `toggle-info`, `toggle-error`
+- Color: `toggle-primary`, `toggle-secondary`, `toggle-accent`,
+  `toggle-neutral`, `toggle-success`, `toggle-warning`, `toggle-info`,
+  `toggle-error`
 - Size: `toggle-xs`, `toggle-sm`, `toggle-md`, `toggle-lg`, `toggle-xl`
 
 #### Syntax
@@ -2049,7 +2344,8 @@ Toggle is a checkbox that is styled to look like a switch button
 
 ### validator
 
-Validator class changes the color of form elements to error or success based on input's validation rules
+Validator class changes the color of form elements to error or success based on
+input's validation rules
 
 [validator docs](https://daisyui.com/components/validator/)
 

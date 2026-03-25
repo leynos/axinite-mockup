@@ -16,7 +16,9 @@ Create a single entry stylesheet (e.g., `app.css`).
 
 /* Load daisyUI as a plugin (v5 syntax) and choose themes */
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark;
+  themes:
+    light --default,
+    dark --prefersdark;
 }
 
 /* Optional: define project tokens via Tailwind's @theme */
@@ -34,20 +36,33 @@ When components are stored in unusual places, add explicit sources:
 @source "./src/**/*.{ts,tsx,js,jsx,mdx}";
 ```
 
-> **Tip:** daisyUI v5 exposes theme variables like `--color-primary`, `--color-base-100`, plus utilities such as `bg-primary`, `text-primary-content`, and size tokens like `rounded-box`/`rounded-field`. These are theme-aware, so prefer them to raw colours for brand‑consistent styling.
+> **Tip:** daisyUI v5 exposes theme variables like `--color-primary`,
+> `--color-base-100`, plus utilities such as `bg-primary`,
+> `text-primary-content`, and size tokens like `rounded-box`/`rounded-field`.
+> These are theme-aware, so prefer them to raw colours for brand‑consistent
+> styling.
 
 ---
 
 ## 1) Mental model: five layers
 
-1. **Semantic HTML**: use the correct element for the job (e.g., `<nav>`, `<button>`, `<section>`). Add ARIA only to clarify, never to replace semantics.
+1. **Semantic HTML**: use the correct element for the job (e.g., `<nav>`,
+   `<button>`, `<section>`). Add ARIA only to clarify, never to replace
+   semantics.
 2. **Headless behaviour**: Kobalte primitives provide accessibility and state
    via attributes like `data-state`, `data-disabled`, and `aria-expanded`.
-3. **Component classes**: daisyUI gives structural styles (`btn`, `card`, `input`, `menu`, `alert`, …) and colour roles (`btn-primary`, `bg-base-100`, …).
-4. **Utilities**: Tailwind v4 utilities for spacing, layout, visibility, state variants, container queries, etc.
-5. **Semantic wrappers**: project-specific *meaningful* classes (e.g., `.cta`, `.product-card`) implemented using Tailwind’s `@utility` (and selective `@apply`) to encode intent and keep markup tidy where repetition would otherwise explode.
+3. **Component classes**: daisyUI gives structural styles (`btn`, `card`,
+   `input`, `menu`, `alert`, …) and colour roles (`btn-primary`, `bg-base-100`,
+   …).
+4. **Utilities**: Tailwind v4 utilities for spacing, layout, visibility, state
+   variants, container queries, etc.
+5. **Semantic wrappers**: project-specific _meaningful_ classes (e.g., `.cta`,
+   `.product-card`) implemented using Tailwind’s `@utility` (and selective
+   `@apply`) to encode intent and keep markup tidy where repetition would
+   otherwise explode.
 
-The cascade should flow so that **inline utilities win** over broad component styles. That keeps local adjustments easy.
+The cascade should flow so that **inline utilities win** over broad component
+styles. That keeps local adjustments easy.
 
 ---
 
@@ -55,7 +70,10 @@ The cascade should flow so that **inline utilities win** over broad component st
 
 ```html
 <header class="bg-base-100 border-b">
-  <nav class="container mx-auto flex items-center gap-4 py-3" aria-label="Primary">
+  <nav
+    class="container mx-auto flex items-center gap-4 py-3"
+    aria-label="Primary"
+  >
     <a class="btn btn-ghost" href="/">Home</a>
     <a class="link" href="/docs" aria-current="page">Docs</a>
   </nav>
@@ -76,7 +94,8 @@ SR (screen reader) output without extra ceremony.
 
 ## 3) Semantic class names: where they help
 
-Create **domain‑level** classes only when they encode reused intent (CTA buttons, product cards, page headers) or when bridging third‑party markup.
+Create **domain‑level** classes only when they encode reused intent (CTA
+buttons, product cards, page headers) or when bridging third‑party markup.
 
 ```css
 /* app.css */
@@ -103,7 +122,9 @@ Use them in markup where repetition would otherwise get silly:
 <button class="cta/ghost">Learn more</button>
 ```
 
-> **Rule of thumb:** If a class name describes *what the thing is* to the business or user, keep it. If it describes *how it looks* (e.g., `.blue-btn`, `.mt-4`), prefer utilities.
+> **Rule of thumb:** If a class name describes _what the thing is_ to the
+> business or user, keep it. If it describes _how it looks_ (e.g., `.blue-btn`,
+> `.mt-4`), prefer utilities.
 
 ---
 
@@ -133,7 +154,9 @@ For state-specific tweaks, prefer utility colours over toggling component
 variants in selectors. For example, with `data-*` states emitted by Kobalte:
 
 ```html
-<button class="btn data-[expanded]:ring data-[expanded]:bg-primary data-[expanded]:text-primary-content">
+<button
+  class="btn data-[expanded]:ring data-[expanded]:bg-primary data-[expanded]:text-primary-content"
+>
   Toggle
 </button>
 ```
@@ -165,7 +188,9 @@ export function ExampleDialog() {
               Something helpful.
             </Dialog.Description>
             <div class="mt-4 flex justify-end gap-2">
-              <Dialog.CloseButton class="btn btn-ghost">Cancel</Dialog.CloseButton>
+              <Dialog.CloseButton class="btn btn-ghost">
+                Cancel
+              </Dialog.CloseButton>
               <button class="btn btn-primary">Continue</button>
             </div>
           </div>
@@ -193,20 +218,23 @@ Example for a menu item:
 </div>
 ```
 
-> **Note:** Variants like `data-[expanded]:…` or `data-[pressed]:…` work with **Tailwind
-> utilities** (e.g., `bg-primary`, `ring-2`). They won’t magically prefix
-> non‑utility classes such as `btn-primary`. When a daisyUI variant must flip
-> by state, compute the class in the component
+> **Note:** Variants like `data-[expanded]:…` or `data-[pressed]:…` work with
+> **Tailwind utilities** (e.g., `bg-primary`, `ring-2`). They won’t magically
+> prefix non‑utility classes such as `btn-primary`. When a daisyUI variant must
+> flip by state, compute the class in the component
 > (`classList={{ "btn-primary": isOn() }}`).
 
 ---
 
 ## 6) `@apply` vs `@utility` (v4 reality)
 
-- Use **`@apply`** to inline Tailwind **utilities** into CSS when styling third‑party DOM, authoring CSS Modules / Vue `<style>` blocks, or reducing repetition inside a semantic wrapper. Pair it with `@reference` when applying inside component‑scoped styles.
+- Use **`@apply`** to inline Tailwind **utilities** into CSS when styling
+  third‑party DOM, authoring CSS Modules / Vue `<style>` blocks, or reducing
+  repetition inside a semantic wrapper. Pair it with `@reference` when applying
+  inside component‑scoped styles.
 - Use **`@utility`** to register a **custom utility** (or a small family of
   them) that participates in Tailwind’s variant system (`hover:`, `md:`,
-  `data-[state=…]:`, etc.). Prefer this for *project-specific shorthands* that
+  `data-[state=…]:`, etc.). Prefer this for _project-specific shorthands_ that
   should behave like first-class utilities.
 
 Examples:
@@ -224,12 +252,14 @@ Examples:
 /* Usage: <p class="prose-muted md:hover:prose-muted">… */
 ```
 
-**Avoid** `@apply` with plugin component classes like `btn`/`card` — they are not Tailwind utilities. Compose them in markup, or rebuild a semantic equivalent using tokens as shown in `.cta` above.
+**Avoid** `@apply` with plugin component classes like `btn`/`card` — they are
+not Tailwind utilities. Compose them in markup, or rebuild a semantic equivalent
+using tokens as shown in `.cta` above.
 
 ### 6.1 Encode state with selectors, not variant `@apply`
 
 Tailwind v4 only inlines **plain utilities** when `@apply` is used. Variant
-helpers such as `hover:`, `group-…`, or `data-[state=…]:…` are *not* expanded,
+helpers such as `hover:`, `group-…`, or `data-[state=…]:…` are _not_ expanded,
 which means the rule below will quietly drop the interactive parts:
 
 ```css
@@ -240,8 +270,8 @@ which means the rule below will quietly drop the interactive parts:
 ```
 
 Instead, combine `@apply` (for the static bits) with explicit selectors for
-stateful styles. This keeps the markup clean *and* ensures Kobalte data attributes
-toggle the look correctly:
+stateful styles. This keeps the markup clean _and_ ensures Kobalte data
+attributes toggle the look correctly:
 
 ```css
 .interest-chip {
@@ -266,26 +296,29 @@ Markup stays semantic:
 </ToggleGroup.Item>
 ```
 
-> **Summary:** Use `@apply` for the base utility stack, then express Kobalte / ARIA
-> state through selectors. This mirrors daisyUI’s approach and keeps all visual
-> logic in the stylesheet instead of scattering utility soup through JSX.
+> **Summary:** Use `@apply` for the base utility stack, then express Kobalte /
+> ARIA state through selectors. This mirrors daisyUI’s approach and keeps all
+> visual logic in the stylesheet instead of scattering utility soup through JSX.
 >
 > In a SolidJS + Kobalte codebase, this keeps behaviour in the primitive and
 > presentation in the stylesheet.
 >
 > **Ordering hint:** When markup keeps Tailwind utilities (e.g. `bg-base-200/60`
 > or `text-base-content/70`) alongside a semantic class, place the stateful
-> selectors in the `@layer utilities` block so they compile *after* the inline
-> utilities. Otherwise those utilities will win the cascade and the state
-> styles will never show up.
+> selectors in the `@layer utilities` block so they compile _after_ the inline
+> utilities. Otherwise those utilities will win the cascade and the state styles
+> will never show up.
 
 ---
 
 ## 7) Cascading styles without fights
 
-- Keep specificity low. Where selectors are needed, prefer `:where()` wrappers and attributes over IDs.
-- Let utilities win locally. If a component wrapper sets padding, expect a nearby `px-*`/`py-*` to override it in markup.
-- Encapsulate scope with attributes. For example, theme a section: `<section data-theme="retro">…`.
+- Keep specificity low. Where selectors are needed, prefer `:where()` wrappers
+  and attributes over IDs.
+- Let utilities win locally. If a component wrapper sets padding, expect a
+  nearby `px-*`/`py-*` to override it in markup.
+- Encapsulate scope with attributes. For example, theme a section:
+  `<section data-theme="retro">…`.
 - When a project‑wide variant is truly needed, mint one:
 
 ```css
@@ -329,20 +362,26 @@ export function PlanCard() {
 ## 9) Checklist (fast sanity)
 
 - [ ] Semantic element first; ARIA as clarifier.
-- [ ] Prefer daisyUI tokens (`bg-primary`, `rounded-box`, `text-base-content`) for theme‑aware styles.
+- [ ] Prefer daisyUI tokens (`bg-primary`, `rounded-box`, `text-base-content`)
+      for theme‑aware styles.
 - [ ] Use Tailwind utilities for per‑instance polish and state.
-- [ ] Create semantic wrappers only for reused intent; implement with `@utility`/`@apply` (utilities only).
-- [ ] Target Kobalte state via `data-[state=…]`, `data-[highlighted]`, `data-[disabled]`, or component-specific attributes such as `data-[pressed]`.
+- [ ] Create semantic wrappers only for reused intent; implement with
+      `@utility`/`@apply` (utilities only).
+- [ ] Target Kobalte state via `data-[state=…]`, `data-[highlighted]`,
+      `data-[disabled]`, or component-specific attributes such as
+      `data-[pressed]`.
 - [ ] Keep specificity low; let utilities win locally.
 
 ---
 
 ## 10) Troubleshooting notes
 
-- `@apply` inside CSS Modules/Svelte/Vue: add `@reference "../../app.css";` at the top of the scoped style block so Tailwind can resolve tokens/utilities.
-- Variant prefixes won’t apply to non‑utility classes: use utilities in the variant (e.g., `data-[state=open]:bg-primary`) or compute classes in JS/TS.
-- If a class isn’t generated, ensure the literal string exists in project
-  source files or is safelisted via `@source inline("class-name")`.
+- `@apply` inside CSS Modules/Svelte/Vue: add `@reference "../../app.css";` at
+  the top of the scoped style block so Tailwind can resolve tokens/utilities.
+- Variant prefixes won’t apply to non‑utility classes: use utilities in the
+  variant (e.g., `data-[state=open]:bg-primary`) or compute classes in JS/TS.
+- If a class isn’t generated, ensure the literal string exists in project source
+  files or is safelisted via `@source inline("class-name")`.
 
 ---
 
@@ -350,10 +389,9 @@ export function PlanCard() {
 
 - Build with daisyUI component classes for structure.
 - Reach for Tailwind utilities for local, stateful, and responsive tweaks.
-- Add a small set of semantic wrappers for concepts named in the product language.
+- Add a small set of semantic wrappers for concepts named in the product
+  language.
 - Let Kobalte drive state through `data-*` and style it with utilities.
-
-
 
 ---
 
@@ -364,11 +402,16 @@ Tailwind utilities, daisyUI roles, and Kobalte state styling.
 
 ### 11.1 Token taxonomy (keep it small and sane)
 
-- **Primitive tokens**: raw scales (colour, spacing, radius, shadows, typography). These are technology‑agnostic values.
-- **Semantic tokens**: role‑based names used in the design language (primary, surface, brand, danger, info).
-- **Component tokens**: per‑component knobs (field radius, selector radius, border thickness) — daisyUI already ships many.
+- **Primitive tokens**: raw scales (colour, spacing, radius, shadows,
+  typography). These are technology‑agnostic values.
+- **Semantic tokens**: role‑based names used in the design language (primary,
+  surface, brand, danger, info).
+- **Component tokens**: per‑component knobs (field radius, selector radius,
+  border thickness) — daisyUI already ships many.
 
-> Keep **primitive** tokens in Tailwind’s `@theme`. Map **semantic** tokens to daisyUI roles (primary, base‑100, etc.). Only introduce **component** tokens when the design needs them.
+> Keep **primitive** tokens in Tailwind’s `@theme`. Map **semantic** tokens to
+> daisyUI roles (primary, base‑100, etc.). Only introduce **component** tokens
+> when the design needs them.
 
 ### 11.2 Defining primitives with Tailwind v4 `@theme`
 
@@ -408,11 +451,15 @@ Tailwind utilities, daisyUI roles, and Kobalte state styling.
 
 ### 11.3 Mapping semantics to daisyUI roles
 
-daisyUI v5 exposes **role tokens** like `--color-primary`, `--color-base-100`, `--radius-field`, etc. Set those from shared primitives so daisyUI components and role utilities (`bg-primary`, `text-primary-content`, `rounded-field`) line up with the project brand.
+daisyUI v5 exposes **role tokens** like `--color-primary`, `--color-base-100`,
+`--radius-field`, etc. Set those from shared primitives so daisyUI components
+and role utilities (`bg-primary`, `text-primary-content`, `rounded-field`) line
+up with the project brand.
 
 ```css
 /* 2) Semantic roles (per theme). You can scope by [data-theme] */
-:root,[data-theme="light"]{
+:root,
+[data-theme="light"] {
   --color-primary: var(--color-brand-500);
   --color-primary-content: oklch(0.18 0.03 260);
   --color-base-100: oklch(0.99 0 0);
@@ -420,7 +467,7 @@ daisyUI v5 exposes **role tokens** like `--color-primary`, `--color-base-100`, `
   --radius-box: var(--radius-card);
   --border: 1px;
 }
-[data-theme="dark"]{
+[data-theme="dark"] {
   --color-primary: var(--color-brand-700);
   --color-primary-content: oklch(0.94 0.02 260);
   --color-base-100: oklch(0.16 0.03 260);
@@ -442,15 +489,19 @@ without writing `var()` directly:
 
 ```html
 <!-- Shorthand for bg-[var(--color-primary)] -->
-<div class="bg-(--color-primary) text-(color:--color-primary-content)">Tokenized</div>
+<div class="bg-(--color-primary) text-(color:--color-primary-content)">
+  Tokenized
+</div>
 
 <!-- Tokenized outline and ring -->
-<button class="ring-(--color-primary) ring-2 outline-(--color-primary)">Focus</button>
+<button class="ring-(--color-primary) ring-2 outline-(--color-primary)">
+  Focus
+</button>
 ```
 
-### 11.5 Project utilities that *feel* first‑class
+### 11.5 Project utilities that _feel_ first‑class
 
-Where semantic *wrappers* are needed, register them as **custom utilities** so
+Where semantic _wrappers_ are needed, register them as **custom utilities** so
 they inherit variants (`hover:`, `md:`, `data-[state=...]`) like any Tailwind
 class.
 
@@ -474,7 +525,11 @@ class.
 Usage:
 
 ```html
-<button class="cta data-[state=on]:ring-2 data-[state=on]:ring-(--color-primary)">Buy now</button>
+<button
+  class="cta data-[state=on]:ring-2 data-[state=on]:ring-(--color-primary)"
+>
+  Buy now
+</button>
 ```
 
 ### 11.6 Tokens × Kobalte state
@@ -484,24 +539,27 @@ component-specific state attributes. Pair those with tokenized utilities for
 consistent theming and good contrast.
 
 ```tsx
-<Toggle.Root
-  className="btn btn-ghost data-[state=on]:bg-(--color-primary) data-[state=on]:text-(color:--color-primary-content)"
->
+<Toggle.Root className="btn btn-ghost data-[state=on]:bg-(--color-primary) data-[state=on]:text-(color:--color-primary-content)">
   Enable
 </Toggle.Root>
 ```
 
 ### 11.7 Theming strategies
 
-- **System‑driven:** set `@plugin "daisyui" { themes: light --default, dark --prefersdark; }` and override role tokens in `[data-theme]` blocks for fine control.
-- **Manual switch:** toggle `<html data-theme="…">` at runtime. Add a helper variant for per‑theme tweaks:
+- **System‑driven:** set
+  `@plugin "daisyui" { themes: light --default, dark --prefersdark; }` and
+  override role tokens in `[data-theme]` blocks for fine control.
+- **Manual switch:** toggle `<html data-theme="…">` at runtime. Add a helper
+  variant for per‑theme tweaks:
 
 ```css
 @custom-variant theme-abyss (&:where([data-theme="abyss"] *));
 /* <button class="theme-abyss:ring-(--color-primary)">… */
 ```
 
-- **Section theming:** scope a subtree with `<section data-theme="retro">…</section>`; token mapping above will cascade to just that block.
+- **Section theming:** scope a subtree with
+  `<section data-theme="retro">…</section>`; token mapping above will cascade to
+  just that block.
 
 ### 11.8 Radius/size tokens that match daisyUI
 
@@ -517,16 +575,21 @@ Use daisyUI’s component radius/size tokens to keep edges consistent:
 To create matching Tailwind utilities, back them with `@theme`:
 
 ```css
-@theme { --radius-field: .75rem; } /* now rounded-field works everywhere */
+@theme {
+  --radius-field: 0.75rem;
+} /* now rounded-field works everywhere */
 ```
 
 ### 11.9 Contrast discipline (critical for tokens)
 
-- Ensure `--color-*-content` provides at least **4.5:1** contrast against its background.
+- Ensure `--color-*-content` provides at least **4.5:1** contrast against its
+  background.
 - Derive hovers/focus with `color-mix()` to keep hue/Chroma stable:
 
 ```css
-@utility hover-primary-bg { background: color-mix(in oklab, var(--color-primary) 88%, black); }
+@utility hover-primary-bg {
+  background: color-mix(in oklab, var(--color-primary) 88%, black);
+}
 ```
 
 ### 11.10 Quick recipes
@@ -535,36 +598,43 @@ To create matching Tailwind utilities, back them with `@theme`:
 
 ```css
 @theme {
-  --shadow-surface-1: 0 1px 2px rgb(0 0 0 / .06);
-  --shadow-surface-2: 0 4px 12px rgb(0 0 0 / .08);
+  --shadow-surface-1: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-surface-2: 0 4px 12px rgb(0 0 0 / 0.08);
 }
-.card-1 {@apply shadow-surface-1 rounded-box;}
-.card-2 {@apply shadow-surface-2 rounded-box;}
+.card-1 {
+  @apply shadow-surface-1 rounded-box;
+}
+.card-2 {
+  @apply shadow-surface-2 rounded-box;
+}
 ```
-
 
 **b) Tokenized prose**
 
 ```css
-@utility prose-muted { color: color-mix(in oklab, var(--color-base-content) 65%, transparent); }
+@utility prose-muted {
+  color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+}
 ```
-
 
 **c) Container‑aware sizes**
 
 ```css
-@theme { --container-compact: 400px; }
+@theme {
+  --container-compact: 400px;
+}
 /* Use with @sm: variant on container‑named elements */
 ```
-
 
 ### 11.11 Troubleshooting tokens
 
 - If a `bg-foo-500`‑style class doesn’t exist, ensure the token is declared in
   the right **namespace** under `@theme` (e.g., `--color-foo-500`).
-- In component‑scoped styles, add `@reference "../app.css";` before using `@apply` so Tailwind can resolve project tokens.
-- Don’t `@apply` plugin component classes (`btn`, `card`); compose them in markup or rebuild with tokens.
+- In component‑scoped styles, add `@reference "../app.css";` before using
+  `@apply` so Tailwind can resolve project tokens.
+- Don’t `@apply` plugin component classes (`btn`, `card`); compose them in
+  markup or rebuild with tokens.
 
-**Bottom line:** put *values* in `@theme`, map *roles* to daisyUI tokens, and
-style *states* with Kobalte data-attrs + utility variants. One vocabulary,
-zero fights.
+**Bottom line:** put _values_ in `@theme`, map _roles_ to daisyUI tokens, and
+style _states_ with Kobalte data-attrs + utility variants. One vocabulary, zero
+fights.
