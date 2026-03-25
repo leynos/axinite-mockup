@@ -293,8 +293,8 @@ attributes toggle the look correctly:
 Markup stays semantic:
 
 ```tsx
-<ToggleGroup.Item value={id} className="interest-chip">
-  <Icon className="interest-chip__icon text-lg transition" aria-hidden />
+<ToggleGroup.Item value={id} class="interest-chip">
+  <Icon class="interest-chip__icon text-lg transition" aria-hidden />
   {interest.label}
 </ToggleGroup.Item>
 ```
@@ -543,7 +543,7 @@ component-specific state attributes. Pair those with tokenized utilities for
 consistent theming and good contrast.
 
 ```tsx
-<Toggle.Root className="btn btn-ghost data-[state=on]:bg-(--color-primary) data-[state=on]:text-(color:--color-primary-content)">
+<Toggle.Root class="btn btn-ghost data-[state=on]:bg-(--color-primary) data-[state=on]:text-(color:--color-primary-content)">
   Enable
 </Toggle.Root>
 ```

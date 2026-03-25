@@ -47,10 +47,10 @@ common UI components
 1. Styles are applied to an HTML element by adding daisyUI class names to it.
    This includes a component class name, part class names (if available for that
    component), and modifier class names (if available for that component).
-2. Tailwind CSS utility classes may be used to customise components when the
+2. Tailwind CSS utility classes may be used to customize components when the
    existing daisyUI classes do not cover the required styling. For example,
    `btn px-10` sets custom horizontal padding on a `btn`.
-3. If customisation of daisyUI styles using Tailwind CSS utility classes is
+3. If customization of daisyUI styles using Tailwind CSS utility classes is
    blocked by CSS specificity issues, append `!` to the Tailwind CSS utility
    class to override the existing styles. For example, `btn bg-red-500!` sets a
    custom background colour on a `btn` forcefully. This is a last-resort

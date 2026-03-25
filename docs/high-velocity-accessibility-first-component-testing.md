@@ -35,16 +35,22 @@ documentation confirm this issue: the maintainers of `vitest-axe` (a Vitest/Jest
 integration for axe) explicitly warn that their matcher is **incompatible** with
 Happy DOM environments.
 
-Unfortunately, Bun’s test runner **does not yet support** the more
-standards-compliant **JSDOM** environment (the de facto choice for Node-based
-DOM testing). JSDOM would solve the `isConnected` issue, but Bun cannot use it
-as a drop-in replacement at this time.[^2] This presents a catch-22:
+Unfortunately, Bun’s test runner still does not provide **JSDOM** as a native,
+drop-in test environment. As of March 2026, Bun’s documentation continues to
+recommend **Happy DOM** for DOM testing, while Bun v1.1.41 and later have made
+JSDOM more reliable through `node:vm` compatibility fixes.[^2] That improves
+the manual setup story, but JSDOM still has to be installed and configured
+explicitly rather than enabled as a built-in replacement for Happy DOM, and a
+future Bun release may change that status. JSDOM would solve the
+`isConnected` issue, but Bun cannot use it as a drop-in replacement at this
+time. This presents a catch-22:
 
 - Bun’s recommended path for DOM tests is Happy DOM (for speed).
 
 - `axe-core` cannot operate under Happy DOM due to fundamental API mismatch.
 
-- The only viable alternative (JSDOM) isn’t supported in Bun’s native runner.
+- The only viable alternative (JSDOM) requires manual setup instead of Bun’s
+  native DOM-test path.
 
 In summary, **Bun alone cannot run component-level accessibility scans** today.
 This impasse is not a matter of configuration or minor bug; it is a fundamental
@@ -1268,8 +1274,10 @@ users.
     implementation with axe-core’s expectations.
 
 [^2]:
-    Bun GitHub issue #3554 – tracking request for JSDOM support in Bun’s test
-    runner (unresolved as of 2025).
+    Bun documentation and Bun v1.1.41 release notes – Bun continues to
+    recommend Happy DOM for DOM tests, while v1.1.41 improved `node:vm`
+    compatibility so `jsdom` works more reliably when it is installed and
+    configured manually.
 
 [^3]:
     Deque `axe-core` documentation – notes on JSDOM support and rules like
