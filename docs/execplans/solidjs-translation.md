@@ -637,6 +637,11 @@ following are true:
   `make ff`, `make markdownlint`, `make nixie`, Playwright screenshots of
   Extensions and Skills, and `css-view` captures confirming `direction: rtl`
   on the Arabic routes plus the restored catalogue grids and intake panels.
+- [x] 2026-03-25 22:14 GMT: Committed the final restoration slice as `0e6bebc`
+  (`Restore the original extensions and skills design`).
+- [x] 2026-03-25 22:14 GMT: Pushed `solidjs-translation` to
+  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  URL.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
