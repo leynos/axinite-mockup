@@ -1,4 +1,4 @@
-import { For, createMemo, createSignal } from "solid-js";
+import { For, Show, createMemo, createSignal } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
 
@@ -64,17 +64,16 @@ const FORMAT_CLASS: Record<SkillFormat, string> = {
 export const SkillsPreview = () => {
   const { t } = useI18n();
   const [activeSkillId, setActiveSkillId] =
-    createSignal<SkillId>("openapi_reference");
-  const [query, setQuery] = createSignal("react");
+    createSignal<SkillId | null>(null);
+  const [query, setQuery] = createSignal("");
 
   const activeSkill = () =>
-    INSTALLED_SKILLS.find((skill) => skill.id === activeSkillId()) ??
-    INSTALLED_SKILLS[0];
+    INSTALLED_SKILLS.find((skill) => skill.id === activeSkillId()) ?? null;
 
   const filteredResults = createMemo(() => {
     const term = query().trim().toLowerCase();
     if (term.length === 0) {
-      return SEARCH_RESULTS;
+      return [];
     }
 
     return SEARCH_RESULTS.filter((result) => {
@@ -98,29 +97,45 @@ export const SkillsPreview = () => {
     });
   };
 
+  const activeSkillFiles = createMemo(() => {
+    const skill = activeSkill();
+
+    if (!skill) {
+      return [];
+    }
+
+    return [1, 2, 3, 4, 5, 6, 7, 8]
+      .map((index) => {
+        const key = `skillsItem${skill.id}File${index}` as const;
+        const value = t(key);
+        return value === key ? null : value;
+      })
+      .filter((value): value is string => value !== null);
+  });
+
   return (
-    <section class="route-preview route-preview--catalogue">
+    <section class="route-preview route-preview--catalogue route-preview--skills">
       <div aria-hidden="true" class="route-preview__watermark">
         {t("skillsWatermark")}
       </div>
 
-      <div class="catalogue-preview">
-        <header class="route-preview__intro catalogue-preview__intro">
+      <div class="catalogue-preview catalogue-preview--skills">
+        <header class="route-preview__intro catalogue-preview__intro skills-preview__intro">
           <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
           <h2 class="route-preview__title">{t("route-skills-label")}</h2>
           <p class="route-preview__summary">{t("page-skills-summary")}</p>
         </header>
 
-        <section class="catalogue-section">
-          <div class="catalogue-section__header">
+        <section class="catalogue-section skills-section skills-section--search">
+          <div class="catalogue-section__header skills-section__header">
             <div>
               <h3 class="catalogue-section__title">{t("skillsSearchTitle")}</h3>
               <p class="catalogue-section__body">{t("page-skills-agenda")}</p>
             </div>
           </div>
 
-          <div class="catalogue-search">
-            <div class="catalogue-form__row">
+          <div class="catalogue-search skills-search">
+            <div class="catalogue-form__row skills-search__row">
               <input
                 class="catalogue-form__input"
                 onInput={(event) => setQuery(event.currentTarget.value)}
@@ -133,10 +148,10 @@ export const SkillsPreview = () => {
               </button>
             </div>
 
-            <div class="catalogue-search__results">
+            <div class="catalogue-search__results skills-search__results">
               <For each={filteredResults()}>
                 {(result) => (
-                  <article class="catalogue-search__result">
+                  <article class="catalogue-search__result skills-search__result">
                     <div class="catalogue-search__header">
                       <div>
                         <h4 class="catalogue-card__title">
@@ -163,8 +178,8 @@ export const SkillsPreview = () => {
           </div>
         </section>
 
-        <section class="catalogue-section">
-          <div class="catalogue-section__header">
+        <section class="catalogue-section skills-section">
+          <div class="catalogue-section__header skills-section__header">
             <div>
               <h3 class="catalogue-section__title">
                 {t("skillsInstalledTitle")}
@@ -173,14 +188,14 @@ export const SkillsPreview = () => {
             </div>
           </div>
 
-          <div class="catalogue-grid">
+          <div class="catalogue-grid skills-grid">
             <For each={INSTALLED_SKILLS}>
               {(skill) => (
                 <article
                   class={
                     activeSkillId() === skill.id
-                      ? "catalogue-card catalogue-card--active"
-                      : "catalogue-card"
+                      ? "catalogue-card catalogue-card--active skills-card"
+                      : "catalogue-card skills-card"
                   }
                 >
                   <div class="catalogue-card__header">
@@ -234,8 +249,8 @@ export const SkillsPreview = () => {
           </div>
         </section>
 
-        <div class="catalogue-panel-grid">
-          <section class="catalogue-panel">
+        <div class="catalogue-panel-grid skills-panel-grid">
+          <section class="catalogue-panel skills-panel">
             <div class="catalogue-panel__mark">{t("skillsUrlMark")}</div>
             <div class="catalogue-panel__content">
               <h3 class="catalogue-panel__title">{t("skillsUrlTitle")}</h3>
@@ -256,7 +271,7 @@ export const SkillsPreview = () => {
                 <label class="catalogue-form__label" for="skills-url-input">
                   {t("skillsUrlFieldLabel")}
                 </label>
-                <div class="catalogue-form__row">
+                <div class="catalogue-form__row skills-search__row">
                   <input
                     class="catalogue-form__input"
                     id="skills-url-input"
@@ -273,7 +288,7 @@ export const SkillsPreview = () => {
             </div>
           </section>
 
-          <section class="catalogue-panel">
+          <section class="catalogue-panel skills-panel">
             <div class="catalogue-panel__mark">{t("skillsUploadMark")}</div>
             <div class="catalogue-panel__content">
               <h3 class="catalogue-panel__title">{t("skillsUploadTitle")}</h3>
@@ -290,7 +305,7 @@ export const SkillsPreview = () => {
                 </span>
               </button>
 
-              <div class="catalogue-form__row">
+              <div class="catalogue-form__row skills-search__row">
                 <input
                   class="catalogue-form__input"
                   placeholder={t("skillsUploadNamePlaceholder")}
@@ -306,43 +321,45 @@ export const SkillsPreview = () => {
           </section>
         </div>
 
-        <section class="catalogue-detail">
-          <div class="catalogue-detail__header">
-            <div>
-              <p class="catalogue-detail__eyebrow">{t("skillsDetailEyebrow")}</p>
-              <h3 class="catalogue-detail__title">
-                {t(`skillsItem${activeSkill().id}Title`)}
-              </h3>
-            </div>
-            <div class="catalogue-detail__pills">
-              <span class={FORMAT_CLASS[activeSkill().format]}>
-                {formatLabel(activeSkill().format)}
-              </span>
-              <span class="catalogue-pill catalogue-pill--neutral">
-                {activeSkill().version}
-              </span>
-            </div>
-          </div>
+        <Show keyed when={activeSkill()}>
+          {(skill) => (
+            <section class="catalogue-detail skills-detail">
+              <div class="catalogue-detail__header">
+                <div>
+                  <p class="catalogue-detail__eyebrow">{t("skillsDetailEyebrow")}</p>
+                  <h3 class="catalogue-detail__title">
+                    {t(`skillsItem${skill.id}Title`)}
+                  </h3>
+                </div>
+                <div class="catalogue-detail__pills">
+                  <span class={FORMAT_CLASS[skill.format]}>
+                    {formatLabel(skill.format)}
+                  </span>
+                  <span class="catalogue-pill catalogue-pill--neutral">
+                    {skill.version}
+                  </span>
+                </div>
+              </div>
 
-          <p class="catalogue-detail__body">
-            {t(`skillsItem${activeSkill().id}Detail`)}
-          </p>
+              <div class="skills-detail__layout">
+                <div class="skills-detail__body-block">
+                  <p class="catalogue-detail__body">
+                    {t(`skillsItem${skill.id}Detail`)}
+                  </p>
+                </div>
 
-          <div class="catalogue-files">
-            <p class="catalogue-files__title">{t("skillsFilesTitle")}</p>
-            <div class="catalogue-files__list">
-              <For each={[1, 2, 3, 4, 5, 6, 7, 8]}>
-                {(index) => {
-                  const key = `skillsItem${activeSkill().id}File${index}` as const;
-                  const value = t(key);
-                  return value === key ? null : (
-                    <div class="catalogue-files__item">{value}</div>
-                  );
-                }}
-              </For>
-            </div>
-          </div>
-        </section>
+                <div class="catalogue-files skills-detail__files">
+                  <p class="catalogue-files__title">{t("skillsFilesTitle")}</p>
+                  <div class="catalogue-files__list skills-files__list">
+                    <For each={activeSkillFiles()}>
+                      {(value) => <div class="catalogue-files__item">{value}</div>}
+                    </For>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+        </Show>
       </div>
     </section>
   );

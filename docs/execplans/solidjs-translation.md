@@ -677,6 +677,16 @@ following are true:
   installed-extension cards, keeping the dual WASM and MCP intake panels
   side-by-side, and replacing the large bottom detail block with a compact
   selected-extension strip.
+- [x] 2026-03-26 10:18 GMT: Audited the current Skills route against the
+  original static `axinite/skills/index.html` page and confirmed the main
+  visual regression was structural clutter: the always-open selected-skill
+  viewer and shared wrapping form-row styles made the route read as one long
+  catalogue stack instead of search, inventory, and intake surfaces.
+- [x] 2026-03-26 10:24 GMT: Reworked the Solid Skills route to behave more like
+  the original page by hiding search results until a query exists, removing the
+  default always-open skill viewer, keeping search and install rows aligned on
+  desktop, and applying route-specific Skills styling on top of the shared
+  catalogue primitives.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
@@ -769,6 +779,10 @@ following are true:
   page is notably flatter and more operator-panel driven than the bundle-heavy
   Skills view, so route-specific styling is necessary to preserve that
   distinction.
+- The Skills route needs interaction-driven density in a way Extensions does
+  not. Leaving the selected-skill viewer open by default and letting shared
+  wrapping form rows govern the search/install controls makes the page feel
+  visually broken even when the underlying grid math is correct.
 
 ## Decision Log
 
@@ -800,6 +814,14 @@ following are true:
   installed cards, and a compact operator-centric hierarchy. Preserving that
   appearance is easier and safer with route-specific CSS hooks layered on top
   of the shared catalogue primitives.
+
+- Decision: keep Skills search results and the selected-skill viewer
+  interaction-driven instead of always rendering them in the default route
+  state.
+  Rationale: the original static page hides search results until the operator
+  searches and uses a separate viewer surface for skill details. Matching that
+  behaviour reduces clutter and restores the intended visual hierarchy without
+  dropping the current Solid data fixtures.
 
 - Decision: model feature flags as a first-class provider and test target.
   Rationale: the backend does not yet expose every mock-up feature. Treating
