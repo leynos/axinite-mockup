@@ -76,5 +76,5 @@ const server = Bun.serve({
 });
 
 console.log(
-  `[preview] serving dist on http://127.0.0.1:${server.port ?? previewPort} with API proxy http://127.0.0.1:${apiPort}`
+  `[preview] serving dist on http://localhost:${server.port ?? previewPort} with API proxy http://localhost:${apiPort}`
 );

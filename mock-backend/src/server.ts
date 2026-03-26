@@ -392,5 +392,5 @@ export function createMockBackendServer(
 
 if (import.meta.main) {
   const { port } = createMockBackendServer();
-  console.log(`[mock-api] listening on http://127.0.0.1:${port}`);
+  console.log(`[mock-api] listening on http://localhost:${port}`);
 }

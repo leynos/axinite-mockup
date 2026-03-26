@@ -167,6 +167,10 @@ revise this document, not to start coding.
   refactor, and same-origin preview gateway.
 - [x] (2026-03-26 13:26Z) Validated the built preview, API flows, SSE streams,
   and representative CSS output on a free local preview port.
+- [x] (2026-03-26 15:00Z) Followed up on the occupied-port startup failure so
+  `bun run dev` now chooses a nearby free preview port when the default `2020`
+  port is already in use, while still failing fast for an explicitly requested
+  `PREVIEW_PORT`.
 
 ## Surprises & Discoveries
 
@@ -211,6 +215,14 @@ revise this document, not to start coding.
   Impact: the implementation works, but default-port validation remains
   environment-dependent whenever another process owns `2020`.
 
+- Observation: the default developer workflow still felt brittle after the
+  initial implementation because `bun run dev` aborted instead of selecting a
+  free port when `2020` was occupied.
+  Evidence: a direct `bun run dev` run failed with `EADDRINUSE` from
+  `mock-backend/src/preview-server.ts` when `2020` was already bound.
+  Impact: the supervisor now probes for a nearby free port by default, which
+  keeps the local demo stack usable without changing the browser API contract.
+
 ## Decision log
 
 - Decision: the mock service will mirror the Rust web gateway's browser
@@ -247,6 +259,14 @@ revise this document, not to start coding.
   setup was not forwarding the request path correctly for this repository, and
   the plan already allowed a same-origin fallback if `http-server` proved
   unsuitable.
+  Date/Author: 2026-03-26 / Codex
+
+- Decision: when no explicit `PREVIEW_PORT` is provided, `bun run dev` should
+  fall back to a nearby free port instead of aborting on an occupied `2020`
+  port.
+  Rationale: the repository guidance already expects port `2020` to be used for
+  live previewing, so the development supervisor needs a safe default that does
+  not fail merely because another local preview process already owns that port.
   Date/Author: 2026-03-26 / Codex
 
 - Decision: state-management escalation should remain conditional, not

@@ -8,9 +8,9 @@ export function fetchLogLevel(): Promise<LogLevelResponse> {
 }
 
 export function setLogLevel(level: string): Promise<LogLevelResponse> {
-  return postJson<LogLevelResponse>("/api/logs/level", { level }).catch(
-    () => ({ level })
-  );
+  return postJson<LogLevelResponse>("/api/logs/level", { level }).catch(() => ({
+    level,
+  }));
 }
 
 export function connectLogEvents(

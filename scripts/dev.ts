@@ -1,5 +1,8 @@
+import net from "node:net";
+
 const apiPort = Number(process.env.MOCK_API_PORT ?? "8787");
-const previewPort = Number(process.env.PREVIEW_PORT ?? "2020");
+const defaultPreviewPort = Number(process.env.PREVIEW_PORT ?? "2020");
+const previewPortWasExplicit = process.env.PREVIEW_PORT !== undefined;
 
 type ManagedProcess = {
   label: string;
@@ -57,7 +60,55 @@ function spawnManaged(
   return { label, process: child };
 }
 
+async function isPortAvailable(port: number): Promise<boolean> {
+  return await new Promise((resolve) => {
+    const server = net.createServer();
+    server.unref();
+
+    server.once("error", () => {
+      resolve(false);
+    });
+
+    server.once("listening", () => {
+      server.close(() => resolve(true));
+    });
+
+    server.listen(port, "127.0.0.1");
+  });
+}
+
+async function reservePreviewPort(): Promise<number> {
+  if (await isPortAvailable(defaultPreviewPort)) {
+    return defaultPreviewPort;
+  }
+
+  if (previewPortWasExplicit) {
+    throw new Error(
+      `[dev] PREVIEW_PORT ${defaultPreviewPort} is unavailable. Choose a free port and retry.`
+    );
+  }
+
+  const maxFallbackPort = defaultPreviewPort + 100;
+  for (
+    let candidatePort = defaultPreviewPort + 1;
+    candidatePort <= maxFallbackPort;
+    candidatePort += 1
+  ) {
+    if (await isPortAvailable(candidatePort)) {
+      console.warn(
+        `[dev] preview port ${defaultPreviewPort} is busy; falling back to ${candidatePort}`
+      );
+      return candidatePort;
+    }
+  }
+
+  throw new Error(
+    `[dev] could not find a free preview port in ${defaultPreviewPort}-${maxFallbackPort}`
+  );
+}
+
 async function main(): Promise<void> {
+  const previewPort = await reservePreviewPort();
   console.log(
     `[dev] starting mock API on ${apiPort}, static preview on ${previewPort}`
   );
@@ -113,5 +164,3 @@ async function main(): Promise<void> {
 }
 
 await main();
-
-export {};
