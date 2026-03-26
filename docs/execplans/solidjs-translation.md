@@ -658,6 +658,15 @@ following are true:
 - [x] 2026-03-25 23:54 GMT: Pushed `solidjs-translation` to
   `github.com:leynos/axinite-mockup`. The push output did not include a web
   URL.
+- [x] 2026-03-26 09:17 GMT: Verified the user's local-build 404 report against
+  the current output. The prefixed Vite `base` was correct for GitHub Pages,
+  but `scripts/postbuild-routes.mjs` still emitted only root-level route
+  folders, so a static `dist/` preview could not satisfy
+  `/axinite-mockup/...` asset and route requests.
+- [x] 2026-03-26 09:24 GMT: Updated the postbuild output to mirror the built
+  SPA under `dist/axinite-mockup/` and turned the old root route folders into
+  compatibility redirects so existing `/chat`-style preview URLs now forward
+  into the deploy-prefixed app instead of failing.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
@@ -741,6 +750,10 @@ following are true:
 - The GitHub Pages deployment seam is broader than just Vite `base`: the shell
   can still escape the prefix if fallback links, router redirects, or generated
   manifest URLs remain root-absolute.
+- The local static preview seam is broader than route copies alone. Once the
+  SPA emits prefixed asset and service-worker URLs, the postbuild output also
+  has to mirror the deploy tree itself or provide explicit compatibility
+  redirects from the older root-level preview routes.
 
 ## Decision Log
 
@@ -758,6 +771,13 @@ following are true:
   needs typed route structure. The Solid adapter for TanStack Router gives the
   route typing and nested shell model needed for parity with the current page
   families.
+
+- Decision: keep the explicit `/axinite-mockup/` Vite base for GitHub Pages and
+  fix the static preview output rather than reverting to a root base path.
+  Rationale: the deploy prefix is a real requirement. The correct compatibility
+  fix is to emit a mirrored prefixed tree and root-level redirect stubs so the
+  same build works both on GitHub Pages and when `dist/` is served directly for
+  preview.
 
 - Decision: model feature flags as a first-class provider and test target.
   Rationale: the backend does not yet expose every mock-up feature. Treating

@@ -12,6 +12,14 @@ const REQUIRED_OUTPUTS = [
   "dist/routines/index.html",
   "dist/extensions/index.html",
   "dist/skills/index.html",
+  "dist/axinite-mockup/index.html",
+  "dist/axinite-mockup/chat/index.html",
+  "dist/axinite-mockup/memory/index.html",
+  "dist/axinite-mockup/jobs/index.html",
+  "dist/axinite-mockup/routines/index.html",
+  "dist/axinite-mockup/extensions/index.html",
+  "dist/axinite-mockup/skills/index.html",
+  "dist/axinite-mockup/manifest.webmanifest",
   "dist/manifest.webmanifest",
 ];
 
@@ -62,6 +70,28 @@ async function main() {
     !indexHtml.includes('href="/axinite-mockup/assets/')
   ) {
     console.error("Built index.html must reference assets under /axinite-mockup/");
+    process.exitCode = 1;
+    return;
+  }
+
+  const rootRouteCompatibilityHtml = await readFile(
+    path.join(ROOT, "dist", "chat", "index.html"),
+    "utf8"
+  );
+  if (!rootRouteCompatibilityHtml.includes('window.location.replace(target.toString())')) {
+    console.error("Root route compatibility pages must redirect into /axinite-mockup/.");
+    process.exitCode = 1;
+    return;
+  }
+
+  const deployRouteHtml = await readFile(
+    path.join(ROOT, "dist", "axinite-mockup", "chat", "index.html"),
+    "utf8"
+  );
+  if (!deployRouteHtml.includes('src="/axinite-mockup/assets/')) {
+    console.error(
+      "Deploy-prefixed route pages must preserve /axinite-mockup/ asset URLs."
+    );
     process.exitCode = 1;
     return;
   }
