@@ -1,6 +1,7 @@
 import {
   createMutation,
   createQuery,
+  keepPreviousData,
   useQueryClient,
 } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
@@ -80,12 +81,14 @@ export const RoutinesPreview = () => {
     queryKey: ["routines", "detail", activeRoutineId()],
     queryFn: () => fetchRoutineDetail(activeRoutineId() ?? ""),
     enabled: typeof activeRoutineId() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   const runs = createQuery(() => ({
     queryKey: ["routines", "runs", activeRoutineId()],
     queryFn: () => fetchRoutineRuns(activeRoutineId() ?? ""),
     enabled: typeof activeRoutineId() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   const refresh = () => {

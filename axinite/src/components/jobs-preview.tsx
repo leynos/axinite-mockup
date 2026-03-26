@@ -1,6 +1,7 @@
 import {
   createMutation,
   createQuery,
+  keepPreviousData,
   useQueryClient,
 } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
@@ -94,18 +95,21 @@ export const JobsPreview = () => {
     queryKey: ["jobs", "detail", activeJobId()],
     queryFn: () => fetchJobDetail(activeJobId() ?? ""),
     enabled: typeof activeJobId() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   const events = createQuery(() => ({
     queryKey: ["jobs", "events", activeJobId()],
     queryFn: () => fetchJobEvents(activeJobId() ?? ""),
     enabled: typeof activeJobId() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   const files = createQuery(() => ({
     queryKey: ["jobs", "files", activeJobId()],
     queryFn: () => fetchJobFiles(activeJobId() ?? ""),
     enabled: typeof activeJobId() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   createEffect(() => {
@@ -120,6 +124,7 @@ export const JobsPreview = () => {
     queryFn: () => readJobFile(activeJobId() ?? "", activeFilePath() ?? ""),
     enabled:
       typeof activeJobId() === "string" && typeof activeFilePath() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   const refreshJobs = () => {
