@@ -69,6 +69,9 @@ not to start coding.
   approval.
 - The existing GitHub Pages base-path handling must continue to work for built
   static assets and route entry points.
+- Router-local state, Solid signals, and TanStack Query remain the default
+  front-end state model. Introduce a heavier abstraction only when a concrete
+  behaviour becomes too complex for that baseline to remain legible.
 
 ## Tolerances (exception triggers)
 
@@ -77,6 +80,10 @@ not to start coding.
 - Dependencies: adding up to two new packages is acceptable if they are small
   and directly serve the requested workflow. If more than two new packages are
   needed, stop and escalate.
+- State model: if router-local state plus Solid signals plus TanStack Query are
+  no longer sufficient for a route, document the exact pressure first, then
+  choose from the approved escalation options in `docs/v2a-front-end-stack.md`
+  and this plan instead of introducing an ad hoc pattern.
 - Contracts: if the Rust browser contract is ambiguous or contradictory for a
   required endpoint, stop and document the specific mismatch before guessing.
 - Transport: if `http-server` proxying proves unable to carry required SSE
@@ -127,6 +134,22 @@ not to start coding.
   Likelihood: medium
   Mitigation: define a single merge rule: server defaults from `/api/features`,
   then local debug overrides from browser storage, then route rendering.
+
+- Risk: route behaviour may become awkward if complex forms, optimistic
+  mutations, transient drafts, and event-stream coordination are all forced
+  into route-local signals.
+  Severity: medium
+  Likelihood: medium
+  Mitigation: start with the baseline router-plus-query model, but explicitly
+  consider `@tanstack/solid-form`, `solid-state`, Zustand, and XState if a
+  route grows beyond what is reasonable for a router-only solution.
+
+- Risk: hand-rolled SSE lifecycle code for chat and logs may become brittle if
+  reconnect logic, cleanup, and event fan-out are spread across components.
+  Severity: medium
+  Likelihood: medium
+  Mitigation: if the event-stream wiring stops being trivial, consider
+  `useEventSource` rather than building a bespoke subscription layer.
 
 ## Progress
 
@@ -198,6 +221,16 @@ not to start coding.
   contract.
   Date/Author: 2026-03-26 / Codex
 
+- Decision: state-management escalation should remain conditional, not
+  automatic.
+  Rationale: `docs/v2a-front-end-stack.md` places Zustand and XState in the
+  fuller v2a stack rather than the baseline mockup layer. This rollout should
+  first prefer router-local state, Solid signals, and TanStack Query, then
+  reach for `@tanstack/solid-form`, `solid-state`, Zustand, or XState only
+  when the resulting behaviour would otherwise become unreasonably implicit or
+  fragile.
+  Date/Author: 2026-03-26 / Codex
+
 ## Outcomes & retrospective
 
 This plan currently achieves the draft-stage outcome: the repository now has a
@@ -227,6 +260,10 @@ data flow is still mostly static. The files below matter most:
   `axinite/src/components/extensions-preview.tsx`, and
   `axinite/src/components/skills-preview.tsx` still hold route content in local
   arrays and signals.
+- `docs/v2a-front-end-stack.md` describes the intended state-management ladder:
+  baseline Solid signals and route state first, then richer tools such as
+  Zustand and XState in the fuller v2a application stack when behaviour
+  becomes more complex.
 
 The upstream Rust repository in `../axinite` is the contract source for the
 mock backend. The most important files are:
@@ -357,6 +394,26 @@ helpers. The acceptance rule for this stage is strict: no visible route value
 may come from a front-end fixture constant. Local UI state is still fine for
 presentation concerns such as selection, expanded rows, or currently open
 dialogs, but the content being presented must originate from the mock backend.
+
+State management in this stage should follow a deliberate escalation ladder:
+
+1. start with route-local state, Solid signals, and TanStack Query;
+2. use `@tanstack/solid-form` when complex form state or validation makes
+   plain signals too implicit;
+3. use `solid-state` or Zustand when shared client-side interaction state
+   crosses route or component boundaries cleanly enough to justify a dedicated
+   store; and
+4. use XState only for genuinely multistep or event-heavy workflows such as
+   extension auth orchestration, chat approval flows, or other logic that
+   benefits from an explicit state machine.
+
+Do not introduce these libraries merely because they are available. The plan is
+to keep the simplest model that still makes the behaviour obvious.
+
+For SSE specifically, start with ordinary `EventSource` wiring only if the
+subscription remains simple and local. If chat or logs need enough reconnect,
+teardown, or listener coordination that the code starts to sprawl, prefer
+`useEventSource` over a bespoke helper stack.
 
 During this stage, preserve the existing debug-panel feature flag overrides.
 The merge order should stay:
@@ -508,6 +565,22 @@ native watch facilities are not sufficient. `http-server` may stay as a `bunx`
 tool invocation unless making it a dev dependency materially improves
 reliability.
 
+For front-end state and behaviour abstraction, the allowed escalation options
+are:
+
+- `@tanstack/solid-form` for richer form state and validation;
+- `solid-state` for explicit shared client-side stores in Solid-native code;
+- Zustand for broader interactive client and UI state when the behaviour aligns
+  with the fuller v2a stack; and
+- XState for explicit workflow orchestration when simpler stores become too
+  implicit.
+
+For SSE handling, `useEventSource` is an allowed abstraction when direct
+`EventSource` management would otherwise become repetitive or fragile.
+
+These are options, not baseline requirements. Prefer the lightest tool that
+keeps the resulting behaviour legible.
+
 The mock backend should expose clearly named modules, for example:
 
 - `mock-backend/src/contracts.ts` for shared request and response types,
@@ -542,3 +615,13 @@ approval gate before implementation begins.
 Revised the draft on 2026-03-26 to remove the split-origin runtime-API-base
 fallback. If `http-server` cannot support the required transport path, the plan
 now calls for choosing an alternative single-origin preview backend instead.
+
+Revised the draft again on 2026-03-26 to align its state-management guidance
+with `docs/v2a-front-end-stack.md` and the user's follow-up. The plan now
+explicitly treats `@tanstack/solid-form`, `solid-state`, Zustand, and XState as
+conditional escalation options if router-local state plus Solid signals and
+TanStack Query become unreasonably complex.
+
+Revised the draft once more on 2026-03-26 to note `useEventSource` as an
+explicit option for chat and log SSE handling when direct `EventSource`
+management would otherwise become too bespoke.
