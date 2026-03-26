@@ -5,14 +5,14 @@ import FluentBackend from "i18next-fluent-backend";
 
 import { normaliseBasePath } from "@/lib/base-path";
 import {
+  AVAILABLE_LOCALES,
   DEFAULT_LOCALE,
   DETECTION_ORDER,
   getLocaleDirection,
   getLocaleMetadata,
-  SUPPORTED_LOCALES,
 } from "@/lib/i18n/supported-locales";
 
-const supportedLanguages = SUPPORTED_LOCALES.map((locale) => locale.code);
+const supportedLanguages = AVAILABLE_LOCALES.map((locale) => locale.code);
 
 type AjaxResponse = {
   status: number;

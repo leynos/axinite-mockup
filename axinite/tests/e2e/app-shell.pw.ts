@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const DEPLOY_BASE = "/axinite-mockup";
 
-test("navigates routes and flips to rtl", async ({ page }) => {
+test("navigates routes and only exposes complete locales", async ({ page }) => {
   await page.goto(`${DEPLOY_BASE}/chat?debug-flags=1`);
 
   await expect(page.getByRole("heading", { name: "Chat", level: 2 })).toBeVisible();
@@ -30,7 +30,10 @@ test("navigates routes and flips to rtl", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Logs" })).toBeVisible();
 
   await page.keyboard.press("Escape");
-  await page.getByLabel("Language").selectOption("ar");
-  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(page.getByRole("button", { name: "السجلات" })).toBeVisible();
+  await expect(page.getByLabel("Language")).toHaveValue("en-GB");
+  await expect(page.getByRole("option")).toHaveCount(1);
+
+  await page.goto(`${DEPLOY_BASE}/skills?lng=fr`);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en-GB");
+  await expect(page.getByRole("heading", { name: "Skills", level: 2 })).toBeVisible();
 });

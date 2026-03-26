@@ -14,7 +14,7 @@
     "test": "vitest --run --config vitest.config.ts",
     "test:a11y": "vitest --run --config vitest.a11y.config.ts",
     "test:e2e": "playwright test",
-    "lint:ftl-vars": "bun run scripts/check-fluent-vars.ts",
+    "lint:ftl-vars": "bun run scripts/check-fluent-vars.ts && bun run scripts/check-fluent-coverage.ts",
     "test:all": "bun run lint && bun run check:types && bun run test && bun run test:a11y && bun run lint:ftl-vars && bun run semantic && bun run test:e2e",
     "ff": "mkdir -p tmp && bunx --bun @tailwindcss/cli --input axinite/src/styles/index.css --output tmp/tailwind.css --verbose && rm -f tmp/tailwind.css && bun run test:all && uvx --from moz-fluent-linter moz-fluent-lint axinite/public/locales/",
     "semantic:lint": "bunx biome lint axinite/src axinite/tests scripts docs && bun run lint:classlist && bun run lint:class-duplicates && uvx semgrep --config tools/semgrep-semantic.yml --include axinite/src/**/*.tsx --include axinite/tests/**/*.tsx && bunx stylelint 'axinite/src/**/*.css' --config tools/stylelint.config.cjs",

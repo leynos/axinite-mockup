@@ -687,6 +687,14 @@ following are true:
   default always-open skill viewer, keeping search and install rows aligned on
   desktop, and applying route-specific Skills styling on top of the shared
   catalogue primitives.
+- [x] 2026-03-26 10:41 GMT: Verified the missing-translation report against the
+  current locale bundles. The site was not emitting raw message IDs; instead,
+  every non-`en-GB` locale silently lacked the newer route strings for chat
+  controls plus the Jobs, Routines, Extensions, and Skills surfaces, which
+  caused mixed translated-and-English pages.
+- [x] 2026-03-26 10:48 GMT: Gated the locale picker and runtime to locales with
+  complete site coverage, currently `en-GB` only, and added an explicit Fluent
+  coverage check so incomplete locale bundles cannot be advertised silently.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
@@ -783,6 +791,10 @@ following are true:
   not. Leaving the selected-skill viewer open by default and letting shared
   wrapping form rows govern the search/install controls makes the page feel
   visually broken even when the underlying grid math is correct.
+- Fluent fallback hid a real product problem here. Missing locale messages did
+  not surface as raw keys; they fell back to English inside otherwise localized
+  pages, which made the defect easy to miss unless the route was checked in a
+  non-default locale.
 
 ## Decision Log
 
@@ -822,6 +834,13 @@ following are true:
   searches and uses a separate viewer surface for skill details. Matching that
   behaviour reduces clutter and restores the intended visual hierarchy without
   dropping the current Solid data fixtures.
+
+- Decision: expose only locales with full site coverage in the runtime and
+  picker until the missing route strings are translated.
+  Rationale: the defect was mixed-language UI caused by incomplete bundles, not
+  missing fallback machinery. Hiding incomplete locales is the only honest
+  user-facing fix short of translating hundreds of missing strings in one pass,
+  and the new Fluent coverage check now enforces that contract.
 
 - Decision: model feature flags as a first-class provider and test target.
   Rationale: the backend does not yet expose every mock-up feature. Treating

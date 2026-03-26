@@ -3,8 +3,8 @@ import { createContext, createSignal, onCleanup, useContext } from "solid-js";
 
 import i18n, { i18nReady } from "@/lib/i18n/runtime";
 import {
+  AVAILABLE_LOCALES,
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
   type SupportedLocale,
 } from "@/lib/i18n/supported-locales";
 
@@ -44,7 +44,7 @@ export const I18nProvider: ParentComponent = (props) => {
     <I18nContext.Provider
       value={{
         language,
-        locales: SUPPORTED_LOCALES,
+        locales: AVAILABLE_LOCALES,
         t,
         changeLanguage: async (nextLanguage) => {
           await i18n.changeLanguage(nextLanguage);

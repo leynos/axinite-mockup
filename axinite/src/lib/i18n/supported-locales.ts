@@ -20,6 +20,17 @@ export const SUPPORTED_LOCALES = [
   { code: "ar", label: "Arabic", nativeLabel: "العربية", direction: "rtl" },
 ] as const satisfies Readonly<[SupportedLocale, ...SupportedLocale[]]>;
 
+export const COMPLETE_LOCALE_CODES = ["en-GB"] as const satisfies readonly [
+  string,
+  ...string[],
+];
+
+const COMPLETE_LOCALE_CODE_SET = new Set<string>(COMPLETE_LOCALE_CODES);
+
+export const AVAILABLE_LOCALES = SUPPORTED_LOCALES.filter((locale) =>
+  COMPLETE_LOCALE_CODE_SET.has(locale.code)
+);
+
 export const DEFAULT_LOCALE = SUPPORTED_LOCALES[0].code;
 export const DETECTION_ORDER = [
   "querystring",
