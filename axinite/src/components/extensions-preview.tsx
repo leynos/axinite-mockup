@@ -1,6 +1,7 @@
 import {
   createMutation,
   createQuery,
+  keepPreviousData,
   useQueryClient,
 } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
@@ -71,6 +72,7 @@ export const ExtensionsPreview = () => {
     queryKey: ["extensions", "setup", activeExtensionName()],
     queryFn: () => fetchExtensionSetup(activeExtensionName() ?? ""),
     enabled: typeof activeExtensionName() === "string",
+    placeholderData: keepPreviousData,
   }));
 
   createEffect(() => {
