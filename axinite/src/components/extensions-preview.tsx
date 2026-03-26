@@ -124,20 +124,20 @@ export const ExtensionsPreview = () => {
       : t(`extensionsItem${extensionId}Title`);
 
   return (
-    <section class="route-preview route-preview--catalogue">
+    <section class="route-preview route-preview--catalogue route-preview--extensions">
       <div aria-hidden="true" class="route-preview__watermark">
         {t("extensionsWatermark")}
       </div>
 
-      <div class="catalogue-preview">
-        <header class="route-preview__intro catalogue-preview__intro">
+      <div class="catalogue-preview catalogue-preview--extensions">
+        <header class="route-preview__intro catalogue-preview__intro extensions-preview__intro">
           <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
           <h2 class="route-preview__title">{t("route-extensions-label")}</h2>
           <p class="route-preview__summary">{t("page-extensions-summary")}</p>
         </header>
 
-        <section class="catalogue-section">
-          <div class="catalogue-section__header">
+        <section class="catalogue-section catalogue-section--bare">
+          <div class="catalogue-section__header extensions-preview__section-header">
             <div>
               <h3 class="catalogue-section__title">
                 {t("extensionsInstalledTitle")}
@@ -146,14 +146,14 @@ export const ExtensionsPreview = () => {
             </div>
           </div>
 
-          <div class="catalogue-grid">
+          <div class="catalogue-grid catalogue-grid--extensions">
             <For each={EXTENSIONS}>
               {(extension) => (
                 <article
                   class={
                     activeExtensionId() === extension.id
-                      ? "catalogue-card catalogue-card--active"
-                      : "catalogue-card"
+                      ? "catalogue-card catalogue-card--active extensions-card"
+                      : "catalogue-card extensions-card"
                   }
                 >
                   <div class="catalogue-card__header">
@@ -211,9 +211,47 @@ export const ExtensionsPreview = () => {
               )}
             </For>
           </div>
+
+          <aside class="catalogue-detail catalogue-detail--inline extensions-detail">
+            <div class="catalogue-detail__header">
+              <div>
+                <p class="catalogue-detail__eyebrow">{t("extensionsDetailEyebrow")}</p>
+                <h3 class="catalogue-detail__title">
+                  {t(`extensionsItem${activeExtension().id}Title`)}
+                </h3>
+              </div>
+              <div class="catalogue-detail__pills">
+                <span class={KIND_CLASS[activeExtension().kind]}>
+                  {kindLabel(activeExtension().kind)}
+                </span>
+                <span class="catalogue-pill catalogue-pill--neutral">
+                  {activeExtension().version}
+                </span>
+              </div>
+            </div>
+
+            <p class="catalogue-detail__body">
+              {t(`extensionsItem${activeExtension().id}Detail`)}
+            </p>
+
+            <dl class="catalogue-detail__meta-grid">
+              <div>
+                <dt>{t("extensionsMetaPath")}</dt>
+                <dd>{t(`extensionsItem${activeExtension().id}Path`)}</dd>
+              </div>
+              <div>
+                <dt>{t("extensionsMetaConfig")}</dt>
+                <dd>{t(`extensionsItem${activeExtension().id}Config`)}</dd>
+              </div>
+              <div>
+                <dt>{t("extensionsMetaGuardrail")}</dt>
+                <dd>{t("page-extensions-guardrail")}</dd>
+              </div>
+            </dl>
+          </aside>
         </section>
 
-        <div class="catalogue-panel-grid">
+        <div class="catalogue-panel-grid catalogue-panel-grid--extensions">
           <section class="catalogue-panel">
             <div class="catalogue-panel__mark">
               {t("extensionsWasmMark")}
@@ -269,15 +307,15 @@ export const ExtensionsPreview = () => {
           </section>
         </div>
 
-        <section class="catalogue-section">
-          <div class="catalogue-section__header">
+        <section class="catalogue-section catalogue-section--bare">
+          <div class="catalogue-section__header extensions-preview__section-header">
             <div>
               <h3 class="catalogue-section__title">{t("extensionsToolsTitle")}</h3>
               <p class="catalogue-section__body">{t("page-extensions-guardrail")}</p>
             </div>
           </div>
 
-          <div class="catalogue-list">
+          <div class="catalogue-list catalogue-list--extensions">
             <For each={REGISTERED_TOOLS}>
               {(tool) => (
                 <article class="catalogue-list__row">
@@ -293,44 +331,6 @@ export const ExtensionsPreview = () => {
               )}
             </For>
           </div>
-        </section>
-
-        <section class="catalogue-detail">
-          <div class="catalogue-detail__header">
-            <div>
-              <p class="catalogue-detail__eyebrow">{t("extensionsDetailEyebrow")}</p>
-              <h3 class="catalogue-detail__title">
-                {t(`extensionsItem${activeExtension().id}Title`)}
-              </h3>
-            </div>
-            <div class="catalogue-detail__pills">
-              <span class={KIND_CLASS[activeExtension().kind]}>
-                {kindLabel(activeExtension().kind)}
-              </span>
-              <span class="catalogue-pill catalogue-pill--neutral">
-                {activeExtension().version}
-              </span>
-            </div>
-          </div>
-
-          <p class="catalogue-detail__body">
-            {t(`extensionsItem${activeExtension().id}Detail`)}
-          </p>
-
-          <dl class="catalogue-detail__meta-grid">
-            <div>
-              <dt>{t("extensionsMetaPath")}</dt>
-              <dd>{t(`extensionsItem${activeExtension().id}Path`)}</dd>
-            </div>
-            <div>
-              <dt>{t("extensionsMetaConfig")}</dt>
-              <dd>{t(`extensionsItem${activeExtension().id}Config`)}</dd>
-            </div>
-            <div>
-              <dt>{t("extensionsMetaGuardrail")}</dt>
-              <dd>{t("page-extensions-guardrail")}</dd>
-            </div>
-          </dl>
         </section>
       </div>
     </section>

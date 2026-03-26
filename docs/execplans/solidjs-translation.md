@@ -667,6 +667,16 @@ following are true:
   SPA under `dist/axinite-mockup/` and turned the old root route folders into
   compatibility redirects so existing `/chat`-style preview URLs now forward
   into the deploy-prefixed app instead of failing.
+- [x] 2026-03-26 10:01 GMT: Audited the restored Extensions route against the
+  original static `axinite/extensions/index.html` page and confirmed the
+  largest remaining drift was visual: the shared catalogue intro and oversized
+  detail panel still made the route read more like a generic library screen
+  than the flatter operator-focused extensions page.
+- [x] 2026-03-26 10:08 GMT: Reworked the Solid Extensions route toward the
+  original visual grammar by flattening the section wrappers, tightening the
+  installed-extension cards, keeping the dual WASM and MCP intake panels
+  side-by-side, and replacing the large bottom detail block with a compact
+  selected-extension strip.
 - [x] Restore the original shared shell chrome and route watermark treatment in
   the SolidJS app.
 - [x] Port the Chat and Memory layouts into dedicated Solid preview components
@@ -754,6 +764,11 @@ following are true:
   SPA emits prefixed asset and service-worker URLs, the postbuild output also
   has to mirror the deploy tree itself or provide explicit compatibility
   redirects from the older root-level preview routes.
+- The Extensions and Skills routes should not share identical visual density
+  just because they share a broad catalogue family. The original Extensions
+  page is notably flatter and more operator-panel driven than the bundle-heavy
+  Skills view, so route-specific styling is necessary to preserve that
+  distinction.
 
 ## Decision Log
 
@@ -778,6 +793,13 @@ following are true:
   fix is to emit a mirrored prefixed tree and root-level redirect stubs so the
   same build works both on GitHub Pages and when `dist/` is served directly for
   preview.
+
+- Decision: give Extensions route-specific catalogue modifiers instead of
+  forcing it to share the same layout density as Skills.
+  Rationale: the original static page uses flatter section framing, denser
+  installed cards, and a compact operator-centric hierarchy. Preserving that
+  appearance is easier and safer with route-specific CSS hooks layered on top
+  of the shared catalogue primitives.
 
 - Decision: model feature flags as a first-class provider and test target.
   Rationale: the backend does not yet expose every mock-up feature. Treating
