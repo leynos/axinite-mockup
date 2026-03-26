@@ -1,132 +1,102 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import {
+  createMutation,
+  createQuery,
+  useQueryClient,
+} from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 
+import {
+  fetchMemoryTree,
+  readMemory,
+  searchMemory,
+  writeMemory,
+} from "@/lib/api/memory";
 import { useI18n } from "@/lib/i18n/provider";
 
-type MemoryFileId =
-  | "agents"
-  | "identity"
-  | "memory"
-  | "user"
-  | "tools"
-  | "heartbeat";
-
-type MemoryFileNode = {
-  id: MemoryFileId;
-  kind: "file";
+type FileGroup = {
   label: string;
-  path: string[];
+  files: string[];
 };
-
-type MemoryFolderNode = {
-  kind: "folder";
-  label: string;
-  path: string[];
-  children: MemoryFileNode[];
-};
-
-type MemoryNode = MemoryFileNode | MemoryFolderNode;
-
-const MEMORY_TREE: MemoryNode[] = [
-  {
-    id: "agents",
-    kind: "file",
-    label: "AGENTS.md",
-    path: ["workspace", "AGENTS.md"],
-  },
-  {
-    kind: "folder",
-    label: "daily",
-    path: ["workspace", "daily"],
-    children: [
-      {
-        id: "heartbeat",
-        kind: "file",
-        label: "HEARTBEAT.md",
-        path: ["workspace", "daily", "HEARTBEAT.md"],
-      },
-      {
-        id: "identity",
-        kind: "file",
-        label: "IDENTITY.md",
-        path: ["workspace", "daily", "IDENTITY.md"],
-      },
-      {
-        id: "memory",
-        kind: "file",
-        label: "MEMORY.md",
-        path: ["workspace", "daily", "MEMORY.md"],
-      },
-    ],
-  },
-  {
-    kind: "folder",
-    label: "skills",
-    path: ["workspace", "skills"],
-    children: [
-      {
-        id: "tools",
-        kind: "file",
-        label: "TOOLS.md",
-        path: ["workspace", "skills", "TOOLS.md"],
-      },
-      {
-        id: "user",
-        kind: "file",
-        label: "USER.md",
-        path: ["workspace", "skills", "USER.md"],
-      },
-    ],
-  },
-];
 
 export const MemoryPreview = () => {
   const { t } = useI18n();
-  const [activeFile, setActiveFile] = createSignal<MemoryFileId>("identity");
+  const queryClient = useQueryClient();
+  const [activePath, setActivePath] = createSignal<string>();
   const [editing, setEditing] = createSignal(false);
   const [draft, setDraft] = createSignal("");
+  const [query, setQuery] = createSignal("");
 
-  const firstFileNode = MEMORY_TREE.find(
-    (node): node is MemoryFileNode => node.kind === "file"
+  const tree = createQuery(() => ({
+    queryKey: ["memory", "tree"],
+    queryFn: () => fetchMemoryTree(),
+  }));
+
+  const searchResults = createQuery(() => ({
+    queryKey: ["memory", "search", query().trim()],
+    queryFn: () => searchMemory({ query: query().trim(), limit: 8 }),
+    enabled: query().trim().length > 0,
+  }));
+
+  const filePaths = createMemo(
+    () =>
+      tree.data?.entries
+        .filter((entry) => !entry.is_dir)
+        .map((entry) => entry.path)
+        .sort((left, right) => left.localeCompare(right)) ?? []
   );
 
-  const activeNode = createMemo<MemoryFileNode | undefined>(() => {
-    for (const node of MEMORY_TREE) {
-      if (node.kind === "file" && node.id === activeFile()) {
-        return node;
-      }
-
-      if (node.kind === "folder") {
-        const match = node.children.find((child) => child.id === activeFile());
-        if (match) {
-          return match;
-        }
-      }
-    }
-
-    return firstFileNode;
-  });
-
-  const activeContent = createMemo(() => {
-    switch (activeFile()) {
-      case "agents":
-        return [t("page-memory-card-a-body"), t("page-memory-card-c-body")];
-      case "heartbeat":
-        return [t("page-memory-card-b-body"), t("page-memory-guardrail")];
-      case "identity":
-        return [t("page-memory-summary"), t("page-memory-agenda")];
-      case "memory":
-        return [t("page-memory-card-a-body"), t("page-memory-card-b-body")];
-      case "tools":
-        return [t("page-memory-card-c-body"), t("page-memory-summary")];
-      case "user":
-        return [t("page-memory-agenda"), t("page-memory-guardrail")];
+  createEffect(() => {
+    const firstPath = filePaths()[0];
+    if (!activePath() && firstPath) {
+      setActivePath(firstPath);
     }
   });
 
-  const beginEdit = () => {
-    setDraft(activeContent().join("\n\n"));
-    setEditing(true);
-  };
+  const document = createQuery(() => ({
+    queryKey: ["memory", "read", activePath()],
+    queryFn: () => readMemory(activePath() ?? ""),
+    enabled: typeof activePath() === "string",
+  }));
+
+  createEffect(() => {
+    if (!editing() && document.data?.content) {
+      setDraft(document.data.content);
+    }
+  });
+
+  const saveMutation = createMutation(() => ({
+    mutationFn: () =>
+      writeMemory({
+        path: activePath() ?? "",
+        content: draft(),
+      }),
+    onSuccess: () => {
+      setEditing(false);
+      void queryClient.invalidateQueries({ queryKey: ["memory", "tree"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["memory", "read", activePath()],
+      });
+    },
+  }));
+
+  const groups = createMemo<FileGroup[]>(() => {
+    const byGroup = new Map<string, string[]>();
+    for (const path of filePaths()) {
+      const parts = path.split("/");
+      const group = parts.length > 2 ? parts[parts.length - 2] : "workspace";
+      const current = byGroup.get(group) ?? [];
+      current.push(path);
+      byGroup.set(group, current);
+    }
+    return [...byGroup.entries()].map(([label, files]) => ({
+      label,
+      files,
+    }));
+  });
+
+  const breadcrumbs = createMemo(() =>
+    activePath() ? (activePath()?.split("/") ?? []) : []
+  );
 
   return (
     <section class="route-preview route-preview--memory">
@@ -139,49 +109,59 @@ export const MemoryPreview = () => {
             <input
               aria-label={t("memory-search-label")}
               class="route-sidebar__search-input"
+              onInput={(event) => setQuery(event.currentTarget.value)}
               placeholder={t("memory-search-placeholder")}
               type="text"
+              value={query()}
             />
           </div>
 
-          <div class="route-tree">
-            <For each={MEMORY_TREE}>
-              {(node) =>
-                node.kind === "file" ? (
+          <Show when={query().trim().length > 0}>
+            <div class="catalogue-search__results skills-search__results">
+              <For each={searchResults.data?.results ?? []}>
+                {(result) => (
                   <button
-                    class={
-                      activeFile() === node.id
-                        ? "route-tree__file route-tree__file--active"
-                        : "route-tree__file"
-                    }
-                    onClick={() => setActiveFile(node.id)}
+                    class="route-sidebar__list-item"
+                    onClick={() => {
+                      setActivePath(result.path);
+                      setQuery("");
+                    }}
                     type="button"
                   >
-                    {node.label}
+                    <span class="route-sidebar__list-label">{result.path}</span>
+                    <span class="route-sidebar__list-time">
+                      {(result.score * 100).toFixed(0)}%
+                    </span>
                   </button>
-                ) : (
-                  <section class="route-tree__group">
-                    <h3 class="route-tree__folder-title">{node.label}</h3>
-                    <div class="route-tree__group-items">
-                      <For each={node.children}>
-                        {(child) => (
-                          <button
-                            class={
-                              activeFile() === child.id
-                                ? "route-tree__file route-tree__file--active"
-                                : "route-tree__file"
-                            }
-                            onClick={() => setActiveFile(child.id)}
-                            type="button"
-                          >
-                            {child.label}
-                          </button>
-                        )}
-                      </For>
-                    </div>
-                  </section>
-                )
-              }
+                )}
+              </For>
+            </div>
+          </Show>
+
+          <div class="route-tree">
+            <For each={groups()}>
+              {(group) => (
+                <section class="route-tree__group">
+                  <h3 class="route-tree__folder-title">{group.label}</h3>
+                  <div class="route-tree__group-items">
+                    <For each={group.files}>
+                      {(path) => (
+                        <button
+                          class={
+                            activePath() === path
+                              ? "route-tree__file route-tree__file--active"
+                              : "route-tree__file"
+                          }
+                          onClick={() => setActivePath(path)}
+                          type="button"
+                        >
+                          {path.split("/").at(-1)}
+                        </button>
+                      )}
+                    </For>
+                  </div>
+                </section>
+              )}
             </For>
           </div>
         </aside>
@@ -189,7 +169,7 @@ export const MemoryPreview = () => {
         <main class="memory-preview__main">
           <div class="memory-preview__toolbar">
             <div class="memory-preview__breadcrumb">
-              <For each={activeNode()?.path ?? []}>
+              <For each={breadcrumbs()}>
                 {(segment, index) => (
                   <>
                     <Show when={index() > 0}>
@@ -197,7 +177,7 @@ export const MemoryPreview = () => {
                     </Show>
                     <span
                       class={
-                        index() === (activeNode()?.path.length ?? 0) - 1
+                        index() === breadcrumbs().length - 1
                           ? "memory-preview__breadcrumb-current"
                           : "memory-preview__breadcrumb-item"
                       }
@@ -215,7 +195,7 @@ export const MemoryPreview = () => {
                 fallback={
                   <button
                     class="memory-preview__action-button"
-                    onClick={beginEdit}
+                    onClick={() => setEditing(true)}
                     type="button"
                   >
                     {t("memory-edit-button")}
@@ -224,17 +204,17 @@ export const MemoryPreview = () => {
               >
                 <button
                   class="memory-preview__action-button"
-                  onClick={() => setEditing(false)}
+                  onClick={() => {
+                    setDraft(document.data?.content ?? "");
+                    setEditing(false);
+                  }}
                   type="button"
                 >
                   {t("memory-cancel-button")}
                 </button>
                 <button
                   class="memory-preview__save-button"
-                  onClick={() => {
-                    // TODO: persist draft() here before leaving edit mode.
-                    setEditing(false);
-                  }}
+                  onClick={() => saveMutation.mutate()}
                   type="button"
                 >
                   {t("memory-save-button")}
@@ -263,11 +243,15 @@ export const MemoryPreview = () => {
           >
             <article class="memory-preview__document">
               <h2 class="memory-preview__document-title">
-                {activeNode()?.label}
+                {activePath()?.split("/").at(-1)}
               </h2>
-              <For each={activeContent()}>
+              <For each={(document.data?.content ?? "").split("\n\n")}>
                 {(paragraph) => (
-                  <p class="memory-preview__document-paragraph">{paragraph}</p>
+                  <Show when={paragraph.trim().length > 0}>
+                    <p class="memory-preview__document-paragraph">
+                      {paragraph}
+                    </p>
+                  </Show>
                 )}
               </For>
             </article>

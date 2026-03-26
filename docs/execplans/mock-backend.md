@@ -5,16 +5,16 @@ This ExecPlan (execution plan) is a living document. The sections
 `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work
 proceeds.
 
-Status: DRAFT
+Status: IMPLEMENTED
 
 ## Purpose / big picture
 
-After this change, `bun run dev` will start a local demonstration stack that is
-much closer to the real Axinite browser architecture than the current static
-preview. A Bun and TypeScript mock gateway will serve API-correct JSON and
-Server-Sent Events (SSE), the site will rebuild into `dist/` whenever source
-files change, and `bunx http-server -p <port> dist` will serve the built site
-for realistic static-site testing.
+After this change, `bun run dev` starts a local demonstration stack that is
+much closer to the real Axinite browser architecture than the previous static
+preview. A Bun and TypeScript mock gateway serves API-correct JSON and
+Server-Sent Events (SSE), the site rebuilds into `dist/` whenever source files
+change, and a Bun preview gateway serves the built output while proxying
+`/api/*` on the same browser origin for realistic static-site testing.
 
 The important observable change is that the front end will stop reading route
 content from in-component fixture arrays. Chat, memory, jobs, routines,
@@ -25,8 +25,8 @@ running the real Rust backend.
 
 ## Approval gates
 
-This plan is intentionally in `DRAFT` status. No implementation should begin
-until the user explicitly approves the approach in this document.
+This plan began in `DRAFT` status and was approved by the user before
+implementation started.
 
 Approval means agreement on all of the following:
 
@@ -40,8 +40,8 @@ Approval means agreement on all of the following:
    data and mutating actions come from the mock API rather than front-end
    fixture constants.
 
-If approval is withheld, the correct next action is to revise this document,
-not to start coding.
+If approval is withheld on a future revision, the correct next action is to
+revise this document, not to start coding.
 
 ## Constraints
 
@@ -159,10 +159,14 @@ not to start coding.
   modules, and DTO definitions in `../axinite`.
 - [x] (2026-03-26 12:21Z) Drafted this ExecPlan in
   `docs/execplans/mock-backend.md`.
-- [ ] Await explicit approval before implementation.
-- [ ] Prototype the static-server plus mock-API transport path.
-- [ ] Implement the Bun mock backend, front-end API refactor, and validation
-  stack.
+- [x] (2026-03-26 12:36Z) User approved implementation of this ExecPlan.
+- [x] (2026-03-26 13:05Z) Prototyped the static-server plus mock-API transport
+  path and confirmed that `http-server` proxying was not preserving the
+  required `/api/*` request path for this setup.
+- [x] (2026-03-26 13:21Z) Implemented the Bun mock backend, front-end API
+  refactor, and same-origin preview gateway.
+- [x] (2026-03-26 13:26Z) Validated the built preview, API flows, SSE streams,
+  and representative CSS output on a free local preview port.
 
 ## Surprises & Discoveries
 
@@ -191,6 +195,21 @@ not to start coding.
   defines the DTOs.
   Impact: the mock service can be driven from documented contracts instead of
   inventing an ad hoc TypeScript API.
+
+- Observation: `http-server` proxying did not preserve the required API path in
+  this repository's preview flow.
+  Evidence: a direct probe of `/api/gateway/status` through the static preview
+  reached the mock backend as `GET /` instead of `GET /api/gateway/status`.
+  Impact: the original transport assumption was wrong; the correct fix was a
+  Bun preview gateway that serves `dist/` and proxies `/api/*` directly.
+
+- Observation: local validation could not use preview port `2020` because that
+  port was already occupied by an existing `caddy file-server` process in the
+  environment.
+  Evidence: `ss -ltnp '( sport = :2020 )'` showed `caddy` listening on port
+  `2020`, so validation ran on `PREVIEW_PORT=43111` instead.
+  Impact: the implementation works, but default-port validation remains
+  environment-dependent whenever another process owns `2020`.
 
 ## Decision log
 
@@ -221,6 +240,15 @@ not to start coding.
   contract.
   Date/Author: 2026-03-26 / Codex
 
+- Decision: replace the originally proposed `http-server` preview hop with a
+  Bun preview gateway that serves `dist/` and proxies `/api/*` to the mock API
+  on the same origin.
+  Rationale: the direct transport probe showed that the original `http-server`
+  setup was not forwarding the request path correctly for this repository, and
+  the plan already allowed a same-origin fallback if `http-server` proved
+  unsuitable.
+  Date/Author: 2026-03-26 / Codex
+
 - Decision: state-management escalation should remain conditional, not
   automatic.
   Rationale: `docs/v2a-front-end-stack.md` places Zustand and XState in the
@@ -233,11 +261,13 @@ not to start coding.
 
 ## Outcomes & retrospective
 
-This plan currently achieves the draft-stage outcome: the repository now has a
-concrete, self-contained proposal for replacing front-end route fixtures with a
-Bun mock gateway that mirrors the Rust backend. No implementation has started
-yet, which is intentional. The next meaningful outcome is approval or revision,
-not code.
+This plan now achieves the implemented outcome. The repository has an in-memory
+Bun mock backend, a same-origin Bun preview gateway for the built site, and a
+front end that reads chat, memory, jobs, routines, extensions, skills, logs,
+gateway status, and feature flags through typed API modules instead of route
+fixture arrays. Validation succeeded against a free preview port and confirmed
+static routes, JSON endpoints, SSE flows, Playwright coverage, and
+representative computed CSS for status pills in the jobs view.
 
 ## Context and orientation
 

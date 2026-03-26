@@ -1,67 +1,25 @@
-import { createMemo, createSignal, For } from "solid-js";
-
+import {
+  createMutation,
+  createQuery,
+  useQueryClient,
+} from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import type { JobDetailResponse, JobInfo } from "@/lib/api/contracts";
+import {
+  cancelJob,
+  fetchJobDetail,
+  fetchJobEvents,
+  fetchJobFiles,
+  fetchJobSummary,
+  fetchJobs,
+  promptJob,
+  readJobFile,
+  restartJob,
+} from "@/lib/api/jobs";
 import { useI18n } from "@/lib/i18n/provider";
 import { pascalCase } from "@/lib/string-case";
 
-type JobStatus = "pending" | "in_progress" | "completed" | "failed" | "stuck";
-type JobSource = "direct" | "sandbox";
-type JobId = "audit" | "comparison" | "oauth" | "docs" | "security";
-
-type JobRecord = {
-  createdAt: string;
-  id: JobId;
-  shortId: string;
-  source: JobSource;
-  status: JobStatus;
-};
-
-const JOBS: JobRecord[] = [
-  {
-    createdAt: "2026-03-12 08:15",
-    id: "audit",
-    shortId: "f2854dd8",
-    source: "direct",
-    status: "completed",
-  },
-  {
-    createdAt: "2026-03-12 09:30",
-    id: "comparison",
-    shortId: "a1b2c3d4",
-    source: "direct",
-    status: "in_progress",
-  },
-  {
-    createdAt: "2026-03-11 14:00",
-    id: "oauth",
-    shortId: "7e8f9a0b",
-    source: "sandbox",
-    status: "failed",
-  },
-  {
-    createdAt: "2026-03-12 07:00",
-    id: "docs",
-    shortId: "b3c4d5e6",
-    source: "direct",
-    status: "stuck",
-  },
-  {
-    createdAt: "2026-03-12 10:05",
-    id: "security",
-    shortId: "c5d6e7f8",
-    source: "direct",
-    status: "pending",
-  },
-];
-
-const JOB_SUMMARY_KEYS = [
-  "total",
-  "in_progress",
-  "completed",
-  "failed",
-  "stuck",
-] as const;
-
-const STATUS_CLASS: Record<JobStatus, string> = {
+const STATUS_CLASS: Record<string, string> = {
   completed: "pill pill--success",
   failed: "pill pill--danger",
   in_progress: "pill pill--success",
@@ -69,38 +27,137 @@ const STATUS_CLASS: Record<JobStatus, string> = {
   stuck: "pill pill--warning",
 };
 
-const SOURCE_CLASS: Record<JobSource, string> = {
+const SOURCE_CLASS: Record<string, string> = {
+  agent: "pill pill--neutral",
   direct: "pill pill--neutral",
   sandbox: "pill pill--info",
 };
 
+function toKebabSegment(value: string): string {
+  return pascalCase(value)
+    .replace(/([A-Z])/g, "-$1")
+    .toLowerCase()
+    .replace(/^-/, "");
+}
+
+function formatTimestamp(value: string | null | undefined): string {
+  if (!value) {
+    return "Pending";
+  }
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function sourceName(
+  job: JobDetailResponse | JobInfo | { job_kind?: string; job_mode?: string }
+): string {
+  if ("job_kind" in job && typeof job.job_kind === "string") {
+    return job.job_kind;
+  }
+  if ("job_mode" in job && typeof job.job_mode === "string") {
+    return job.job_mode;
+  }
+  return "direct";
+}
+
 export const JobsPreview = () => {
   const { t } = useI18n();
-  const [activeJobId, setActiveJobId] = createSignal<JobId>("comparison");
-
-  const toKebabSegment = (value: string) =>
-    pascalCase(value)
-      .replace(/([A-Z])/g, "-$1")
-      .toLowerCase()
-      .replace(/^-/, "");
-
-  const activeJob = createMemo(
-    () => JOBS.find((job) => job.id === activeJobId()) ?? JOBS[0]
+  const queryClient = useQueryClient();
+  const [activeJobId, setActiveJobId] = createSignal<string>();
+  const [activeFilePath, setActiveFilePath] = createSignal<string>();
+  const [promptText, setPromptText] = createSignal(
+    "Summarise the current blocker."
   );
 
-  const summaryCount = (key: (typeof JOB_SUMMARY_KEYS)[number]): number => {
-    if (key === "total") {
-      return JOBS.length;
-    }
+  const jobs = createQuery(() => ({
+    queryKey: ["jobs", "list"],
+    queryFn: fetchJobs,
+  }));
 
-    return JOBS.filter((job) => job.status === key).length;
+  const summary = createQuery(() => ({
+    queryKey: ["jobs", "summary"],
+    queryFn: fetchJobSummary,
+  }));
+
+  createEffect(() => {
+    const firstJob = jobs.data?.jobs[0]?.id;
+    if (!activeJobId() && firstJob) {
+      setActiveJobId(firstJob);
+    }
+  });
+
+  const activeJob = createQuery(() => ({
+    queryKey: ["jobs", "detail", activeJobId()],
+    queryFn: () => fetchJobDetail(activeJobId() ?? ""),
+    enabled: typeof activeJobId() === "string",
+  }));
+
+  const events = createQuery(() => ({
+    queryKey: ["jobs", "events", activeJobId()],
+    queryFn: () => fetchJobEvents(activeJobId() ?? ""),
+    enabled: typeof activeJobId() === "string",
+  }));
+
+  const files = createQuery(() => ({
+    queryKey: ["jobs", "files", activeJobId()],
+    queryFn: () => fetchJobFiles(activeJobId() ?? ""),
+    enabled: typeof activeJobId() === "string",
+  }));
+
+  createEffect(() => {
+    const firstFile = files.data?.entries[0]?.path;
+    if (firstFile && firstFile !== activeFilePath()) {
+      setActiveFilePath(firstFile);
+    }
+  });
+
+  const fileContent = createQuery(() => ({
+    queryKey: ["jobs", "file", activeJobId(), activeFilePath()],
+    queryFn: () => readJobFile(activeJobId() ?? "", activeFilePath() ?? ""),
+    enabled:
+      typeof activeJobId() === "string" && typeof activeFilePath() === "string",
+  }));
+
+  const refreshJobs = () => {
+    void queryClient.invalidateQueries({ queryKey: ["jobs"] });
   };
 
-  const statusLabel = (status: JobStatus) =>
-    t(`jobs-status-${toKebabSegment(status)}`);
+  const restartMutation = createMutation(() => ({
+    mutationFn: () => restartJob(activeJobId() ?? ""),
+    onSuccess: refreshJobs,
+  }));
 
-  const sourceLabel = (source: JobSource) =>
-    source === "direct" ? t("jobs-source-direct") : t("jobs-source-sandbox");
+  const cancelMutation = createMutation(() => ({
+    mutationFn: () => cancelJob(activeJobId() ?? ""),
+    onSuccess: refreshJobs,
+  }));
+
+  const promptMutation = createMutation(() => ({
+    mutationFn: () =>
+      promptJob(activeJobId() ?? "", {
+        prompt: promptText(),
+      }),
+    onSuccess: () => {
+      refreshJobs();
+    },
+  }));
+
+  const summaryCards = createMemo(() => {
+    if (!summary.data) {
+      return [];
+    }
+    return [
+      { key: "total", value: summary.data.total },
+      { key: "in_progress", value: summary.data.in_progress },
+      { key: "completed", value: summary.data.completed },
+      { key: "failed", value: summary.data.failed },
+      { key: "stuck", value: summary.data.stuck },
+    ];
+  });
 
   return (
     <section class="route-preview route-preview--dashboard">
@@ -116,15 +173,13 @@ export const JobsPreview = () => {
         </header>
 
         <div class="dashboard-summary">
-          <For each={JOB_SUMMARY_KEYS}>
-            {(summaryKey) => (
+          <For each={summaryCards()}>
+            {(card) => (
               <article class="dashboard-summary__card">
                 <p class="dashboard-summary__label">
-                  {t(`jobs-summary-${toKebabSegment(summaryKey)}`)}
+                  {t(`jobs-summary-${toKebabSegment(card.key)}`)}
                 </p>
-                <p class="dashboard-summary__value">
-                  {summaryCount(summaryKey)}
-                </p>
+                <p class="dashboard-summary__value">{card.value}</p>
               </article>
             )}
           </For>
@@ -151,7 +206,7 @@ export const JobsPreview = () => {
                 </tr>
               </thead>
               <tbody>
-                <For each={JOBS}>
+                <For each={jobs.data?.jobs ?? []}>
                   {(job) => (
                     <tr
                       class={
@@ -160,27 +215,38 @@ export const JobsPreview = () => {
                           : "dashboard-table__row"
                       }
                     >
-                      <td class="dashboard-table__mono">{job.shortId}</td>
+                      <td class="dashboard-table__mono">{job.id}</td>
                       <td>
                         <button
                           class="dashboard-table__title-button"
                           onClick={() => setActiveJobId(job.id)}
                           type="button"
                         >
-                          {t(`jobs-item-${job.id}-title`)}
+                          {job.title}
                         </button>
                       </td>
                       <td>
-                        <span class={SOURCE_CLASS[job.source]}>
-                          {sourceLabel(job.source)}
+                        <span
+                          class={
+                            SOURCE_CLASS[sourceName(job)] ??
+                            "pill pill--neutral"
+                          }
+                        >
+                          {sourceName(job)}
                         </span>
                       </td>
                       <td>
-                        <span class={STATUS_CLASS[job.status]}>
-                          {statusLabel(job.status)}
+                        <span
+                          class={
+                            STATUS_CLASS[job.state] ?? "pill pill--neutral"
+                          }
+                        >
+                          {t(`jobs-status-${toKebabSegment(job.state)}`)}
                         </span>
                       </td>
-                      <td class="dashboard-table__meta">{job.createdAt}</td>
+                      <td class="dashboard-table__meta">
+                        {formatTimestamp(job.created_at)}
+                      </td>
                       <td>
                         <button
                           class="dashboard-table__action"
@@ -198,57 +264,151 @@ export const JobsPreview = () => {
           </div>
         </section>
 
-        <section class="dashboard-detail">
-          <div class="dashboard-detail__header">
-            <div>
-              <p class="dashboard-detail__eyebrow">
-                {t("jobs-detail-eyebrow")}
-              </p>
-              <h3 class="dashboard-detail__title">
-                {t(`jobs-item-${activeJob().id}-title`)}
-              </h3>
-            </div>
-            <div class="dashboard-detail__pills">
-              <span class={SOURCE_CLASS[activeJob().source]}>
-                {sourceLabel(activeJob().source)}
-              </span>
-              <span class={STATUS_CLASS[activeJob().status]}>
-                {statusLabel(activeJob().status)}
-              </span>
-            </div>
-          </div>
+        <Show when={activeJob.data}>
+          {(job) => (
+            <section class="dashboard-detail">
+              <div class="dashboard-detail__header">
+                <div>
+                  <p class="dashboard-detail__eyebrow">
+                    {t("jobs-detail-eyebrow")}
+                  </p>
+                  <h3 class="dashboard-detail__title">{job().title}</h3>
+                </div>
+                <div class="dashboard-detail__pills">
+                  <span
+                    class={
+                      SOURCE_CLASS[sourceName(job())] ?? "pill pill--neutral"
+                    }
+                  >
+                    {sourceName(job())}
+                  </span>
+                  <span
+                    class={STATUS_CLASS[job().state] ?? "pill pill--neutral"}
+                  >
+                    {t(`jobs-status-${toKebabSegment(job().state)}`)}
+                  </span>
+                </div>
+              </div>
 
-          <p class="dashboard-detail__body">
-            {t(`jobs-item-${activeJob().id}-body`)}
-          </p>
+              <p class="dashboard-detail__body">{job().description}</p>
 
-          <dl class="dashboard-detail__meta-grid">
-            <div>
-              <dt>{t("jobs-meta-created")}</dt>
-              <dd>{activeJob().createdAt}</dd>
-            </div>
-            <div>
-              <dt>{t("jobs-meta-elapsed")}</dt>
-              <dd>{t(`jobs-item-${activeJob().id}-elapsed`)}</dd>
-            </div>
-            <div>
-              <dt>{t("jobs-meta-guardrail")}</dt>
-              <dd>{t("page-jobs-guardrail")}</dd>
-            </div>
-          </dl>
+              <dl class="dashboard-detail__meta-grid">
+                <div>
+                  <dt>{t("jobs-meta-created")}</dt>
+                  <dd>{formatTimestamp(job().created_at)}</dd>
+                </div>
+                <div>
+                  <dt>{t("jobs-meta-elapsed")}</dt>
+                  <dd>
+                    {job().elapsed_secs ? `${job().elapsed_secs}s` : "Pending"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t("jobs-meta-guardrail")}</dt>
+                  <dd>{t("page-jobs-guardrail")}</dd>
+                </div>
+              </dl>
 
-          <div class="dashboard-detail__actions">
-            <button class="dashboard-detail__ghost" type="button">
-              {t("jobs-action-inspect")}
-            </button>
-            <button class="dashboard-detail__ghost" disabled type="button">
-              {t("jobs-action-restart")}
-            </button>
-            <button class="dashboard-detail__ghost" disabled type="button">
-              {t("jobs-action-cancel")}
-            </button>
-          </div>
-        </section>
+              <div class="dashboard-detail__actions">
+                <button
+                  class="dashboard-detail__ghost"
+                  type="button"
+                  onClick={() => restartMutation.mutate()}
+                  disabled={!job().can_restart}
+                >
+                  {t("jobs-action-restart")}
+                </button>
+                <button
+                  class="dashboard-detail__ghost"
+                  type="button"
+                  onClick={() => cancelMutation.mutate()}
+                  disabled={
+                    job().state !== "in_progress" && job().state !== "pending"
+                  }
+                >
+                  {t("jobs-action-cancel")}
+                </button>
+              </div>
+
+              <div class="catalogue-panel-grid catalogue-panel-grid--extensions">
+                <section class="catalogue-panel">
+                  <div class="catalogue-panel__content">
+                    <h3 class="catalogue-panel__title">Activity</h3>
+                    <div class="catalogue-list catalogue-list--extensions">
+                      <For each={events.data?.events ?? []}>
+                        {(event) => (
+                          <article class="catalogue-list__row">
+                            <div class="catalogue-list__key">{event.level}</div>
+                            <div class="catalogue-list__content">
+                              <p class="catalogue-list__source">
+                                {formatTimestamp(event.timestamp)}
+                              </p>
+                              <p class="catalogue-list__body">
+                                {event.message}
+                              </p>
+                            </div>
+                          </article>
+                        )}
+                      </For>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="catalogue-panel">
+                  <div class="catalogue-panel__content">
+                    <h3 class="catalogue-panel__title">Files</h3>
+                    <div class="catalogue-files skills-detail__files">
+                      <div class="catalogue-files__list skills-files__list">
+                        <For each={files.data?.entries ?? []}>
+                          {(file) => (
+                            <button
+                              class="catalogue-files__item"
+                              onClick={() => setActiveFilePath(file.path)}
+                              type="button"
+                            >
+                              {file.path}
+                            </button>
+                          )}
+                        </For>
+                      </div>
+                    </div>
+                    <Show when={fileContent.data?.content}>
+                      <pre class="memory-preview__document">
+                        {fileContent.data?.content}
+                      </pre>
+                    </Show>
+                  </div>
+                </section>
+              </div>
+
+              <section class="catalogue-panel">
+                <div class="catalogue-panel__content">
+                  <h3 class="catalogue-panel__title">Follow-up prompt</h3>
+                  <div class="catalogue-form">
+                    <div class="catalogue-form__row">
+                      <input
+                        class="catalogue-form__input"
+                        onInput={(event) =>
+                          setPromptText(event.currentTarget.value)
+                        }
+                        type="text"
+                        value={promptText()}
+                      />
+                      <button
+                        class="catalogue-form__button"
+                        type="button"
+                        onClick={() => promptMutation.mutate()}
+                        disabled={!job().can_prompt}
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </section>
+          )}
+        </Show>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= "0";
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:4173";
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:2020";
 
 export default defineConfig({
   testDir: "./axinite/tests/e2e",
@@ -25,11 +25,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "bun run dev -- --host 127.0.0.1 --port 4173",
+    command: "bun run dev",
     url: baseURL,
     reuseExistingServer: true,
     stdout: "pipe",
     stderr: "pipe",
-    timeout: 120_000,
+    timeout: 180_000,
   },
 });

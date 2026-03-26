@@ -25,6 +25,7 @@
   "include": [
     "axinite/src",
     "axinite/tests",
+    "mock-backend",
     "playwright.config.ts",
     "scripts",
     "vite.config.ts",

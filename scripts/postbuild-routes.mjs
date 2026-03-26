@@ -1,5 +1,6 @@
 import { cp, mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const DIST_DIR = path.join(process.cwd(), "dist");
 const DEPLOY_BASE_PATH = "/axinite-mockup/";
@@ -9,7 +10,7 @@ const DEPLOY_DIR = path.join(
 );
 const ROUTES = ["chat", "memory", "jobs", "routines", "extensions", "skills"];
 
-async function main() {
+export async function postbuildRoutes() {
   const indexPath = path.join(DIST_DIR, "index.html");
   await writeFile(path.join(DIST_DIR, ".nojekyll"), "");
 
@@ -40,11 +41,17 @@ async function main() {
   }
 }
 
-main()
-  .then(() => {
-    console.log("postbuild routes completed successfully");
-  })
-  .catch((error) => {
+async function main() {
+  await postbuildRoutes();
+  console.log("postbuild routes completed successfully");
+}
+
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
   });
+}

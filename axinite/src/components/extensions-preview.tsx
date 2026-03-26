@@ -1,123 +1,130 @@
-import { createSignal, For } from "solid-js";
-
+import {
+  createMutation,
+  createQuery,
+  useQueryClient,
+} from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import type { ExtensionInfo } from "@/lib/api/contracts";
+import {
+  activateExtension,
+  fetchExtensionRegistry,
+  fetchExtensionSetup,
+  fetchExtensions,
+  fetchExtensionTools,
+  installExtension,
+  removeExtension,
+  submitExtensionSetup,
+} from "@/lib/api/extensions";
 import { useI18n } from "@/lib/i18n/provider";
 import { capitalise, pascalCase } from "@/lib/string-case";
 
-type ExtensionId = "firecrawl" | "github" | "jmap" | "telegram";
-type ExtensionKind = "mcp" | "wasm" | "grpcm";
-type ExtensionTag = "actions" | "read" | "read_write" | "triggers" | "events";
-
-type ExtensionRecord = {
-  active: boolean;
-  id: ExtensionId;
-  kind: ExtensionKind;
-  tags: ExtensionTag[];
-  version: string;
-};
-
-type ToolRecord = {
-  descriptionKey: string;
-  extensionId: ExtensionId | "core";
-  id: string;
-};
-
-const EXTENSIONS: ExtensionRecord[] = [
-  {
-    active: true,
-    id: "firecrawl",
-    kind: "mcp",
-    tags: ["actions", "read"],
-    version: "v3.1",
-  },
-  {
-    active: true,
-    id: "github",
-    kind: "wasm",
-    tags: ["actions", "read_write"],
-    version: "v0.1.3",
-  },
-  {
-    active: true,
-    id: "jmap",
-    kind: "wasm",
-    tags: ["actions", "read_write"],
-    version: "v0.1",
-  },
-  {
-    active: true,
-    id: "telegram",
-    kind: "grpcm",
-    tags: ["actions", "read_write", "triggers", "events"],
-    version: "v0.2.3",
-  },
-];
-
-const REGISTERED_TOOLS: ToolRecord[] = [
-  {
-    descriptionKey: "extensions-tool-scrape-body",
-    extensionId: "firecrawl",
-    id: "scrape",
-  },
-  {
-    descriptionKey: "extensions-tool-create-job-body",
-    extensionId: "core",
-    id: "create_job",
-  },
-  {
-    descriptionKey: "extensions-tool-crawl-body",
-    extensionId: "firecrawl",
-    id: "crawl",
-  },
-  {
-    descriptionKey: "extensions-tool-info-body",
-    extensionId: "core",
-    id: "extension_info",
-  },
-  {
-    descriptionKey: "extensions-tool-browser-body",
-    extensionId: "firecrawl",
-    id: "firecrawl_browser_session_create",
-  },
-];
-
-const KIND_CLASS: Record<ExtensionKind, string> = {
+const KIND_CLASS: Record<string, string> = {
   grpcm: "pill pill--info",
   mcp: "pill pill--success",
   wasm: "pill pill--warning",
 };
 
-const TAG_CLASS: Record<ExtensionTag, string> = {
-  actions: "pill pill--success",
-  events: "pill pill--violet",
-  read: "pill pill--neutral",
-  read_write: "pill pill--info",
-  triggers: "pill pill--warning",
+const STATUS_CLASS: Record<string, string> = {
+  active: "catalogue-status-dot catalogue-status-dot--active",
+  inactive: "catalogue-status-dot",
 };
 
 export const ExtensionsPreview = () => {
   const { t } = useI18n();
-  const [activeExtensionId, setActiveExtensionId] =
-    createSignal<ExtensionId>("firecrawl");
+  const queryClient = useQueryClient();
+  const [activeExtensionName, setActiveExtensionName] = createSignal<string>();
+  const [registryQuery, setRegistryQuery] = createSignal("");
+  const [setupValues, setSetupValues] = createSignal<Record<string, string>>(
+    {}
+  );
 
-  const activeExtension = () =>
-    EXTENSIONS.find((extension) => extension.id === activeExtensionId()) ??
-    EXTENSIONS[0];
+  const extensions = createQuery(() => ({
+    queryKey: ["extensions", "list"],
+    queryFn: fetchExtensions,
+  }));
 
-  const kindLabel = (kind: ExtensionKind) =>
-    t(`extensions-kind-${capitalise(kind).toLowerCase()}`);
+  const tools = createQuery(() => ({
+    queryKey: ["extensions", "tools"],
+    queryFn: fetchExtensionTools,
+  }));
 
-  const tagLabel = (tag: ExtensionTag) =>
+  const registry = createQuery(() => ({
+    queryKey: ["extensions", "registry", registryQuery().trim()],
+    queryFn: () => fetchExtensionRegistry(registryQuery().trim()),
+  }));
+
+  createEffect(() => {
+    const firstName = extensions.data?.extensions[0]?.name;
+    if (!activeExtensionName() && firstName) {
+      setActiveExtensionName(firstName);
+    }
+  });
+
+  const activeExtension = createMemo<ExtensionInfo | null>(
+    () =>
+      extensions.data?.extensions.find(
+        (extension) => extension.name === activeExtensionName()
+      ) ?? null
+  );
+
+  const setup = createQuery(() => ({
+    queryKey: ["extensions", "setup", activeExtensionName()],
+    queryFn: () => fetchExtensionSetup(activeExtensionName() ?? ""),
+    enabled: typeof activeExtensionName() === "string",
+  }));
+
+  createEffect(() => {
+    const nextValues = Object.fromEntries(
+      (setup.data?.secrets ?? []).map((field) => [field.name, ""])
+    );
+    setSetupValues(nextValues);
+  });
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["extensions"] });
+  };
+
+  const installMutation = createMutation(() => ({
+    mutationFn: (name: string) => installExtension(name),
+    onSuccess: refresh,
+  }));
+
+  const activateMutation = createMutation(() => ({
+    mutationFn: () => activateExtension(activeExtensionName() ?? ""),
+    onSuccess: refresh,
+  }));
+
+  const removeMutation = createMutation(() => ({
+    mutationFn: () => removeExtension(activeExtensionName() ?? ""),
+    onSuccess: refresh,
+  }));
+
+  const setupMutation = createMutation(() => ({
+    mutationFn: () =>
+      submitExtensionSetup(activeExtensionName() ?? "", {
+        secrets: setupValues(),
+      }),
+    onSuccess: refresh,
+  }));
+
+  const tagList = (extension: ExtensionInfo) => {
+    const tags = [
+      extension.active ? "actions" : "read",
+      extension.authenticated ? "read_write" : "triggers",
+    ];
+    if (extension.has_auth) {
+      tags.push("events");
+    }
+    return tags;
+  };
+
+  const tagLabel = (tag: string) =>
     t(
       `extensions-tag-${pascalCase(tag)
         .replace(/([A-Z])/g, "-$1")
         .toLowerCase()
         .replace(/^-/, "")}`
     );
-
-  const sourceLabel = (extensionId: ExtensionId | "core") =>
-    extensionId === "core"
-      ? t("extensions-tool-source-core")
-      : t(`extensions-item-${extensionId}-title`);
 
   return (
     <section class="route-preview route-preview--catalogue route-preview--extensions">
@@ -145,11 +152,11 @@ export const ExtensionsPreview = () => {
           </div>
 
           <div class="catalogue-grid catalogue-grid--extensions">
-            <For each={EXTENSIONS}>
+            <For each={extensions.data?.extensions ?? []}>
               {(extension) => (
                 <article
                   class={
-                    activeExtensionId() === extension.id
+                    activeExtensionName() === extension.name
                       ? "catalogue-card catalogue-card--active extensions-card"
                       : "catalogue-card extensions-card"
                   }
@@ -157,35 +164,37 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-card__header">
                     <div class="catalogue-card__title-wrap">
                       <h4 class="catalogue-card__title">
-                        {t(`extensions-item-${extension.id}-title`)}
+                        {extension.display_name ?? extension.name}
                       </h4>
-                      <span class={KIND_CLASS[extension.kind]}>
-                        {kindLabel(extension.kind)}
+                      <span
+                        class={
+                          KIND_CLASS[extension.kind] ?? "pill pill--neutral"
+                        }
+                      >
+                        {capitalise(extension.kind).toLowerCase()}
                       </span>
                     </div>
                     <div class="catalogue-card__meta">
-                      <span>{extension.version}</span>
+                      <span>{extension.version ?? "preview"}</span>
                       <span
                         class={
                           extension.active
-                            ? "catalogue-status-dot catalogue-status-dot--active"
-                            : "catalogue-status-dot"
+                            ? STATUS_CLASS.active
+                            : STATUS_CLASS.inactive
                         }
                       />
                     </div>
                   </div>
 
                   <p class="catalogue-card__path">
-                    {t(`extensions-item-${extension.id}-path`)}
+                    {extension.url ?? "Local preview"}
                   </p>
-                  <p class="catalogue-card__body">
-                    {t(`extensions-item-${extension.id}-body`)}
-                  </p>
+                  <p class="catalogue-card__body">{extension.description}</p>
 
                   <div class="catalogue-card__tags">
-                    <For each={extension.tags}>
+                    <For each={tagList(extension)}>
                       {(tag) => (
-                        <span class={TAG_CLASS[tag]}>{tagLabel(tag)}</span>
+                        <span class="pill pill--neutral">{tagLabel(tag)}</span>
                       )}
                     </For>
                   </div>
@@ -193,24 +202,26 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-card__actions">
                     <button
                       class="catalogue-card__action"
-                      onClick={() => setActiveExtensionId(extension.id)}
+                      onClick={() => setActiveExtensionName(extension.name)}
                       type="button"
                     >
                       {t("extensions-action-inspect")}
                     </button>
                     <button
                       class="catalogue-card__action"
-                      disabled
+                      onClick={() => setActiveExtensionName(extension.name)}
                       type="button"
                     >
                       {t("extensions-action-configure")}
                     </button>
                     <button
                       class="catalogue-card__action"
-                      disabled
+                      onClick={() => setActiveExtensionName(extension.name)}
                       type="button"
                     >
-                      {t("extensions-action-disable")}
+                      {extension.active
+                        ? t("extensions-action-disable")
+                        : "Activate"}
                     </button>
                   </div>
                 </article>
@@ -218,45 +229,79 @@ export const ExtensionsPreview = () => {
             </For>
           </div>
 
-          <aside class="catalogue-detail catalogue-detail--inline extensions-detail">
-            <div class="catalogue-detail__header">
-              <div>
-                <p class="catalogue-detail__eyebrow">
-                  {t("extensions-detail-eyebrow")}
-                </p>
-                <h3 class="catalogue-detail__title">
-                  {t(`extensions-item-${activeExtension().id}-title`)}
-                </h3>
-              </div>
-              <div class="catalogue-detail__pills">
-                <span class={KIND_CLASS[activeExtension().kind]}>
-                  {kindLabel(activeExtension().kind)}
-                </span>
-                <span class="pill pill--neutral">
-                  {activeExtension().version}
-                </span>
-              </div>
-            </div>
+          <Show when={activeExtension()}>
+            {(extension) => (
+              <aside class="catalogue-detail catalogue-detail--inline extensions-detail">
+                <div class="catalogue-detail__header">
+                  <div>
+                    <p class="catalogue-detail__eyebrow">
+                      {t("extensions-detail-eyebrow")}
+                    </p>
+                    <h3 class="catalogue-detail__title">
+                      {extension().display_name ?? extension().name}
+                    </h3>
+                  </div>
+                  <div class="catalogue-detail__pills">
+                    <span
+                      class={
+                        KIND_CLASS[extension().kind] ?? "pill pill--neutral"
+                      }
+                    >
+                      {extension().kind}
+                    </span>
+                    <span class="pill pill--neutral">
+                      {extension().version ?? "preview"}
+                    </span>
+                  </div>
+                </div>
 
-            <p class="catalogue-detail__body">
-              {t(`extensions-item-${activeExtension().id}-detail`)}
-            </p>
+                <p class="catalogue-detail__body">{extension().description}</p>
 
-            <dl class="catalogue-detail__meta-grid">
-              <div>
-                <dt>{t("extensions-meta-path")}</dt>
-                <dd>{t(`extensions-item-${activeExtension().id}-path`)}</dd>
-              </div>
-              <div>
-                <dt>{t("extensions-meta-config")}</dt>
-                <dd>{t(`extensions-item-${activeExtension().id}-config`)}</dd>
-              </div>
-              <div>
-                <dt>{t("extensions-meta-guardrail")}</dt>
-                <dd>{t("page-extensions-guardrail")}</dd>
-              </div>
-            </dl>
-          </aside>
+                <dl class="catalogue-detail__meta-grid">
+                  <div>
+                    <dt>{t("extensions-meta-path")}</dt>
+                    <dd>{extension().url ?? "Local preview"}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("extensions-meta-config")}</dt>
+                    <dd>
+                      {extension().needs_setup
+                        ? "Setup values required"
+                        : "No setup needed"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{t("extensions-meta-guardrail")}</dt>
+                    <dd>{t("page-extensions-guardrail")}</dd>
+                  </div>
+                </dl>
+
+                <div class="dashboard-detail__actions">
+                  <button
+                    class="dashboard-detail__ghost"
+                    type="button"
+                    onClick={() => activateMutation.mutate()}
+                  >
+                    {extension().active ? "Re-activate" : "Activate"}
+                  </button>
+                  <button
+                    class="dashboard-detail__ghost"
+                    type="button"
+                    onClick={() => setupMutation.mutate()}
+                  >
+                    Save setup
+                  </button>
+                  <button
+                    class="dashboard-detail__ghost"
+                    type="button"
+                    onClick={() => removeMutation.mutate()}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </aside>
+            )}
+          </Show>
         </section>
 
         <div class="catalogue-panel-grid catalogue-panel-grid--extensions">
@@ -266,26 +311,48 @@ export const ExtensionsPreview = () => {
               <h3 class="catalogue-panel__title">
                 {t("extensions-wasm-title")}
               </h3>
-              <p class="catalogue-panel__empty">{t("extensions-wasm-empty")}</p>
-
               <div class="catalogue-form">
                 <label
                   class="catalogue-form__label"
-                  for="extensions-wasm-input"
+                  for="extensions-registry-search"
                 >
-                  {t("extensions-wasm-field-label")}
+                  Search registry
                 </label>
                 <div class="catalogue-form__row">
                   <input
                     class="catalogue-form__input"
-                    id="extensions-wasm-input"
+                    id="extensions-registry-search"
+                    onInput={(event) =>
+                      setRegistryQuery(event.currentTarget.value)
+                    }
                     placeholder={t("extensions-wasm-placeholder")}
                     type="text"
+                    value={registryQuery()}
                   />
-                  <button class="catalogue-form__button" disabled type="button">
-                    {t("extensions-wasm-action")}
-                  </button>
                 </div>
+              </div>
+              <div class="catalogue-list catalogue-list--extensions">
+                <For each={registry.data?.entries ?? []}>
+                  {(entry) => (
+                    <article class="catalogue-list__row">
+                      <div class="catalogue-list__key">{entry.kind}</div>
+                      <div class="catalogue-list__content">
+                        <p class="catalogue-list__source">
+                          {entry.display_name}
+                        </p>
+                        <p class="catalogue-list__body">{entry.description}</p>
+                      </div>
+                      <button
+                        class="catalogue-card__action"
+                        type="button"
+                        onClick={() => installMutation.mutate(entry.name)}
+                        disabled={entry.installed}
+                      >
+                        {entry.installed ? "Installed" : "Install"}
+                      </button>
+                    </article>
+                  )}
+                </For>
               </div>
             </div>
           </section>
@@ -296,24 +363,41 @@ export const ExtensionsPreview = () => {
               <h3 class="catalogue-panel__title">
                 {t("extensions-mcp-title")}
               </h3>
-              <p class="catalogue-panel__empty">{t("extensions-mcp-empty")}</p>
-
-              <div class="catalogue-form">
-                <label class="catalogue-form__label" for="extensions-mcp-input">
-                  {t("extensions-mcp-field-label")}
-                </label>
-                <div class="catalogue-form__row">
-                  <input
-                    class="catalogue-form__input"
-                    id="extensions-mcp-input"
-                    placeholder={t("extensions-mcp-placeholder")}
-                    type="text"
-                  />
-                  <button class="catalogue-form__button" disabled type="button">
-                    {t("extensions-mcp-action")}
-                  </button>
-                </div>
-              </div>
+              <For each={setup.data?.secrets ?? []}>
+                {(field) => (
+                  <div class="catalogue-form">
+                    <label
+                      class="catalogue-form__label"
+                      for={`setup-${field.name}`}
+                    >
+                      {field.prompt}
+                    </label>
+                    <div class="catalogue-form__row">
+                      <input
+                        class="catalogue-form__input"
+                        id={`setup-${field.name}`}
+                        onInput={(event) =>
+                          setSetupValues((current) => ({
+                            ...current,
+                            [field.name]: event.currentTarget.value,
+                          }))
+                        }
+                        placeholder={
+                          field.provided ? "Stored value present" : field.prompt
+                        }
+                        type="text"
+                      />
+                    </div>
+                  </div>
+                )}
+              </For>
+              <button
+                class="catalogue-form__button"
+                type="button"
+                onClick={() => setupMutation.mutate()}
+              >
+                Save setup
+              </button>
             </div>
           </section>
         </div>
@@ -331,16 +415,15 @@ export const ExtensionsPreview = () => {
           </div>
 
           <div class="catalogue-list catalogue-list--extensions">
-            <For each={REGISTERED_TOOLS}>
+            <For each={tools.data?.tools ?? []}>
               {(tool) => (
                 <article class="catalogue-list__row">
-                  <div class="catalogue-list__key">{tool.id}</div>
+                  <div class="catalogue-list__key">{tool.name}</div>
                   <div class="catalogue-list__content">
                     <p class="catalogue-list__source">
-                      {t("extensions-tools-source-label")}:{" "}
-                      {sourceLabel(tool.extensionId)}
+                      {tool.name.includes("_") ? "Mock tool" : "Core tool"}
                     </p>
-                    <p class="catalogue-list__body">{t(tool.descriptionKey)}</p>
+                    <p class="catalogue-list__body">{tool.description}</p>
                   </div>
                 </article>
               )}

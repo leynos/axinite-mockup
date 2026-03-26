@@ -6,6 +6,8 @@ import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
 
 import { GITHUB_PAGES_BASE_PATH } from "./axinite/src/lib/base-path";
+// @ts-expect-error TypeScript has no ambient declarations for this ESM helper.
+import { postbuildRoutes } from "./scripts/postbuild-routes.mjs";
 
 const projectRoot = resolve(__dirname, "axinite");
 const deployBasePath = GITHUB_PAGES_BASE_PATH;
@@ -17,6 +19,13 @@ export default defineConfig({
   plugins: [
     solid(),
     tailwindcss(),
+    {
+      name: "postbuild-routes",
+      apply: "build",
+      async closeBundle() {
+        await postbuildRoutes();
+      },
+    },
     VitePWA({
       registerType: "autoUpdate",
       strategies: "generateSW",

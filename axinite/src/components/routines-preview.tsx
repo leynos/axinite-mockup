@@ -1,147 +1,130 @@
-import { createSignal, For } from "solid-js";
+import {
+  createMutation,
+  createQuery,
+  useQueryClient,
+} from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 
+import {
+  deleteRoutine,
+  fetchRoutineDetail,
+  fetchRoutineRuns,
+  fetchRoutineSummary,
+  fetchRoutines,
+  toggleRoutine,
+  triggerRoutine,
+} from "@/lib/api/routines";
 import { useI18n } from "@/lib/i18n/provider";
 import { capitalise, pascalCase } from "@/lib/string-case";
 
-type RoutineStatus = "active" | "disabled" | "failing";
-type RoutineTrigger = "cron" | "event" | "system" | "manual";
-type RoutineAction = "lightweight" | "full_job";
-type RoutineId = "standup" | "deploy" | "triage" | "weekly" | "health";
-
-type RoutineRecord = {
-  action: RoutineAction;
-  id: RoutineId;
-  lastRun: string;
-  nextRunKey: "scheduled" | "none" | "paused" | "manual";
-  runCount: number;
-  status: RoutineStatus;
-  trigger: RoutineTrigger;
-};
-
-const ROUTINES: RoutineRecord[] = [
-  {
-    action: "lightweight",
-    id: "standup",
-    lastRun: "2026-03-12 09:00",
-    nextRunKey: "scheduled",
-    runCount: 47,
-    status: "active",
-    trigger: "cron",
-  },
-  {
-    action: "full_job",
-    id: "deploy",
-    lastRun: "2026-03-11 16:45",
-    nextRunKey: "none",
-    runCount: 12,
-    status: "active",
-    trigger: "event",
-  },
-  {
-    action: "lightweight",
-    id: "triage",
-    lastRun: "2026-03-12 10:15",
-    nextRunKey: "none",
-    runCount: 89,
-    status: "failing",
-    trigger: "system",
-  },
-  {
-    action: "full_job",
-    id: "weekly",
-    lastRun: "2026-02-24 08:00",
-    nextRunKey: "paused",
-    runCount: 15,
-    status: "disabled",
-    trigger: "cron",
-  },
-  {
-    action: "lightweight",
-    id: "health",
-    lastRun: "2026-03-09 15:30",
-    nextRunKey: "manual",
-    runCount: 6,
-    status: "active",
-    trigger: "manual",
-  },
-];
-
-const ROUTINE_SUMMARY_KEYS = [
-  "total",
-  "enabled",
-  "disabled",
-  "failing",
-  "runs_today",
-] as const;
-
-const STATUS_CLASS: Record<RoutineStatus, string> = {
+const STATUS_CLASS: Record<string, string> = {
   active: "pill pill--success",
   disabled: "pill pill--neutral",
   failing: "pill pill--danger",
 };
 
-const TRIGGER_CLASS: Record<RoutineTrigger, string> = {
+const TRIGGER_CLASS: Record<string, string> = {
   cron: "pill pill--info",
   event: "pill pill--violet",
+  system_event: "pill pill--warning",
   manual: "pill pill--neutral",
-  system: "pill pill--warning",
 };
 
-const ACTION_CLASS: Record<RoutineAction, string> = {
+const ACTION_CLASS: Record<string, string> = {
   full_job: "pill pill--violet",
   lightweight: "pill pill--neutral",
 };
 
+function toKebabSegment(value: string): string {
+  return pascalCase(value)
+    .replace(/([A-Z])/g, "-$1")
+    .toLowerCase()
+    .replace(/^-/, "");
+}
+
+function formatTimestamp(value: string | null | undefined): string {
+  if (!value) {
+    return "Pending";
+  }
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
 export const RoutinesPreview = () => {
   const { t } = useI18n();
-  const [activeRoutineId, setActiveRoutineId] =
-    createSignal<RoutineId>("standup");
+  const queryClient = useQueryClient();
+  const [activeRoutineId, setActiveRoutineId] = createSignal<string>();
 
-  const toKebabSegment = (value: string) =>
-    pascalCase(value)
-      .replace(/([A-Z])/g, "-$1")
-      .toLowerCase()
-      .replace(/^-/, "");
+  const routines = createQuery(() => ({
+    queryKey: ["routines", "list"],
+    queryFn: fetchRoutines,
+  }));
 
-  const activeRoutine = () =>
-    ROUTINES.find((routine) => routine.id === activeRoutineId()) ?? ROUTINES[0];
+  const summary = createQuery(() => ({
+    queryKey: ["routines", "summary"],
+    queryFn: fetchRoutineSummary,
+  }));
 
-  const summaryCount = (key: (typeof ROUTINE_SUMMARY_KEYS)[number]): number => {
-    switch (key) {
-      case "total":
-        return ROUTINES.length;
-      case "enabled":
-        return ROUTINES.filter((routine) => routine.status !== "disabled")
-          .length;
-      case "disabled":
-        return ROUTINES.filter((routine) => routine.status === "disabled")
-          .length;
-      case "failing":
-        return ROUTINES.filter((routine) => routine.status === "failing")
-          .length;
-      case "runs_today":
-        // TODO: replace this hardcoded count with runtime-backed runs_today data.
-        return 3;
+  createEffect(() => {
+    const firstRoutine = routines.data?.routines[0]?.id;
+    if (!activeRoutineId() && firstRoutine) {
+      setActiveRoutineId(firstRoutine);
     }
+  });
+
+  const activeRoutine = createQuery(() => ({
+    queryKey: ["routines", "detail", activeRoutineId()],
+    queryFn: () => fetchRoutineDetail(activeRoutineId() ?? ""),
+    enabled: typeof activeRoutineId() === "string",
+  }));
+
+  const runs = createQuery(() => ({
+    queryKey: ["routines", "runs", activeRoutineId()],
+    queryFn: () => fetchRoutineRuns(activeRoutineId() ?? ""),
+    enabled: typeof activeRoutineId() === "string",
+  }));
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["routines"] });
   };
 
-  const statusLabel = (status: RoutineStatus) =>
-    t(`routines-status-${capitalise(status).toLowerCase()}`);
+  const triggerMutation = createMutation(() => ({
+    mutationFn: () => triggerRoutine(activeRoutineId() ?? ""),
+    onSuccess: refresh,
+  }));
 
-  const triggerLabel = (trigger: RoutineTrigger) =>
-    t(`routines-trigger-${capitalise(trigger).toLowerCase()}`);
+  const toggleMutation = createMutation(() => ({
+    mutationFn: () =>
+      toggleRoutine(activeRoutineId() ?? "", {
+        enabled: !activeRoutine.data?.enabled,
+      }),
+    onSuccess: refresh,
+  }));
 
-  const actionLabel = (action: RoutineAction) =>
-    t(
-      action === "full_job"
-        ? "routines-action-type-full-job"
-        : "routines-action-type-lightweight"
-    );
+  const deleteMutation = createMutation(() => ({
+    mutationFn: () => deleteRoutine(activeRoutineId() ?? ""),
+    onSuccess: () => {
+      refresh();
+      setActiveRoutineId(undefined);
+    },
+  }));
 
-  const nextRunLabel = (routine: RoutineRecord) =>
-    routine.nextRunKey === "scheduled"
-      ? t(`routines-item-${routine.id}-next-run`)
-      : t(`routines-next-run-${routine.nextRunKey}`);
+  const summaryCards = createMemo(() => {
+    if (!summary.data) {
+      return [];
+    }
+    return [
+      { key: "total", value: summary.data.total },
+      { key: "enabled", value: summary.data.enabled },
+      { key: "disabled", value: summary.data.disabled },
+      { key: "failing", value: summary.data.failing },
+      { key: "runs_today", value: summary.data.runs_today },
+    ];
+  });
 
   return (
     <section class="route-preview route-preview--dashboard">
@@ -157,15 +140,13 @@ export const RoutinesPreview = () => {
         </header>
 
         <div class="dashboard-summary">
-          <For each={ROUTINE_SUMMARY_KEYS}>
-            {(summaryKey) => (
+          <For each={summaryCards()}>
+            {(card) => (
               <article class="dashboard-summary__card">
                 <p class="dashboard-summary__label">
-                  {t(`routines-summary-${toKebabSegment(summaryKey)}`)}
+                  {t(`routines-summary-${toKebabSegment(card.key)}`)}
                 </p>
-                <p class="dashboard-summary__value">
-                  {summaryCount(summaryKey)}
-                </p>
+                <p class="dashboard-summary__value">{card.value}</p>
               </article>
             )}
           </For>
@@ -196,7 +177,7 @@ export const RoutinesPreview = () => {
                 </tr>
               </thead>
               <tbody>
-                <For each={ROUTINES}>
+                <For each={routines.data?.routines ?? []}>
                   {(routine) => (
                     <tr
                       class={
@@ -211,27 +192,45 @@ export const RoutinesPreview = () => {
                           onClick={() => setActiveRoutineId(routine.id)}
                           type="button"
                         >
-                          {t(`routines-item-${routine.id}-title`)}
+                          {routine.name}
                         </button>
                       </td>
                       <td>
-                        <span class={TRIGGER_CLASS[routine.trigger]}>
-                          {triggerLabel(routine.trigger)}
+                        <span
+                          class={
+                            TRIGGER_CLASS[routine.trigger_type] ??
+                            "pill pill--neutral"
+                          }
+                        >
+                          {routine.trigger_type}
                         </span>
                       </td>
                       <td>
-                        <span class={ACTION_CLASS[routine.action]}>
-                          {actionLabel(routine.action)}
+                        <span
+                          class={
+                            ACTION_CLASS[routine.action_type] ??
+                            "pill pill--neutral"
+                          }
+                        >
+                          {routine.action_type}
                         </span>
                       </td>
-                      <td class="dashboard-table__meta">{routine.lastRun}</td>
                       <td class="dashboard-table__meta">
-                        {nextRunLabel(routine)}
+                        {formatTimestamp(routine.last_run_at)}
                       </td>
-                      <td class="dashboard-table__meta">{routine.runCount}</td>
+                      <td class="dashboard-table__meta">
+                        {formatTimestamp(routine.next_fire_at)}
+                      </td>
+                      <td class="dashboard-table__meta">{routine.run_count}</td>
                       <td>
-                        <span class={STATUS_CLASS[routine.status]}>
-                          {statusLabel(routine.status)}
+                        <span
+                          class={
+                            STATUS_CLASS[routine.status] ?? "pill pill--neutral"
+                          }
+                        >
+                          {t(
+                            `routines-status-${capitalise(routine.status).toLowerCase()}`
+                          )}
                         </span>
                       </td>
                       <td>
@@ -251,57 +250,107 @@ export const RoutinesPreview = () => {
           </div>
         </section>
 
-        <section class="dashboard-detail">
-          <div class="dashboard-detail__header">
-            <div>
-              <p class="dashboard-detail__eyebrow">
-                {t("routines-detail-eyebrow")}
-              </p>
-              <h3 class="dashboard-detail__title">
-                {t(`routines-item-${activeRoutine().id}-title`)}
-              </h3>
-            </div>
-            <div class="dashboard-detail__pills">
-              <span class={TRIGGER_CLASS[activeRoutine().trigger]}>
-                {triggerLabel(activeRoutine().trigger)}
-              </span>
-              <span class={STATUS_CLASS[activeRoutine().status]}>
-                {statusLabel(activeRoutine().status)}
-              </span>
-            </div>
-          </div>
+        <Show when={activeRoutine.data}>
+          {(routine) => (
+            <section class="dashboard-detail">
+              <div class="dashboard-detail__header">
+                <div>
+                  <p class="dashboard-detail__eyebrow">
+                    {t("routines-detail-eyebrow")}
+                  </p>
+                  <h3 class="dashboard-detail__title">{routine().name}</h3>
+                </div>
+                <div class="dashboard-detail__pills">
+                  <span
+                    class={
+                      TRIGGER_CLASS[String(routine().trigger.type)] ??
+                      "pill pill--neutral"
+                    }
+                  >
+                    {String(routine().trigger.type ?? "manual")}
+                  </span>
+                  <span
+                    class={
+                      STATUS_CLASS[
+                        routine().enabled
+                          ? routine().consecutive_failures > 0
+                            ? "failing"
+                            : "active"
+                          : "disabled"
+                      ] ?? "pill pill--neutral"
+                    }
+                  >
+                    {routine().enabled ? "enabled" : "disabled"}
+                  </span>
+                </div>
+              </div>
 
-          <p class="dashboard-detail__body">
-            {t(`routines-item-${activeRoutine().id}-body`)}
-          </p>
+              <p class="dashboard-detail__body">{routine().description}</p>
 
-          <dl class="dashboard-detail__meta-grid">
-            <div>
-              <dt>{t("routines-meta-last-run")}</dt>
-              <dd>{activeRoutine().lastRun}</dd>
-            </div>
-            <div>
-              <dt>{t("routines-meta-next-run")}</dt>
-              <dd>{nextRunLabel(activeRoutine())}</dd>
-            </div>
-            <div>
-              <dt>{t("routines-meta-guardrail")}</dt>
-              <dd>{t("page-routines-guardrail")}</dd>
-            </div>
-          </dl>
+              <dl class="dashboard-detail__meta-grid">
+                <div>
+                  <dt>{t("routines-meta-last-run")}</dt>
+                  <dd>{formatTimestamp(routine().last_run_at)}</dd>
+                </div>
+                <div>
+                  <dt>{t("routines-meta-next-run")}</dt>
+                  <dd>{formatTimestamp(routine().next_fire_at)}</dd>
+                </div>
+                <div>
+                  <dt>{t("routines-meta-guardrail")}</dt>
+                  <dd>{t("page-routines-guardrail")}</dd>
+                </div>
+              </dl>
 
-          <div class="dashboard-detail__actions">
-            <button class="dashboard-detail__ghost" type="button">
-              {t("routines-action-inspect")}
-            </button>
-            <button class="dashboard-detail__ghost" disabled type="button">
-              {t("routines-action-run-now")}
-            </button>
-            <button class="dashboard-detail__ghost" disabled type="button">
-              {t("routines-action-disable")}
-            </button>
-          </div>
-        </section>
+              <div class="dashboard-detail__actions">
+                <button
+                  class="dashboard-detail__ghost"
+                  type="button"
+                  onClick={() => triggerMutation.mutate()}
+                >
+                  {t("routines-action-run-now")}
+                </button>
+                <button
+                  class="dashboard-detail__ghost"
+                  type="button"
+                  onClick={() => toggleMutation.mutate()}
+                >
+                  {routine().enabled ? t("routines-action-disable") : "Enable"}
+                </button>
+                <button
+                  class="dashboard-detail__ghost"
+                  type="button"
+                  onClick={() => deleteMutation.mutate()}
+                >
+                  Delete
+                </button>
+              </div>
+
+              <section class="catalogue-panel">
+                <div class="catalogue-panel__content">
+                  <h3 class="catalogue-panel__title">Recent runs</h3>
+                  <div class="catalogue-list catalogue-list--extensions">
+                    <For each={runs.data?.runs ?? []}>
+                      {(run) => (
+                        <article class="catalogue-list__row">
+                          <div class="catalogue-list__key">{run.status}</div>
+                          <div class="catalogue-list__content">
+                            <p class="catalogue-list__source">
+                              {formatTimestamp(run.started_at)}
+                            </p>
+                            <p class="catalogue-list__body">
+                              {run.result_summary ?? "No summary recorded."}
+                            </p>
+                          </div>
+                        </article>
+                      )}
+                    </For>
+                  </div>
+                </div>
+              </section>
+            </section>
+          )}
+        </Show>
       </div>
     </section>
   );

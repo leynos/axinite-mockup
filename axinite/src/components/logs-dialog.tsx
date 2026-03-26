@@ -1,12 +1,37 @@
 import { Dialog } from "@kobalte/core/dialog";
-import { For } from "solid-js";
-
+import { createMutation, createQuery } from "@tanstack/solid-query";
+import { createEffect, createSignal, For, onCleanup } from "solid-js";
+import type { LogEntry } from "@/lib/api/contracts";
+import { connectLogEvents, fetchLogLevel, setLogLevel } from "@/lib/api/logs";
 import { useI18n } from "@/lib/i18n/provider";
 
-const LOG_KEYS = ["boot", "flags", "locale", "query"] as const;
+function formatTimestamp(value: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(value));
+}
 
 export const LogsDialog = () => {
   const { t } = useI18n();
+  const [entries, setEntries] = createSignal<LogEntry[]>([]);
+
+  const level = createQuery(() => ({
+    queryKey: ["logs", "level"],
+    queryFn: fetchLogLevel,
+  }));
+
+  const levelMutation = createMutation(() => ({
+    mutationFn: (nextLevel: string) => setLogLevel(nextLevel),
+  }));
+
+  createEffect(() => {
+    const source = connectLogEvents((entry) => {
+      setEntries((current) => [entry, ...current].slice(0, 30));
+    });
+    onCleanup(() => source.close());
+  });
 
   return (
     <Dialog>
@@ -20,13 +45,37 @@ export const LogsDialog = () => {
           <Dialog.Description class="dialog-description">
             {t("logs-description")}
           </Dialog.Description>
+
+          <div class="catalogue-form">
+            <label class="catalogue-form__label" for="logs-level">
+              Log level
+            </label>
+            <div class="catalogue-form__row">
+              <select
+                class="catalogue-form__input"
+                id="logs-level"
+                onChange={(event) =>
+                  levelMutation.mutate(event.currentTarget.value)
+                }
+                value={level.data?.level ?? "info"}
+              >
+                <option value="debug">debug</option>
+                <option value="info">info</option>
+                <option value="warn">warn</option>
+                <option value="error">error</option>
+              </select>
+            </div>
+          </div>
+
           <div class="logs-panel" aria-live="polite">
-            <For each={LOG_KEYS}>
-              {(logKey) => (
+            <For each={entries()}>
+              {(entry) => (
                 <article class="logs-panel__item">
-                  <p class="logs-panel__time">{t(`logs-${logKey}-time`)}</p>
+                  <p class="logs-panel__time">
+                    {formatTimestamp(entry.timestamp)} · {entry.level}
+                  </p>
                   <p class="logs-panel__message">
-                    {t(`logs-${logKey}-message`)}
+                    [{entry.source}] {entry.message}
                   </p>
                 </article>
               )}

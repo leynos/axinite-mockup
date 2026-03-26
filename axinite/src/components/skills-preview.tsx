@@ -1,126 +1,124 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import {
+  createMutation,
+  createQuery,
+  useQueryClient,
+} from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 
+import {
+  fetchSkills,
+  installSkill,
+  removeSkill,
+  searchSkills,
+} from "@/lib/api/skills";
 import { useI18n } from "@/lib/i18n/provider";
 
-type SkillId =
-  | "rust_ownership"
-  | "openapi_reference"
-  | "code_review"
-  | "frontend_a11y";
-type SkillFormat = "single" | "bundle";
-type SearchResultId = "react_patterns" | "python_typing" | "docker_compose";
-
-type SkillRecord = {
-  active: boolean;
-  format: SkillFormat;
-  id: SkillId;
-  version: string;
-};
-
-type SearchResultRecord = {
-  format: SkillFormat;
-  id: SearchResultId;
-  refs: number;
-  assets: number;
-  version: string;
-};
-
-const INSTALLED_SKILLS: SkillRecord[] = [
-  { active: true, format: "single", id: "rust_ownership", version: "v1.0.0" },
-  {
-    active: true,
-    format: "bundle",
-    id: "openapi_reference",
-    version: "v2.1.0",
-  },
-  { active: true, format: "single", id: "code_review", version: "v1.2.0" },
-  { active: false, format: "bundle", id: "frontend_a11y", version: "v0.9.0" },
-];
-
-const SEARCH_RESULTS: SearchResultRecord[] = [
-  {
-    assets: 0,
-    format: "bundle",
-    id: "react_patterns",
-    refs: 4,
-    version: "v1.3.0",
-  },
-  {
-    assets: 0,
-    format: "single",
-    id: "python_typing",
-    refs: 0,
-    version: "v2.0.0",
-  },
-  {
-    assets: 1,
-    format: "bundle",
-    id: "docker_compose",
-    refs: 2,
-    version: "v1.1.0",
-  },
-];
-
-const FORMAT_CLASS: Record<SkillFormat, string> = {
+const FORMAT_CLASS: Record<string, string> = {
   bundle: "pill pill--violet",
   single: "pill pill--neutral",
+  preview: "pill pill--warning",
 };
+
+function detectFormat(source: string): string {
+  if (source.includes("bundle")) {
+    return "bundle";
+  }
+  if (source.includes("catalog")) {
+    return "single";
+  }
+  return "preview";
+}
 
 export const SkillsPreview = () => {
   const { t } = useI18n();
-  const [activeSkillId, setActiveSkillId] = createSignal<SkillId | null>(null);
+  const queryClient = useQueryClient();
+  const [activeSkillName, setActiveSkillName] = createSignal<string | null>(
+    null
+  );
   const [query, setQuery] = createSignal("");
+  const [urlName, setUrlName] = createSignal("");
+  const [urlValue, setUrlValue] = createSignal("");
+  const [inlineName, setInlineName] = createSignal("");
 
-  const activeSkill = () =>
-    INSTALLED_SKILLS.find((skill) => skill.id === activeSkillId()) ?? null;
+  const skills = createQuery(() => ({
+    queryKey: ["skills", "list"],
+    queryFn: fetchSkills,
+  }));
 
-  const filteredResults = createMemo(() => {
-    const term = query().trim().toLowerCase();
-    if (term.length === 0) {
-      return [];
+  createEffect(() => {
+    const firstSkill = skills.data?.skills[0]?.name ?? null;
+    if (activeSkillName() === null && firstSkill) {
+      setActiveSkillName(firstSkill);
     }
-
-    return SEARCH_RESULTS.filter((result) => {
-      const title = t(
-        `skills-search-${result.id.replaceAll("_", "-")}-title`
-      ).toLowerCase();
-      const body = t(
-        `skills-search-${result.id.replaceAll("_", "-")}-body`
-      ).toLowerCase();
-      return title.includes(term) || body.includes(term);
-    });
   });
 
-  const formatLabel = (format: SkillFormat) =>
-    format === "bundle" ? t("skills-format-bundle") : t("skills-format-single");
+  const searchResults = createQuery(() => ({
+    queryKey: ["skills", "search", query().trim()],
+    queryFn: () => searchSkills({ query: query().trim() }),
+    enabled: query().trim().length > 0,
+  }));
 
-  const assetSummary = (result: SearchResultRecord) => {
-    if (result.format === "single") {
-      return t("skills-search-single-summary");
-    }
+  const activeSkill = createMemo(
+    () =>
+      skills.data?.skills.find((skill) => skill.name === activeSkillName()) ??
+      null
+  );
 
-    return t("skills-search-bundle-summary", {
-      assets: result.assets,
-      refs: result.refs,
-    });
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["skills"] });
   };
 
-  const activeSkillFiles = createMemo(() => {
-    const skill = activeSkill();
+  const installMutation = createMutation(() => ({
+    mutationFn: (name: string) =>
+      installSkill({
+        name,
+        slug: `catalog/${name}`,
+      }),
+    onSuccess: refresh,
+  }));
 
-    if (!skill) {
-      return [];
+  const urlInstallMutation = createMutation(() => ({
+    mutationFn: () =>
+      installSkill({
+        name: urlName().trim() || "remote_skill",
+        url: urlValue().trim(),
+      }),
+    onSuccess: () => {
+      setUrlName("");
+      setUrlValue("");
+      refresh();
+    },
+  }));
+
+  const inlineInstallMutation = createMutation(() => ({
+    mutationFn: () =>
+      installSkill({
+        name: inlineName().trim() || "uploaded_skill",
+        content: `# ${inlineName().trim() || "uploaded_skill"}\n\nMock uploaded skill content.`,
+      }),
+    onSuccess: () => {
+      setInlineName("");
+      refresh();
+    },
+  }));
+
+  const removeMutation = createMutation(() => ({
+    mutationFn: () => removeSkill(activeSkillName() ?? ""),
+    onSuccess: () => {
+      refresh();
+      setActiveSkillName(null);
+    },
+  }));
+
+  const formatLabel = (format: string) => {
+    if (format === "bundle") {
+      return t("skills-format-bundle");
     }
-
-    return [1, 2, 3, 4, 5, 6, 7, 8]
-      .map((index) => {
-        const key =
-          `skills-item-${skill.id.replaceAll("_", "-")}-file-${index}` as const;
-        const value = t(key);
-        return value === key ? null : value;
-      })
-      .filter((value): value is string => value !== null);
-  });
+    if (format === "single") {
+      return t("skills-format-single");
+    }
+    return "Preview";
+  };
 
   return (
     <section class="route-preview route-preview--catalogue route-preview--skills">
@@ -160,32 +158,44 @@ export const SkillsPreview = () => {
             </div>
 
             <div class="catalogue-search__results skills-search__results">
-              <For each={filteredResults()}>
-                {(result) => (
-                  <article class="catalogue-search__result skills-search__result">
-                    <div class="catalogue-search__header">
-                      <div>
-                        <h4 class="catalogue-card__title">
-                          {t(
-                            `skills-search-${result.id.replaceAll("_", "-")}-title`
-                          )}
-                        </h4>
-                        <p class="catalogue-list__body">
-                          {t(
-                            `skills-search-${result.id.replaceAll("_", "-")}-body`
-                          )}
-                        </p>
+              <For each={searchResults.data?.catalog ?? []}>
+                {(result) => {
+                  const format = detectFormat(result.slug);
+                  return (
+                    <article class="catalogue-search__result skills-search__result">
+                      <div class="catalogue-search__header">
+                        <div>
+                          <h4 class="catalogue-card__title">{result.name}</h4>
+                          <p class="catalogue-list__body">
+                            {result.description}
+                          </p>
+                        </div>
+                        <div class="catalogue-detail__pills">
+                          <span
+                            class={FORMAT_CLASS[format] ?? "pill pill--neutral"}
+                          >
+                            {formatLabel(format)}
+                          </span>
+                          <span class="pill pill--neutral">
+                            {result.version}
+                          </span>
+                        </div>
                       </div>
-                      <div class="catalogue-detail__pills">
-                        <span class={FORMAT_CLASS[result.format]}>
-                          {formatLabel(result.format)}
-                        </span>
-                        <span class="pill pill--neutral">{result.version}</span>
+                      <p class="catalogue-search__meta">
+                        {result.stars} stars · {result.downloads} downloads
+                      </p>
+                      <div class="catalogue-card__actions">
+                        <button
+                          class="catalogue-card__action"
+                          type="button"
+                          onClick={() => installMutation.mutate(result.name)}
+                        >
+                          Install
+                        </button>
                       </div>
-                    </div>
-                    <p class="catalogue-search__meta">{assetSummary(result)}</p>
-                  </article>
-                )}
+                    </article>
+                  );
+                }}
               </For>
             </div>
           </div>
@@ -204,74 +214,66 @@ export const SkillsPreview = () => {
           </div>
 
           <div class="catalogue-grid skills-grid">
-            <For each={INSTALLED_SKILLS}>
-              {(skill) => (
-                <article
-                  class={
-                    activeSkillId() === skill.id
-                      ? "catalogue-card catalogue-card--active skills-card"
-                      : "catalogue-card skills-card"
-                  }
-                >
-                  <div class="catalogue-card__header">
-                    <div class="catalogue-card__title-wrap">
-                      <h4 class="catalogue-card__title">
-                        {t(
-                          `skills-item-${skill.id.replaceAll("_", "-")}-title`
-                        )}
-                      </h4>
-                      <span class={FORMAT_CLASS[skill.format]}>
-                        {formatLabel(skill.format)}
-                      </span>
+            <For each={skills.data?.skills ?? []}>
+              {(skill) => {
+                const format = detectFormat(skill.source);
+                return (
+                  <article
+                    class={
+                      activeSkillName() === skill.name
+                        ? "catalogue-card catalogue-card--active skills-card"
+                        : "catalogue-card skills-card"
+                    }
+                  >
+                    <div class="catalogue-card__header">
+                      <div class="catalogue-card__title-wrap">
+                        <h4 class="catalogue-card__title">{skill.name}</h4>
+                        <span
+                          class={FORMAT_CLASS[format] ?? "pill pill--neutral"}
+                        >
+                          {formatLabel(format)}
+                        </span>
+                      </div>
+                      <div class="catalogue-card__meta">
+                        <span>{skill.version}</span>
+                        <span class="catalogue-status-dot catalogue-status-dot--active" />
+                      </div>
                     </div>
-                    <div class="catalogue-card__meta">
-                      <span>{skill.version}</span>
-                      <span
-                        class={
-                          skill.active
-                            ? "catalogue-status-dot catalogue-status-dot--active"
-                            : "catalogue-status-dot"
-                        }
-                      />
+
+                    <p class="catalogue-card__body">{skill.description}</p>
+                    <p class="catalogue-search__meta">
+                      {skill.keywords.join(", ")}
+                    </p>
+
+                    <div class="catalogue-card__actions">
+                      <button
+                        class="catalogue-card__action"
+                        onClick={() => setActiveSkillName(skill.name)}
+                        type="button"
+                      >
+                        {t("skills-action-view")}
+                      </button>
+                      <button
+                        class="catalogue-card__action"
+                        type="button"
+                        onClick={() => setActiveSkillName(skill.name)}
+                      >
+                        {t("skills-action-disable")}
+                      </button>
+                      <button
+                        class="catalogue-card__action"
+                        type="button"
+                        onClick={() => {
+                          setActiveSkillName(skill.name);
+                          removeMutation.mutate();
+                        }}
+                      >
+                        {t("skills-action-remove")}
+                      </button>
                     </div>
-                  </div>
-
-                  <p class="catalogue-card__body">
-                    {t(`skills-item-${skill.id.replaceAll("_", "-")}-body`)}
-                  </p>
-                  <p class="catalogue-search__meta">
-                    {t(
-                      `skills-item-${skill.id.replaceAll("_", "-")}-bundle-summary`
-                    )}
-                  </p>
-
-                  <div class="catalogue-card__actions">
-                    <button
-                      class="catalogue-card__action"
-                      onClick={() => setActiveSkillId(skill.id)}
-                      type="button"
-                    >
-                      {t("skills-action-view")}
-                    </button>
-                    <button
-                      class="catalogue-card__action"
-                      disabled
-                      type="button"
-                    >
-                      {skill.active
-                        ? t("skills-action-disable")
-                        : t("skills-action-enable")}
-                    </button>
-                    <button
-                      class="catalogue-card__action"
-                      disabled
-                      type="button"
-                    >
-                      {t("skills-action-remove")}
-                    </button>
-                  </div>
-                </article>
-              )}
+                  </article>
+                );
+              }}
             </For>
           </div>
         </section>
@@ -289,8 +291,10 @@ export const SkillsPreview = () => {
                 <input
                   class="catalogue-form__input"
                   id="skills-url-name"
+                  onInput={(event) => setUrlName(event.currentTarget.value)}
                   placeholder={t("skills-url-name-placeholder")}
                   type="text"
+                  value={urlName()}
                 />
               </div>
 
@@ -302,10 +306,17 @@ export const SkillsPreview = () => {
                   <input
                     class="catalogue-form__input"
                     id="skills-url-input"
+                    onInput={(event) => setUrlValue(event.currentTarget.value)}
                     placeholder={t("skills-url-placeholder")}
                     type="text"
+                    value={urlValue()}
                   />
-                  <button class="catalogue-form__button" disabled type="button">
+                  <button
+                    class="catalogue-form__button"
+                    type="button"
+                    onClick={() => urlInstallMutation.mutate()}
+                    disabled={urlValue().trim().length === 0}
+                  >
                     {t("skills-url-action")}
                   </button>
                 </div>
@@ -335,10 +346,16 @@ export const SkillsPreview = () => {
               <div class="catalogue-form__row skills-search__row">
                 <input
                   class="catalogue-form__input"
+                  onInput={(event) => setInlineName(event.currentTarget.value)}
                   placeholder={t("skills-upload-name-placeholder")}
                   type="text"
+                  value={inlineName()}
                 />
-                <button class="catalogue-form__button" disabled type="button">
+                <button
+                  class="catalogue-form__button"
+                  type="button"
+                  onClick={() => inlineInstallMutation.mutate()}
+                >
                   {t("skills-upload-action")}
                 </button>
               </div>
@@ -356,13 +373,16 @@ export const SkillsPreview = () => {
                   <p class="catalogue-detail__eyebrow">
                     {t("skills-detail-eyebrow")}
                   </p>
-                  <h3 class="catalogue-detail__title">
-                    {t(`skills-item-${skill.id.replaceAll("_", "-")}-title`)}
-                  </h3>
+                  <h3 class="catalogue-detail__title">{skill.name}</h3>
                 </div>
                 <div class="catalogue-detail__pills">
-                  <span class={FORMAT_CLASS[skill.format]}>
-                    {formatLabel(skill.format)}
+                  <span
+                    class={
+                      FORMAT_CLASS[detectFormat(skill.source)] ??
+                      "pill pill--neutral"
+                    }
+                  >
+                    {formatLabel(detectFormat(skill.source))}
                   </span>
                   <span class="pill pill--neutral">{skill.version}</span>
                 </div>
@@ -370,8 +390,9 @@ export const SkillsPreview = () => {
 
               <div class="skills-detail__layout">
                 <div class="skills-detail__body-block">
-                  <p class="catalogue-detail__body">
-                    {t(`skills-item-${skill.id.replaceAll("_", "-")}-detail`)}
+                  <p class="catalogue-detail__body">{skill.description}</p>
+                  <p class="catalogue-search__meta">
+                    Source: {skill.source} · Trust: {skill.trust}
                   </p>
                 </div>
 
@@ -380,9 +401,9 @@ export const SkillsPreview = () => {
                     {t("skills-files-title")}
                   </p>
                   <div class="catalogue-files__list skills-files__list">
-                    <For each={activeSkillFiles()}>
-                      {(value) => (
-                        <div class="catalogue-files__item">{value}</div>
+                    <For each={skill.keywords}>
+                      {(keyword) => (
+                        <div class="catalogue-files__item">{keyword}</div>
                       )}
                     </For>
                   </div>

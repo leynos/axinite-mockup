@@ -7,8 +7,9 @@
     "node": ">=20.19.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/postbuild-routes.mjs",
+    "dev": "bun run scripts/dev.ts",
+    "mock:api": "bun mock-backend/src/server.ts",
+    "build": "vite build",
     "preview": "vite preview",
     "fmt": "bunx biome check --write axinite/src axinite/tests scripts docs package.json tsconfig.json vite.config.ts playwright.config.ts vitest.config.ts vitest.a11y.config.ts biome.jsonc",
     "check:fmt": "bunx biome check --formatter-enabled=true --linter-enabled=false --assist-enabled=false axinite/src axinite/tests scripts docs package.json tsconfig.json vite.config.ts playwright.config.ts vitest.config.ts vitest.a11y.config.ts biome.jsonc",
