@@ -51,6 +51,10 @@ not to start coding.
 - The delivered development loop must use Bun and TypeScript for the mock
   gateway and must serve the built static site with
   `bunx http-server -p <port> dist`, not Vite's development server.
+- If `http-server` proves unable to support the required browser contract, the
+  fallback must remain single-origin from the browser's point of view. Do not
+  switch the front end to a separate runtime API base without explicit user
+  approval.
 - Presented values in the browser must not come from hard-coded front-end
   fixture arrays or route-local constants once the plan is implemented.
 - The mock API must follow the Rust gateway's public browser contracts. The
@@ -91,7 +95,8 @@ not to start coding.
   Severity: high
   Likelihood: medium
   Mitigation: validate the transport path early with a dedicated prototype, and
-  fall back to an explicit runtime API base only if proxying is unreliable.
+  if proxying is unreliable, switch to an alternative preview backend that can
+  serve built `dist/` output and the mock API behind one browser origin.
 
 - Risk: the current Solid preview components are still organised as static
   design previews, so API integration may require more state management work
@@ -188,8 +193,9 @@ not to start coding.
 - Decision: the first implementation milestone will explicitly validate
   `http-server` request routing for both static routes and proxied API traffic,
   especially SSE.
-  Rationale: if that transport assumption is wrong, it changes the rest of the
-  plan.
+  Rationale: if that transport assumption is wrong, the fallback must be a
+  different preview backend topology rather than a different browser API
+  contract.
   Date/Author: 2026-03-26 / Codex
 
 ## Outcomes & retrospective
@@ -271,10 +277,11 @@ with a supervisor script that can:
 3. start `bunx http-server -p 2020 dist`.
 
 The purpose of Stage A is to prove one of two viable routing strategies:
-`http-server` proxying unresolved `/api/*` requests to the Bun service, or an
-explicit runtime API base that keeps the built site on `2020` and the API on a
-second port. Do not proceed until one of those strategies is working for normal
-JSON requests and at least one SSE endpoint.
+`http-server` proxying unresolved `/api/*` requests to the Bun service, or a
+single-origin alternative preview backend that serves the built `dist/`
+artefacts itself while fronting the Bun mock API. Do not proceed until one of
+those strategies is working for normal JSON requests and at least one SSE
+endpoint.
 
 Stage B is the contract and fixture scaffold. Create TypeScript interfaces that
 mirror the Rust DTOs from `../axinite/src/channels/web/types.rs`. Keep them in
@@ -473,6 +480,11 @@ If the build watcher or static server dies independently, the supervisor should
 fail loudly and tear down sibling processes rather than leaving a half-live
 stack behind.
 
+If Stage A proves that `http-server` cannot carry the required API and SSE
+traffic, the recovery path is to replace the preview-serving edge with a
+different single-origin backend. The front-end request contract should stay on
+relative `/api/*` paths.
+
 ## Artifacts and notes
 
 Useful implementation artefacts to preserve during execution:
@@ -526,3 +538,7 @@ inspecting the current `axinite-mockup` frontend data flow and the upstream
 Rust gateway contracts in `../axinite`. This draft establishes the intended
 development loop, the endpoint inventory, the bounded scope, and the required
 approval gate before implementation begins.
+
+Revised the draft on 2026-03-26 to remove the split-origin runtime-API-base
+fallback. If `http-server` cannot support the required transport path, the plan
+now calls for choosing an alternative single-origin preview backend instead.
