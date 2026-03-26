@@ -171,6 +171,9 @@ revise this document, not to start coding.
   `bun run dev` now chooses a nearby free preview port when the default `2020`
   port is already in use, while still failing fast for an explicitly requested
   `PREVIEW_PORT`.
+- [x] (2026-03-26 14:29Z) Added an optimistic chat-send update so the preview
+  shows the just-sent user turn immediately and renders an assistant spinner
+  while the response is still pending.
 
 ## Surprises & Discoveries
 
@@ -222,6 +225,16 @@ revise this document, not to start coding.
   `mock-backend/src/preview-server.ts` when `2020` was already bound.
   Impact: the supervisor now probes for a nearby free port by default, which
   keeps the local demo stack usable without changing the browser API contract.
+
+- Observation: the chat preview still felt inert immediately after pressing
+  Send because the just-submitted turn and the pending assistant state were not
+  rendered until later history or SSE updates arrived.
+  Evidence: `sendMutation` previously cleared the composer and updated status
+  text, but the conversation view did not append a local user turn or any
+  visible assistant waiting state until follow-up events arrived.
+  Impact: the chat preview now performs an optimistic UI update with a pending
+  user bubble and assistant spinner, which makes the route feel responsive
+  while still deferring final content to the mock API and SSE stream.
 
 ## Decision log
 

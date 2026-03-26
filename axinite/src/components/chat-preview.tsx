@@ -40,7 +40,9 @@ export const ChatPreview = () => {
   const queryClient = useQueryClient();
   const [activeThreadId, setActiveThreadId] = createSignal<string>();
   const [composerText, setComposerText] = createSignal("");
+  const [pendingUserMessage, setPendingUserMessage] = createSignal("");
   const [streamingResponse, setStreamingResponse] = createSignal("");
+  const [isAwaitingResponse, setIsAwaitingResponse] = createSignal(false);
   const [liveStatus, setLiveStatus] = createSignal("");
 
   const threads = createQuery(() => ({
@@ -74,6 +76,18 @@ export const ChatPreview = () => {
     enabled: typeof activeThreadId() === "string",
   }));
 
+  createEffect(() => {
+    const pending = pendingUserMessage();
+    if (!pending) {
+      return;
+    }
+
+    const latestTurn = history.data?.turns.at(-1);
+    if (latestTurn?.user_input === pending) {
+      setPendingUserMessage("");
+    }
+  });
+
   const createThreadMutation = createMutation(() => ({
     mutationFn: createThread,
     onSuccess: (thread) => {
@@ -92,11 +106,24 @@ export const ChatPreview = () => {
           Intl.DateTimeFormat().resolvedOptions().timeZone ?? "Europe/London",
         images: [],
       }),
-    onSuccess: () => {
+    onMutate: (content) => {
+      setPendingUserMessage(content);
       setComposerText("");
       setStreamingResponse("");
+      setIsAwaitingResponse(true);
+      setLiveStatus("Waiting for assistant response...");
+    },
+    onSuccess: () => {
       setLiveStatus("Streaming assistant response...");
+      void queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
       void queryClient.invalidateQueries({ queryKey: ["chat", "threads"] });
+    },
+    onError: (_error, content) => {
+      setComposerText(content);
+      setPendingUserMessage("");
+      setStreamingResponse("");
+      setIsAwaitingResponse(false);
+      setLiveStatus("Message failed to send.");
     },
   }));
 
@@ -143,19 +170,26 @@ export const ChatPreview = () => {
           );
           break;
         case "stream_chunk":
+          setIsAwaitingResponse(false);
           setStreamingResponse((current) => `${current}${event.content}`);
           break;
         case "response":
+          setPendingUserMessage("");
+          setIsAwaitingResponse(false);
           setStreamingResponse("");
           setLiveStatus("Response completed.");
           void queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
           void queryClient.invalidateQueries({ queryKey: ["chat", "threads"] });
           break;
         case "approval_needed":
+          setPendingUserMessage("");
+          setIsAwaitingResponse(false);
           setLiveStatus(event.description);
           void queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
           break;
         case "error":
+          setPendingUserMessage("");
+          setIsAwaitingResponse(false);
           setLiveStatus(event.message);
           break;
         case "auth_required":
@@ -270,6 +304,33 @@ export const ChatPreview = () => {
                   </>
                 )}
               </For>
+
+              <Show when={pendingUserMessage().length > 0}>
+                <div class="chat-preview__turn chat-preview__turn--user">
+                  <div class="chat-preview__bubble chat-preview__bubble--user">
+                    <p>{pendingUserMessage()}</p>
+                  </div>
+                </div>
+              </Show>
+
+              <Show
+                when={isAwaitingResponse() && streamingResponse().length === 0}
+              >
+                <div class="chat-preview__turn chat-preview__turn--assistant">
+                  <div class="chat-preview__bubble chat-preview__bubble--assistant">
+                    <div
+                      aria-busy="true"
+                      aria-live="polite"
+                      class="chat-preview__spinner-row"
+                    >
+                      <span aria-hidden="true" class="chat-preview__spinner" />
+                      <p>
+                        {liveStatus() || "Waiting for assistant response..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Show>
 
               <Show when={streamingResponse().length > 0}>
                 <div class="chat-preview__turn chat-preview__turn--assistant">
