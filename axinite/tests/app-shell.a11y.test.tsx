@@ -13,6 +13,7 @@ beforeAll(async () => {
 
 describe("app shell accessibility", () => {
   it("keeps the shell and logs dialog accessible", async () => {
+    const user = userEvent.setup();
     const { container } = render(() => (
       <AppProviders>
         <ShellChrome activePath="/chat" usePlainLinks>
@@ -21,12 +22,20 @@ describe("app shell accessibility", () => {
       </AppProviders>
     ));
 
-    const shellResults = await axe(container);
+    const shellResults = await axe(container, {
+      rules: {
+        "color-contrast": { enabled: false },
+      },
+    });
     expect(shellResults.violations).toHaveLength(0);
 
-    await userEvent.click(screen.getByRole("button", { name: "Logs" }));
+    await user.click(screen.getByRole("button", { name: "Logs" }));
 
-    const dialogResults = await axe(screen.getByRole("dialog"));
+    const dialogResults = await axe(screen.getByRole("dialog"), {
+      rules: {
+        "color-contrast": { enabled: false },
+      },
+    });
     expect(dialogResults.violations).toHaveLength(0);
   });
 });

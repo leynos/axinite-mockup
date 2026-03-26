@@ -22,21 +22,27 @@ export const RoutePage = (props: RoutePageProps) => {
   const renderGenericPreview = () => (
     <>
       <header class="route-page__hero">
-        <div class="route-page__eyebrow">{t("routeHeroEyebrow")}</div>
+        <div class="route-page__eyebrow">{t("route-hero-eyebrow")}</div>
         <div class="route-page__hero-grid">
           <div>
-            <h2 class="route-page__title">{t(`route-${props.routeId}-label`)}</h2>
-            <p class="route-page__summary">{t(`page-${props.routeId}-summary`)}</p>
+            <h2 class="route-page__title">
+              {t(`route-${props.routeId}-label`)}
+            </h2>
+            <p class="route-page__summary">
+              {t(`page-${props.routeId}-summary`)}
+            </p>
           </div>
           <div class="route-page__meta">
             <div class="route-page__meta-card">
-              <p class="route-page__meta-label">{t("routeMetaModeLabel")}</p>
+              <p class="route-page__meta-label">{t("route-meta-mode-label")}</p>
               <p class="route-page__meta-value">
                 {t(`page-${props.routeId}-mode`)}
               </p>
             </div>
             <div class="route-page__meta-card">
-              <p class="route-page__meta-label">{t("routeMetaStatusLabel")}</p>
+              <p class="route-page__meta-label">
+                {t("route-meta-status-label")}
+              </p>
               <p class="route-page__meta-value">
                 {t(`page-${props.routeId}-status`)}
               </p>
@@ -49,7 +55,7 @@ export const RoutePage = (props: RoutePageProps) => {
         <For each={details().cardKeys}>
           {(cardKey) => (
             <article class="route-card">
-              <p class="route-card__kicker">{t("routeCardKicker")}</p>
+              <p class="route-card__kicker">{t("route-card-kicker")}</p>
               <h3 class="route-card__title">
                 {t(`page-${props.routeId}-${cardKey}-title`)}
               </h3>
@@ -63,11 +69,15 @@ export const RoutePage = (props: RoutePageProps) => {
 
       <section class="route-page__agenda">
         <div>
-          <h3 class="route-page__section-title">{t("routeAgendaTitle")}</h3>
-          <p class="route-page__section-body">{t(`page-${props.routeId}-agenda`)}</p>
+          <h3 class="route-page__section-title">{t("route-agenda-title")}</h3>
+          <p class="route-page__section-body">
+            {t(`page-${props.routeId}-agenda`)}
+          </p>
         </div>
         <div>
-          <h3 class="route-page__section-title">{t("routeGuardrailTitle")}</h3>
+          <h3 class="route-page__section-title">
+            {t("route-guardrail-title")}
+          </h3>
           <p class="route-page__section-body">
             {t(`page-${props.routeId}-guardrail`)}
           </p>
@@ -82,8 +92,8 @@ export const RoutePage = (props: RoutePageProps) => {
         when={flags.isRouteVisible(details().flagName)}
         fallback={
           <div class="route-page__notice">
-            <h3>{t("routeUnavailableTitle")}</h3>
-            <p>{t("routeUnavailableBody")}</p>
+            <h3>{t("route-unavailable-title")}</h3>
+            <p>{t("route-unavailable-body")}</p>
           </div>
         }
       >

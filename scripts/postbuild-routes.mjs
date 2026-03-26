@@ -9,37 +9,15 @@ const DEPLOY_DIR = path.join(
 );
 const ROUTES = ["chat", "memory", "jobs", "routines", "extensions", "skills"];
 
-function buildRedirectHtml(route) {
-  const targetPath = `${DEPLOY_BASE_PATH}${route}`.replace(/\/{2,}/g, "/");
-
-  return `<!doctype html>
-<html lang="en-GB">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redirecting to Axinite</title>
-    <meta http-equiv="refresh" content="0; url=${targetPath}" />
-    <script type="module">
-      const target = new URL(${JSON.stringify(targetPath)}, window.location.origin);
-      target.search = window.location.search;
-      target.hash = window.location.hash;
-      window.location.replace(target.toString());
-    </script>
-  </head>
-  <body>
-    <p>
-      Redirecting to
-      <a href="${targetPath}">${targetPath}</a>.
-    </p>
-  </body>
-</html>
-`;
-}
-
 async function main() {
   const indexPath = path.join(DIST_DIR, "index.html");
   await writeFile(path.join(DIST_DIR, ".nojekyll"), "");
 
+  // GitHub Pages project deploys for this repo serve both `/chat` and
+  // `/axinite-mockup/chat` from the published artifact tree. Keep full SPA entry
+  // points at the root route folders, then mirror the complete build under the
+  // deploy-prefixed directory so deep links and reloads work in both layouts
+  // without self-redirect stubs.
   for (const route of ROUTES) {
     const routeDir = path.join(DIST_DIR, route);
     await mkdir(routeDir, { recursive: true });
@@ -60,14 +38,13 @@ async function main() {
 
     await cp(sourcePath, targetPath, { recursive: true });
   }
-
-  for (const route of ROUTES) {
-    const routeDir = path.join(DIST_DIR, route);
-    await writeFile(path.join(routeDir, "index.html"), buildRedirectHtml(route));
-  }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => {
+    console.log("postbuild routes completed successfully");
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

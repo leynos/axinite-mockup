@@ -218,8 +218,8 @@ disabled
    dark theme - because on dark theme, `bg-base-100` is a dark colour
 9. `*-content` colours should have a good contrast compared to their associated
    colours
-10. suggestion - when designing a page use `base-*` colours for majority of the
-    page. use `primary` colour for important elements
+10. suggestion - when designing a page, use `base-*` colours for the majority
+    of the page. Use `primary` colour for important elements
 
 ### daisyUI custom theme with custom colours
 
@@ -989,7 +989,7 @@ A single FAB in the corner of the screen
 </div>
 ```
 
-A FAB that opens a 3 other buttons in the corner of page vertically
+A FAB that opens 3 other buttons in the corner of page vertically
 
 ```html
 <div class="fab">
@@ -1002,7 +1002,7 @@ A FAB that opens a 3 other buttons in the corner of page vertically
 </div>
 ```
 
-A FAB that opens a 3 other buttons in the corner of page vertically and they
+A FAB that opens 3 other buttons in the corner of page vertically and they
 have label text
 
 ```html

@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 
 import { DEFAULT_LOCALE } from "@/lib/i18n/supported-locales";
 
@@ -9,6 +9,12 @@ const publicDir = resolve(projectRoot, "public");
 async function readLocaleAsset(pathname: string): Promise<string> {
   const relativePath = pathname.replace(/^\//u, "");
   const diskPath = resolve(publicDir, relativePath);
+  const safeRelativePath = relative(publicDir, diskPath);
+
+  if (safeRelativePath.startsWith("..") || isAbsolute(safeRelativePath)) {
+    throw new Error(`Refusing to read locale asset outside ${publicDir}`);
+  }
+
   return await readFile(diskPath, "utf8");
 }
 
@@ -28,30 +34,6 @@ export async function setupI18nTestHarness(): Promise<void> {
         status: 200,
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
-        },
-      });
-    }
-
-    if (pathname === "/api/gateway/status") {
-      return new Response(
-        JSON.stringify({
-          connected: false,
-          status: "Preview",
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
-
-    if (pathname === "/api/features") {
-      return new Response(JSON.stringify({ flags: {} }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
         },
       });
     }

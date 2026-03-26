@@ -10,7 +10,7 @@ for (const relativePath of files) {
   const absolutePath = path.join(root, relativePath);
   const source = readFileSync(absolutePath, "utf8");
 
-  for (const match of source.matchAll(/class="([^"\n]+)"/g)) {
+  for (const match of source.matchAll(/class\s*=\s*"([^"]*)"/gs)) {
     const value = match[1] ?? "";
     const tokens = value.trim().split(/\s+/u).filter(Boolean);
     const uniqueTokens = new Set(tokens);

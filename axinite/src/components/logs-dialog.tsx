@@ -11,14 +11,14 @@ export const LogsDialog = () => {
   return (
     <Dialog>
       <Dialog.Trigger class="btn btn-ghost btn-sm shell-button">
-        {t("logsButton")}
+        {t("logs-button")}
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay class="dialog-overlay" />
         <Dialog.Content class="dialog-surface">
-          <Dialog.Title class="dialog-title">{t("logsTitle")}</Dialog.Title>
+          <Dialog.Title class="dialog-title">{t("logs-title")}</Dialog.Title>
           <Dialog.Description class="dialog-description">
-            {t("logsDescription")}
+            {t("logs-description")}
           </Dialog.Description>
           <div class="logs-panel" aria-live="polite">
             <For each={LOG_KEYS}>
@@ -34,7 +34,7 @@ export const LogsDialog = () => {
           </div>
           <div class="dialog-actions">
             <Dialog.CloseButton class="btn btn-primary btn-sm">
-              {t("dialogClose")}
+              {t("dialog-close")}
             </Dialog.CloseButton>
           </div>
         </Dialog.Content>

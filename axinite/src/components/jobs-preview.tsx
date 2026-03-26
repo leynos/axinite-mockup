@@ -1,6 +1,7 @@
-import { For, createSignal } from "solid-js";
+import { createMemo, createSignal, For } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
+import { pascalCase } from "@/lib/string-case";
 
 type JobStatus = "pending" | "in_progress" | "completed" | "failed" | "stuck";
 type JobSource = "direct" | "sandbox";
@@ -61,28 +62,33 @@ const JOB_SUMMARY_KEYS = [
 ] as const;
 
 const STATUS_CLASS: Record<JobStatus, string> = {
-  completed: "dashboard-pill dashboard-pill--success",
-  failed: "dashboard-pill dashboard-pill--danger",
-  in_progress: "dashboard-pill dashboard-pill--success",
-  pending: "dashboard-pill dashboard-pill--neutral",
-  stuck: "dashboard-pill dashboard-pill--warning",
+  completed: "pill pill--success",
+  failed: "pill pill--danger",
+  in_progress: "pill pill--success",
+  pending: "pill pill--neutral",
+  stuck: "pill pill--warning",
 };
 
 const SOURCE_CLASS: Record<JobSource, string> = {
-  direct: "dashboard-pill dashboard-pill--neutral",
-  sandbox: "dashboard-pill dashboard-pill--info",
+  direct: "pill pill--neutral",
+  sandbox: "pill pill--info",
 };
 
 export const JobsPreview = () => {
   const { t } = useI18n();
   const [activeJobId, setActiveJobId] = createSignal<JobId>("comparison");
 
-  const activeJob = () =>
-    JOBS.find((job) => job.id === activeJobId()) ?? JOBS[0];
+  const toKebabSegment = (value: string) =>
+    pascalCase(value)
+      .replace(/([A-Z])/g, "-$1")
+      .toLowerCase()
+      .replace(/^-/, "");
 
-  const summaryCount = (
-    key: (typeof JOB_SUMMARY_KEYS)[number]
-  ): number => {
+  const activeJob = createMemo(
+    () => JOBS.find((job) => job.id === activeJobId()) ?? JOBS[0]
+  );
+
+  const summaryCount = (key: (typeof JOB_SUMMARY_KEYS)[number]): number => {
     if (key === "total") {
       return JOBS.length;
     }
@@ -91,25 +97,20 @@ export const JobsPreview = () => {
   };
 
   const statusLabel = (status: JobStatus) =>
-    t(
-      `jobsStatus${status
-        .split("_")
-        .map((segment) => `${segment.slice(0, 1).toUpperCase()}${segment.slice(1)}`)
-        .join("")}`
-    );
+    t(`jobs-status-${toKebabSegment(status)}`);
 
   const sourceLabel = (source: JobSource) =>
-    source === "direct" ? t("jobsSourceDirect") : t("jobsSourceSandbox");
+    source === "direct" ? t("jobs-source-direct") : t("jobs-source-sandbox");
 
   return (
     <section class="route-preview route-preview--dashboard">
       <div aria-hidden="true" class="route-preview__watermark">
-        {t("jobsWatermark")}
+        {t("jobs-watermark")}
       </div>
 
       <div class="dashboard-preview">
         <header class="route-preview__intro dashboard-preview__intro">
-          <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
+          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-jobs-label")}</h2>
           <p class="route-preview__summary">{t("page-jobs-summary")}</p>
         </header>
@@ -119,17 +120,11 @@ export const JobsPreview = () => {
             {(summaryKey) => (
               <article class="dashboard-summary__card">
                 <p class="dashboard-summary__label">
-                  {t(
-                    `jobsSummary${summaryKey
-                      .split("_")
-                      .map(
-                        (segment) =>
-                          `${segment.slice(0, 1).toUpperCase()}${segment.slice(1)}`
-                      )
-                      .join("")}`
-                  )}
+                  {t(`jobs-summary-${toKebabSegment(summaryKey)}`)}
                 </p>
-                <p class="dashboard-summary__value">{summaryCount(summaryKey)}</p>
+                <p class="dashboard-summary__value">
+                  {summaryCount(summaryKey)}
+                </p>
               </article>
             )}
           </For>
@@ -138,7 +133,7 @@ export const JobsPreview = () => {
         <section class="dashboard-panel">
           <div class="dashboard-panel__header">
             <div>
-              <h3 class="dashboard-panel__title">{t("jobsTableTitle")}</h3>
+              <h3 class="dashboard-panel__title">{t("jobs-table-title")}</h3>
               <p class="dashboard-panel__body">{t("page-jobs-agenda")}</p>
             </div>
           </div>
@@ -147,12 +142,12 @@ export const JobsPreview = () => {
             <table class="dashboard-table">
               <thead>
                 <tr>
-                  <th>{t("jobsColumnId")}</th>
-                  <th>{t("jobsColumnTitle")}</th>
-                  <th>{t("jobsColumnSource")}</th>
-                  <th>{t("jobsColumnStatus")}</th>
-                  <th>{t("jobsColumnCreated")}</th>
-                  <th>{t("jobsColumnActions")}</th>
+                  <th>{t("jobs-column-id")}</th>
+                  <th>{t("jobs-column-title")}</th>
+                  <th>{t("jobs-column-source")}</th>
+                  <th>{t("jobs-column-status")}</th>
+                  <th>{t("jobs-column-created")}</th>
+                  <th>{t("jobs-column-actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -172,7 +167,7 @@ export const JobsPreview = () => {
                           onClick={() => setActiveJobId(job.id)}
                           type="button"
                         >
-                          {t(`jobsItem${job.id}Title`)}
+                          {t(`jobs-item-${job.id}-title`)}
                         </button>
                       </td>
                       <td>
@@ -192,7 +187,7 @@ export const JobsPreview = () => {
                           onClick={() => setActiveJobId(job.id)}
                           type="button"
                         >
-                          {t("jobsActionInspect")}
+                          {t("jobs-action-inspect")}
                         </button>
                       </td>
                     </tr>
@@ -206,9 +201,11 @@ export const JobsPreview = () => {
         <section class="dashboard-detail">
           <div class="dashboard-detail__header">
             <div>
-              <p class="dashboard-detail__eyebrow">{t("jobsDetailEyebrow")}</p>
+              <p class="dashboard-detail__eyebrow">
+                {t("jobs-detail-eyebrow")}
+              </p>
               <h3 class="dashboard-detail__title">
-                {t(`jobsItem${activeJob().id}Title`)}
+                {t(`jobs-item-${activeJob().id}-title`)}
               </h3>
             </div>
             <div class="dashboard-detail__pills">
@@ -221,32 +218,34 @@ export const JobsPreview = () => {
             </div>
           </div>
 
-          <p class="dashboard-detail__body">{t(`jobsItem${activeJob().id}Body`)}</p>
+          <p class="dashboard-detail__body">
+            {t(`jobs-item-${activeJob().id}-body`)}
+          </p>
 
           <dl class="dashboard-detail__meta-grid">
             <div>
-              <dt>{t("jobsMetaCreated")}</dt>
+              <dt>{t("jobs-meta-created")}</dt>
               <dd>{activeJob().createdAt}</dd>
             </div>
             <div>
-              <dt>{t("jobsMetaElapsed")}</dt>
-              <dd>{t(`jobsItem${activeJob().id}Elapsed`)}</dd>
+              <dt>{t("jobs-meta-elapsed")}</dt>
+              <dd>{t(`jobs-item-${activeJob().id}-elapsed`)}</dd>
             </div>
             <div>
-              <dt>{t("jobsMetaGuardrail")}</dt>
+              <dt>{t("jobs-meta-guardrail")}</dt>
               <dd>{t("page-jobs-guardrail")}</dd>
             </div>
           </dl>
 
           <div class="dashboard-detail__actions">
             <button class="dashboard-detail__ghost" type="button">
-              {t("jobsActionInspect")}
+              {t("jobs-action-inspect")}
             </button>
             <button class="dashboard-detail__ghost" disabled type="button">
-              {t("jobsActionRestart")}
+              {t("jobs-action-restart")}
             </button>
             <button class="dashboard-detail__ghost" disabled type="button">
-              {t("jobsActionCancel")}
+              {t("jobs-action-cancel")}
             </button>
           </div>
         </section>

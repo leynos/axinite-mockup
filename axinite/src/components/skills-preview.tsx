@@ -1,4 +1,4 @@
-import { For, Show, createMemo, createSignal } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
 
@@ -27,7 +27,12 @@ type SearchResultRecord = {
 
 const INSTALLED_SKILLS: SkillRecord[] = [
   { active: true, format: "single", id: "rust_ownership", version: "v1.0.0" },
-  { active: true, format: "bundle", id: "openapi_reference", version: "v2.1.0" },
+  {
+    active: true,
+    format: "bundle",
+    id: "openapi_reference",
+    version: "v2.1.0",
+  },
   { active: true, format: "single", id: "code_review", version: "v1.2.0" },
   { active: false, format: "bundle", id: "frontend_a11y", version: "v0.9.0" },
 ];
@@ -57,14 +62,13 @@ const SEARCH_RESULTS: SearchResultRecord[] = [
 ];
 
 const FORMAT_CLASS: Record<SkillFormat, string> = {
-  bundle: "catalogue-pill catalogue-pill--violet",
-  single: "catalogue-pill catalogue-pill--neutral",
+  bundle: "pill pill--violet",
+  single: "pill pill--neutral",
 };
 
 export const SkillsPreview = () => {
   const { t } = useI18n();
-  const [activeSkillId, setActiveSkillId] =
-    createSignal<SkillId | null>(null);
+  const [activeSkillId, setActiveSkillId] = createSignal<SkillId | null>(null);
   const [query, setQuery] = createSignal("");
 
   const activeSkill = () =>
@@ -77,21 +81,25 @@ export const SkillsPreview = () => {
     }
 
     return SEARCH_RESULTS.filter((result) => {
-      const title = t(`skillsSearch${result.id}Title`).toLowerCase();
-      const body = t(`skillsSearch${result.id}Body`).toLowerCase();
+      const title = t(
+        `skills-search-${result.id.replaceAll("_", "-")}-title`
+      ).toLowerCase();
+      const body = t(
+        `skills-search-${result.id.replaceAll("_", "-")}-body`
+      ).toLowerCase();
       return title.includes(term) || body.includes(term);
     });
   });
 
   const formatLabel = (format: SkillFormat) =>
-    format === "bundle" ? t("skillsFormatBundle") : t("skillsFormatSingle");
+    format === "bundle" ? t("skills-format-bundle") : t("skills-format-single");
 
   const assetSummary = (result: SearchResultRecord) => {
     if (result.format === "single") {
-      return t("skillsSearchSingleSummary");
+      return t("skills-search-single-summary");
     }
 
-    return t("skillsSearchBundleSummary", {
+    return t("skills-search-bundle-summary", {
       assets: result.assets,
       refs: result.refs,
     });
@@ -106,7 +114,8 @@ export const SkillsPreview = () => {
 
     return [1, 2, 3, 4, 5, 6, 7, 8]
       .map((index) => {
-        const key = `skillsItem${skill.id}File${index}` as const;
+        const key =
+          `skills-item-${skill.id.replaceAll("_", "-")}-file-${index}` as const;
         const value = t(key);
         return value === key ? null : value;
       })
@@ -116,12 +125,12 @@ export const SkillsPreview = () => {
   return (
     <section class="route-preview route-preview--catalogue route-preview--skills">
       <div aria-hidden="true" class="route-preview__watermark">
-        {t("skillsWatermark")}
+        {t("skills-watermark")}
       </div>
 
       <div class="catalogue-preview catalogue-preview--skills">
         <header class="route-preview__intro catalogue-preview__intro skills-preview__intro">
-          <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
+          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-skills-label")}</h2>
           <p class="route-preview__summary">{t("page-skills-summary")}</p>
         </header>
@@ -129,7 +138,9 @@ export const SkillsPreview = () => {
         <section class="catalogue-section skills-section skills-section--search">
           <div class="catalogue-section__header skills-section__header">
             <div>
-              <h3 class="catalogue-section__title">{t("skillsSearchTitle")}</h3>
+              <h3 class="catalogue-section__title">
+                {t("skills-search-title")}
+              </h3>
               <p class="catalogue-section__body">{t("page-skills-agenda")}</p>
             </div>
           </div>
@@ -139,12 +150,12 @@ export const SkillsPreview = () => {
               <input
                 class="catalogue-form__input"
                 onInput={(event) => setQuery(event.currentTarget.value)}
-                placeholder={t("skillsSearchPlaceholder")}
+                placeholder={t("skills-search-placeholder")}
                 type="text"
                 value={query()}
               />
               <button class="catalogue-form__button" type="button">
-                {t("skillsSearchAction")}
+                {t("skills-search-action")}
               </button>
             </div>
 
@@ -155,19 +166,21 @@ export const SkillsPreview = () => {
                     <div class="catalogue-search__header">
                       <div>
                         <h4 class="catalogue-card__title">
-                          {t(`skillsSearch${result.id}Title`)}
+                          {t(
+                            `skills-search-${result.id.replaceAll("_", "-")}-title`
+                          )}
                         </h4>
                         <p class="catalogue-list__body">
-                          {t(`skillsSearch${result.id}Body`)}
+                          {t(
+                            `skills-search-${result.id.replaceAll("_", "-")}-body`
+                          )}
                         </p>
                       </div>
                       <div class="catalogue-detail__pills">
                         <span class={FORMAT_CLASS[result.format]}>
                           {formatLabel(result.format)}
                         </span>
-                        <span class="catalogue-pill catalogue-pill--neutral">
-                          {result.version}
-                        </span>
+                        <span class="pill pill--neutral">{result.version}</span>
                       </div>
                     </div>
                     <p class="catalogue-search__meta">{assetSummary(result)}</p>
@@ -182,9 +195,11 @@ export const SkillsPreview = () => {
           <div class="catalogue-section__header skills-section__header">
             <div>
               <h3 class="catalogue-section__title">
-                {t("skillsInstalledTitle")}
+                {t("skills-installed-title")}
               </h3>
-              <p class="catalogue-section__body">{t("page-skills-guardrail")}</p>
+              <p class="catalogue-section__body">
+                {t("page-skills-guardrail")}
+              </p>
             </div>
           </div>
 
@@ -201,7 +216,9 @@ export const SkillsPreview = () => {
                   <div class="catalogue-card__header">
                     <div class="catalogue-card__title-wrap">
                       <h4 class="catalogue-card__title">
-                        {t(`skillsItem${skill.id}Title`)}
+                        {t(
+                          `skills-item-${skill.id.replaceAll("_", "-")}-title`
+                        )}
                       </h4>
                       <span class={FORMAT_CLASS[skill.format]}>
                         {formatLabel(skill.format)}
@@ -220,10 +237,12 @@ export const SkillsPreview = () => {
                   </div>
 
                   <p class="catalogue-card__body">
-                    {t(`skillsItem${skill.id}Body`)}
+                    {t(`skills-item-${skill.id.replaceAll("_", "-")}-body`)}
                   </p>
                   <p class="catalogue-search__meta">
-                    {t(`skillsItem${skill.id}BundleSummary`)}
+                    {t(
+                      `skills-item-${skill.id.replaceAll("_", "-")}-bundle-summary`
+                    )}
                   </p>
 
                   <div class="catalogue-card__actions">
@@ -232,15 +251,23 @@ export const SkillsPreview = () => {
                       onClick={() => setActiveSkillId(skill.id)}
                       type="button"
                     >
-                      {t("skillsActionView")}
+                      {t("skills-action-view")}
                     </button>
-                    <button class="catalogue-card__action" disabled type="button">
+                    <button
+                      class="catalogue-card__action"
+                      disabled
+                      type="button"
+                    >
                       {skill.active
-                        ? t("skillsActionDisable")
-                        : t("skillsActionEnable")}
+                        ? t("skills-action-disable")
+                        : t("skills-action-enable")}
                     </button>
-                    <button class="catalogue-card__action" disabled type="button">
-                      {t("skillsActionRemove")}
+                    <button
+                      class="catalogue-card__action"
+                      disabled
+                      type="button"
+                    >
+                      {t("skills-action-remove")}
                     </button>
                   </div>
                 </article>
@@ -251,72 +278,72 @@ export const SkillsPreview = () => {
 
         <div class="catalogue-panel-grid skills-panel-grid">
           <section class="catalogue-panel skills-panel">
-            <div class="catalogue-panel__mark">{t("skillsUrlMark")}</div>
+            <div class="catalogue-panel__mark">{t("skills-url-mark")}</div>
             <div class="catalogue-panel__content">
-              <h3 class="catalogue-panel__title">{t("skillsUrlTitle")}</h3>
+              <h3 class="catalogue-panel__title">{t("skills-url-title")}</h3>
 
               <div class="catalogue-form">
                 <label class="catalogue-form__label" for="skills-url-name">
-                  {t("skillsUrlNameLabel")}
+                  {t("skills-url-name-label")}
                 </label>
                 <input
                   class="catalogue-form__input"
                   id="skills-url-name"
-                  placeholder={t("skillsUrlNamePlaceholder")}
+                  placeholder={t("skills-url-name-placeholder")}
                   type="text"
                 />
               </div>
 
               <div class="catalogue-form">
                 <label class="catalogue-form__label" for="skills-url-input">
-                  {t("skillsUrlFieldLabel")}
+                  {t("skills-url-field-label")}
                 </label>
                 <div class="catalogue-form__row skills-search__row">
                   <input
                     class="catalogue-form__input"
                     id="skills-url-input"
-                    placeholder={t("skillsUrlPlaceholder")}
+                    placeholder={t("skills-url-placeholder")}
                     type="text"
                   />
                   <button class="catalogue-form__button" disabled type="button">
-                    {t("skillsUrlAction")}
+                    {t("skills-url-action")}
                   </button>
                 </div>
               </div>
 
-              <p class="catalogue-panel__hint">{t("skillsUrlHint")}</p>
+              <p class="catalogue-panel__hint">{t("skills-url-hint")}</p>
             </div>
           </section>
 
           <section class="catalogue-panel skills-panel">
-            <div class="catalogue-panel__mark">{t("skillsUploadMark")}</div>
+            <div class="catalogue-panel__mark">{t("skills-upload-mark")}</div>
             <div class="catalogue-panel__content">
-              <h3 class="catalogue-panel__title">{t("skillsUploadTitle")}</h3>
+              <h3 class="catalogue-panel__title">{t("skills-upload-title")}</h3>
 
               <button class="catalogue-upload" type="button">
                 <span class="catalogue-upload__title">
-                  {t("skillsUploadDropTitle")}
+                  {t("skills-upload-drop-title")}
                 </span>
                 <span class="catalogue-upload__body">
-                  {t("skillsUploadDropBody")}
+                  {t("skills-upload-drop-body")}
                 </span>
                 <span class="catalogue-upload__meta">
-                  {t("skillsUploadDropMeta")}
+                  {t("skills-upload-drop-meta")}
                 </span>
               </button>
 
               <div class="catalogue-form__row skills-search__row">
                 <input
                   class="catalogue-form__input"
-                  placeholder={t("skillsUploadNamePlaceholder")}
+                  placeholder={t("skills-upload-name-placeholder")}
                   type="text"
                 />
                 <button class="catalogue-form__button" disabled type="button">
-                  {t("skillsUploadAction")}
+                  {t("skills-upload-action")}
                 </button>
               </div>
 
-              <p class="catalogue-panel__hint">{t("skillsUploadHint")}</p>
+              <p class="catalogue-panel__hint">{t("skills-upload-hint")}</p>
             </div>
           </section>
         </div>
@@ -326,33 +353,37 @@ export const SkillsPreview = () => {
             <section class="catalogue-detail skills-detail">
               <div class="catalogue-detail__header">
                 <div>
-                  <p class="catalogue-detail__eyebrow">{t("skillsDetailEyebrow")}</p>
+                  <p class="catalogue-detail__eyebrow">
+                    {t("skills-detail-eyebrow")}
+                  </p>
                   <h3 class="catalogue-detail__title">
-                    {t(`skillsItem${skill.id}Title`)}
+                    {t(`skills-item-${skill.id.replaceAll("_", "-")}-title`)}
                   </h3>
                 </div>
                 <div class="catalogue-detail__pills">
                   <span class={FORMAT_CLASS[skill.format]}>
                     {formatLabel(skill.format)}
                   </span>
-                  <span class="catalogue-pill catalogue-pill--neutral">
-                    {skill.version}
-                  </span>
+                  <span class="pill pill--neutral">{skill.version}</span>
                 </div>
               </div>
 
               <div class="skills-detail__layout">
                 <div class="skills-detail__body-block">
                   <p class="catalogue-detail__body">
-                    {t(`skillsItem${skill.id}Detail`)}
+                    {t(`skills-item-${skill.id.replaceAll("_", "-")}-detail`)}
                   </p>
                 </div>
 
                 <div class="catalogue-files skills-detail__files">
-                  <p class="catalogue-files__title">{t("skillsFilesTitle")}</p>
+                  <p class="catalogue-files__title">
+                    {t("skills-files-title")}
+                  </p>
                   <div class="catalogue-files__list skills-files__list">
                     <For each={activeSkillFiles()}>
-                      {(value) => <div class="catalogue-files__item">{value}</div>}
+                      {(value) => (
+                        <div class="catalogue-files__item">{value}</div>
+                      )}
                     </For>
                   </div>
                 </div>

@@ -13,63 +13,72 @@ export const DebugFlagPanel = () => {
     <Collapsible class="debug-panel" defaultOpen={false}>
       <div class="debug-panel__header">
         <div>
-          <p class="debug-panel__eyebrow">{t("debugEyebrow")}</p>
-          <h2 class="debug-panel__title">{t("debugTitle")}</h2>
+          <p class="debug-panel__eyebrow">{t("debug-eyebrow")}</p>
+          <h2 class="debug-panel__title">{t("debug-title")}</h2>
         </div>
         <Collapsible.Trigger class="btn btn-outline btn-sm shell-button">
-          {t("debugToggle")}
+          {t("debug-toggle")}
         </Collapsible.Trigger>
       </div>
       <Collapsible.Content class="debug-panel__content">
-        <p class="debug-panel__description">{t("debugDescription")}</p>
-        <ul class="debug-table" aria-label={t("debugTableLabel")}>
-          <For each={FEATURE_FLAGS}>
-            {(flag) => {
-              const resolvedFlag = () => flags.resolvedFlags()[flag.name];
-              const override = () => flags.overrides()[flag.name];
+        <p class="debug-panel__description">{t("debug-description")}</p>
+        <table aria-label={t("debug-table-label")} class="debug-table">
+          <thead class="debug-table__header">
+            <tr>
+              <th scope="col">{t("debug-column-flag")}</th>
+              <th scope="col">{t("debug-column-state")}</th>
+              <th scope="col">{t("debug-column-actions")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <For each={FEATURE_FLAGS}>
+              {(flag) => {
+                const resolvedFlag = () => flags.resolvedFlags()[flag.name];
+                const override = () => flags.overrides()[flag.name];
 
-              return (
-                <li class="debug-table__row">
-                  <div class="debug-table__cell">
-                    <p class="debug-table__name">{flag.name}</p>
-                    <p class="debug-table__meta">
-                      {flag.owner} · {flag.backendContract}
-                    </p>
-                  </div>
-                  <div class="debug-table__cell">
-                    <span class="badge badge-outline">
-                      {t(`flag-${resolvedFlag() ? "on" : "off"}`)}
-                    </span>
-                  </div>
-                  <div class="debug-table__cell debug-table__actions">
-                    <button
-                      class="btn btn-outline btn-xs shell-button"
-                      type="button"
-                      onClick={() => flags.setOverride(flag.name, true)}
-                    >
-                      {t("flagForceOn")}
-                    </button>
-                    <button
-                      class="btn btn-outline btn-xs shell-button"
-                      type="button"
-                      onClick={() => flags.setOverride(flag.name, false)}
-                    >
-                      {t("flagForceOff")}
-                    </button>
-                    <button
-                      class="btn btn-ghost btn-xs shell-button"
-                      type="button"
-                      disabled={typeof override() === "undefined"}
-                      onClick={() => flags.clearOverride(flag.name)}
-                    >
-                      {t("flagClearOverride")}
-                    </button>
-                  </div>
-                </li>
-              );
-            }}
-          </For>
-        </ul>
+                return (
+                  <tr class="debug-table__row">
+                    <th class="debug-table__cell" scope="row">
+                      <p class="debug-table__name">{flag.name}</p>
+                      <p class="debug-table__meta">
+                        {flag.owner} · {flag.backendContract}
+                      </p>
+                    </th>
+                    <td class="debug-table__cell">
+                      <span class="badge badge-outline">
+                        {t(`flag-${resolvedFlag() ? "on" : "off"}`)}
+                      </span>
+                    </td>
+                    <td class="debug-table__cell debug-table__actions">
+                      <button
+                        class="btn btn-outline btn-xs shell-button"
+                        type="button"
+                        onClick={() => flags.setOverride(flag.name, true)}
+                      >
+                        {t("flag-force-on")}
+                      </button>
+                      <button
+                        class="btn btn-outline btn-xs shell-button"
+                        type="button"
+                        onClick={() => flags.setOverride(flag.name, false)}
+                      >
+                        {t("flag-force-off")}
+                      </button>
+                      <button
+                        class="btn btn-ghost btn-xs shell-button"
+                        type="button"
+                        disabled={typeof override() === "undefined"}
+                        onClick={() => flags.clearOverride(flag.name)}
+                      >
+                        {t("flag-clear-override")}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              }}
+            </For>
+          </tbody>
+        </table>
       </Collapsible.Content>
     </Collapsible>
   );

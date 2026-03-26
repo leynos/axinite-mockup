@@ -1,15 +1,11 @@
-import { For, createSignal } from "solid-js";
+import { createSignal, For } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
+import { capitalise, pascalCase } from "@/lib/string-case";
 
 type ExtensionId = "firecrawl" | "github" | "jmap" | "telegram";
 type ExtensionKind = "mcp" | "wasm" | "grpcm";
-type ExtensionTag =
-  | "actions"
-  | "read"
-  | "read_write"
-  | "triggers"
-  | "events";
+type ExtensionTag = "actions" | "read" | "read_write" | "triggers" | "events";
 
 type ExtensionRecord = {
   active: boolean;
@@ -58,44 +54,44 @@ const EXTENSIONS: ExtensionRecord[] = [
 
 const REGISTERED_TOOLS: ToolRecord[] = [
   {
-    descriptionKey: "extensionsToolScrapeBody",
+    descriptionKey: "extensions-tool-scrape-body",
     extensionId: "firecrawl",
     id: "scrape",
   },
   {
-    descriptionKey: "extensionsToolCreateJobBody",
+    descriptionKey: "extensions-tool-create-job-body",
     extensionId: "core",
     id: "create_job",
   },
   {
-    descriptionKey: "extensionsToolCrawlBody",
+    descriptionKey: "extensions-tool-crawl-body",
     extensionId: "firecrawl",
     id: "crawl",
   },
   {
-    descriptionKey: "extensionsToolInfoBody",
+    descriptionKey: "extensions-tool-info-body",
     extensionId: "core",
     id: "extension_info",
   },
   {
-    descriptionKey: "extensionsToolBrowserBody",
+    descriptionKey: "extensions-tool-browser-body",
     extensionId: "firecrawl",
     id: "firecrawl_browser_session_create",
   },
 ];
 
 const KIND_CLASS: Record<ExtensionKind, string> = {
-  grpcm: "catalogue-pill catalogue-pill--info",
-  mcp: "catalogue-pill catalogue-pill--success",
-  wasm: "catalogue-pill catalogue-pill--warning",
+  grpcm: "pill pill--info",
+  mcp: "pill pill--success",
+  wasm: "pill pill--warning",
 };
 
 const TAG_CLASS: Record<ExtensionTag, string> = {
-  actions: "catalogue-pill catalogue-pill--success",
-  events: "catalogue-pill catalogue-pill--violet",
-  read: "catalogue-pill catalogue-pill--neutral",
-  read_write: "catalogue-pill catalogue-pill--info",
-  triggers: "catalogue-pill catalogue-pill--warning",
+  actions: "pill pill--success",
+  events: "pill pill--violet",
+  read: "pill pill--neutral",
+  read_write: "pill pill--info",
+  triggers: "pill pill--warning",
 };
 
 export const ExtensionsPreview = () => {
@@ -108,30 +104,30 @@ export const ExtensionsPreview = () => {
     EXTENSIONS[0];
 
   const kindLabel = (kind: ExtensionKind) =>
-    t(`extensionsKind${kind.slice(0, 1).toUpperCase()}${kind.slice(1)}`);
+    t(`extensions-kind-${capitalise(kind).toLowerCase()}`);
 
   const tagLabel = (tag: ExtensionTag) =>
     t(
-      `extensionsTag${tag
-        .split("_")
-        .map((segment) => `${segment.slice(0, 1).toUpperCase()}${segment.slice(1)}`)
-        .join("")}`
+      `extensions-tag-${pascalCase(tag)
+        .replace(/([A-Z])/g, "-$1")
+        .toLowerCase()
+        .replace(/^-/, "")}`
     );
 
   const sourceLabel = (extensionId: ExtensionId | "core") =>
     extensionId === "core"
-      ? t("extensionsToolSourceCore")
-      : t(`extensionsItem${extensionId}Title`);
+      ? t("extensions-tool-source-core")
+      : t(`extensions-item-${extensionId}-title`);
 
   return (
     <section class="route-preview route-preview--catalogue route-preview--extensions">
       <div aria-hidden="true" class="route-preview__watermark">
-        {t("extensionsWatermark")}
+        {t("extensions-watermark")}
       </div>
 
       <div class="catalogue-preview catalogue-preview--extensions">
         <header class="route-preview__intro catalogue-preview__intro extensions-preview__intro">
-          <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
+          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-extensions-label")}</h2>
           <p class="route-preview__summary">{t("page-extensions-summary")}</p>
         </header>
@@ -140,9 +136,11 @@ export const ExtensionsPreview = () => {
           <div class="catalogue-section__header extensions-preview__section-header">
             <div>
               <h3 class="catalogue-section__title">
-                {t("extensionsInstalledTitle")}
+                {t("extensions-installed-title")}
               </h3>
-              <p class="catalogue-section__body">{t("page-extensions-agenda")}</p>
+              <p class="catalogue-section__body">
+                {t("page-extensions-agenda")}
+              </p>
             </div>
           </div>
 
@@ -159,7 +157,7 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-card__header">
                     <div class="catalogue-card__title-wrap">
                       <h4 class="catalogue-card__title">
-                        {t(`extensionsItem${extension.id}Title`)}
+                        {t(`extensions-item-${extension.id}-title`)}
                       </h4>
                       <span class={KIND_CLASS[extension.kind]}>
                         {kindLabel(extension.kind)}
@@ -178,10 +176,10 @@ export const ExtensionsPreview = () => {
                   </div>
 
                   <p class="catalogue-card__path">
-                    {t(`extensionsItem${extension.id}Path`)}
+                    {t(`extensions-item-${extension.id}-path`)}
                   </p>
                   <p class="catalogue-card__body">
-                    {t(`extensionsItem${extension.id}Body`)}
+                    {t(`extensions-item-${extension.id}-body`)}
                   </p>
 
                   <div class="catalogue-card__tags">
@@ -198,13 +196,21 @@ export const ExtensionsPreview = () => {
                       onClick={() => setActiveExtensionId(extension.id)}
                       type="button"
                     >
-                      {t("extensionsActionInspect")}
+                      {t("extensions-action-inspect")}
                     </button>
-                    <button class="catalogue-card__action" disabled type="button">
-                      {t("extensionsActionConfigure")}
+                    <button
+                      class="catalogue-card__action"
+                      disabled
+                      type="button"
+                    >
+                      {t("extensions-action-configure")}
                     </button>
-                    <button class="catalogue-card__action" disabled type="button">
-                      {t("extensionsActionDisable")}
+                    <button
+                      class="catalogue-card__action"
+                      disabled
+                      type="button"
+                    >
+                      {t("extensions-action-disable")}
                     </button>
                   </div>
                 </article>
@@ -215,36 +221,38 @@ export const ExtensionsPreview = () => {
           <aside class="catalogue-detail catalogue-detail--inline extensions-detail">
             <div class="catalogue-detail__header">
               <div>
-                <p class="catalogue-detail__eyebrow">{t("extensionsDetailEyebrow")}</p>
+                <p class="catalogue-detail__eyebrow">
+                  {t("extensions-detail-eyebrow")}
+                </p>
                 <h3 class="catalogue-detail__title">
-                  {t(`extensionsItem${activeExtension().id}Title`)}
+                  {t(`extensions-item-${activeExtension().id}-title`)}
                 </h3>
               </div>
               <div class="catalogue-detail__pills">
                 <span class={KIND_CLASS[activeExtension().kind]}>
                   {kindLabel(activeExtension().kind)}
                 </span>
-                <span class="catalogue-pill catalogue-pill--neutral">
+                <span class="pill pill--neutral">
                   {activeExtension().version}
                 </span>
               </div>
             </div>
 
             <p class="catalogue-detail__body">
-              {t(`extensionsItem${activeExtension().id}Detail`)}
+              {t(`extensions-item-${activeExtension().id}-detail`)}
             </p>
 
             <dl class="catalogue-detail__meta-grid">
               <div>
-                <dt>{t("extensionsMetaPath")}</dt>
-                <dd>{t(`extensionsItem${activeExtension().id}Path`)}</dd>
+                <dt>{t("extensions-meta-path")}</dt>
+                <dd>{t(`extensions-item-${activeExtension().id}-path`)}</dd>
               </div>
               <div>
-                <dt>{t("extensionsMetaConfig")}</dt>
-                <dd>{t(`extensionsItem${activeExtension().id}Config`)}</dd>
+                <dt>{t("extensions-meta-config")}</dt>
+                <dd>{t(`extensions-item-${activeExtension().id}-config`)}</dd>
               </div>
               <div>
-                <dt>{t("extensionsMetaGuardrail")}</dt>
+                <dt>{t("extensions-meta-guardrail")}</dt>
                 <dd>{t("page-extensions-guardrail")}</dd>
               </div>
             </dl>
@@ -253,26 +261,29 @@ export const ExtensionsPreview = () => {
 
         <div class="catalogue-panel-grid catalogue-panel-grid--extensions">
           <section class="catalogue-panel">
-            <div class="catalogue-panel__mark">
-              {t("extensionsWasmMark")}
-            </div>
+            <div class="catalogue-panel__mark">{t("extensions-wasm-mark")}</div>
             <div class="catalogue-panel__content">
-              <h3 class="catalogue-panel__title">{t("extensionsWasmTitle")}</h3>
-              <p class="catalogue-panel__empty">{t("extensionsWasmEmpty")}</p>
+              <h3 class="catalogue-panel__title">
+                {t("extensions-wasm-title")}
+              </h3>
+              <p class="catalogue-panel__empty">{t("extensions-wasm-empty")}</p>
 
               <div class="catalogue-form">
-                <label class="catalogue-form__label" for="extensions-wasm-input">
-                  {t("extensionsWasmFieldLabel")}
+                <label
+                  class="catalogue-form__label"
+                  for="extensions-wasm-input"
+                >
+                  {t("extensions-wasm-field-label")}
                 </label>
                 <div class="catalogue-form__row">
                   <input
                     class="catalogue-form__input"
                     id="extensions-wasm-input"
-                    placeholder={t("extensionsWasmPlaceholder")}
+                    placeholder={t("extensions-wasm-placeholder")}
                     type="text"
                   />
                   <button class="catalogue-form__button" disabled type="button">
-                    {t("extensionsWasmAction")}
+                    {t("extensions-wasm-action")}
                   </button>
                 </div>
               </div>
@@ -280,26 +291,26 @@ export const ExtensionsPreview = () => {
           </section>
 
           <section class="catalogue-panel">
-            <div class="catalogue-panel__mark">
-              {t("extensionsMcpMark")}
-            </div>
+            <div class="catalogue-panel__mark">{t("extensions-mcp-mark")}</div>
             <div class="catalogue-panel__content">
-              <h3 class="catalogue-panel__title">{t("extensionsMcpTitle")}</h3>
-              <p class="catalogue-panel__empty">{t("extensionsMcpEmpty")}</p>
+              <h3 class="catalogue-panel__title">
+                {t("extensions-mcp-title")}
+              </h3>
+              <p class="catalogue-panel__empty">{t("extensions-mcp-empty")}</p>
 
               <div class="catalogue-form">
                 <label class="catalogue-form__label" for="extensions-mcp-input">
-                  {t("extensionsMcpFieldLabel")}
+                  {t("extensions-mcp-field-label")}
                 </label>
                 <div class="catalogue-form__row">
                   <input
                     class="catalogue-form__input"
                     id="extensions-mcp-input"
-                    placeholder={t("extensionsMcpPlaceholder")}
+                    placeholder={t("extensions-mcp-placeholder")}
                     type="text"
                   />
                   <button class="catalogue-form__button" disabled type="button">
-                    {t("extensionsMcpAction")}
+                    {t("extensions-mcp-action")}
                   </button>
                 </div>
               </div>
@@ -310,8 +321,12 @@ export const ExtensionsPreview = () => {
         <section class="catalogue-section catalogue-section--bare">
           <div class="catalogue-section__header extensions-preview__section-header">
             <div>
-              <h3 class="catalogue-section__title">{t("extensionsToolsTitle")}</h3>
-              <p class="catalogue-section__body">{t("page-extensions-guardrail")}</p>
+              <h3 class="catalogue-section__title">
+                {t("extensions-tools-title")}
+              </h3>
+              <p class="catalogue-section__body">
+                {t("page-extensions-guardrail")}
+              </p>
             </div>
           </div>
 
@@ -322,7 +337,7 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-list__key">{tool.id}</div>
                   <div class="catalogue-list__content">
                     <p class="catalogue-list__source">
-                      {t("extensionsToolsSourceLabel")}:{" "}
+                      {t("extensions-tools-source-label")}:{" "}
                       {sourceLabel(tool.extensionId)}
                     </p>
                     <p class="catalogue-list__body">{t(tool.descriptionKey)}</p>

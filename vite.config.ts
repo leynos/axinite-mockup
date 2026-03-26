@@ -52,7 +52,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 4173,
+    port: 5173,
     host: "0.0.0.0",
   },
   preview: {

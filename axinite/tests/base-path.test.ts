@@ -1,10 +1,10 @@
+import { describe, expect, it } from "vitest";
 import {
   buildAppPath,
   GITHUB_PAGES_BASE_PATH,
   normaliseBasePath,
 } from "@/lib/base-path";
 import { buildFluentLoadPath } from "@/lib/i18n/runtime";
-import { describe, expect, it } from "vitest";
 
 describe("base path helpers", () => {
   it("normalises the GitHub Pages base path", () => {

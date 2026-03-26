@@ -85,7 +85,9 @@ export function applyDocumentLocale(language: string | undefined): void {
   document.documentElement.lang = locale.code;
   document.documentElement.dir = direction;
   document.documentElement.dataset.direction = direction;
-  document.body.dataset.direction = direction;
+  if (document.body) {
+    document.body.dataset.direction = direction;
+  }
 }
 
 const i18nReady = i18n
@@ -114,14 +116,22 @@ const i18nReady = i18n
     returnNull: false,
     i18nFormat: {
       fluentBundleOptions: {
+        // Disable U+2068/U+2069 isolating marks so Fluent does not inject bidi
+        // control characters that interfere with host renderers and validation.
         useIsolating: false,
       },
     },
   });
 
-void i18nReady.then(() => {
-  applyDocumentLocale(i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LOCALE);
-});
+void i18nReady
+  .then(() => {
+    applyDocumentLocale(
+      i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LOCALE
+    );
+  })
+  .catch((error) => {
+    console.error("[i18n] Failed to initialize runtime locale", error);
+  });
 
 i18n.on("languageChanged", (nextLanguage) => {
   applyDocumentLocale(nextLanguage);

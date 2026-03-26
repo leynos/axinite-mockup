@@ -35,12 +35,12 @@ export const ShellChrome: ParentComponent<ShellChromeProps> = (props) => {
           <div class="shell-topbar__brand">
             <div class="shell-topbar__mark" />
             <div>
-              <p class="shell-topbar__eyebrow">{t("shellEyebrow")}</p>
-              <h1 class="shell-topbar__title">{t("shellTitle")}</h1>
+              <p class="shell-topbar__eyebrow">{t("shell-eyebrow")}</p>
+              <h1 class="shell-topbar__title">{t("shell-title")}</h1>
             </div>
           </div>
 
-          <nav aria-label={t("shellNavigationLabel")} class="shell-nav">
+          <nav aria-label={t("shell-navigation-label")} class="shell-nav">
             <For each={ROUTE_ORDER}>
               {(routeId) =>
                 props.usePlainLinks ? (
@@ -78,10 +78,10 @@ export const ShellChrome: ParentComponent<ShellChromeProps> = (props) => {
             <span class="shell-status__dot" />
             <div>
               <div class="shell-status__label">
-                {gatewayStatus.data?.label ?? t("statusPreviewLabel")}
+                {gatewayStatus.data?.label ?? t("status-preview-label")}
               </div>
               <div class="shell-status__value">
-                {gatewayStatus.data?.detail ?? t("statusPreviewDetail")}
+                {gatewayStatus.data?.detail ?? t("status-preview-detail")}
               </div>
             </div>
           </div>

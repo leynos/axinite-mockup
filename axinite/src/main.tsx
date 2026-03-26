@@ -12,7 +12,10 @@ if (!mountNode) {
 }
 
 void i18nReady
-  .catch(() => undefined)
+  .catch((error) => {
+    console.error("[i18n] App bootstrap locale initialization failed", error);
+    return undefined;
+  })
   .then(() => {
     render(
       () => (

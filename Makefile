@@ -1,12 +1,15 @@
 MDLINT ?= markdownlint-cli2
 NIXIE ?= nixie
 
-.PHONY: all build fmt check-fmt lint typecheck test test-a11y test-e2e lint-ftl-vars semantic ff markdownlint nixie
+.PHONY: all build clean fmt check-fmt lint typecheck test test-a11y test-e2e lint-ftl-vars semantic ff markdownlint nixie
 
 all: check-fmt lint typecheck test
 
 build:
 	bun run build
+
+clean:
+	rm -rf dist test-results tmp playwright-report
 
 fmt:
 	bun run fmt
@@ -36,7 +39,7 @@ semantic:
 	bun run semantic
 
 ff:
-	bun run ff
+	bun run verify:full
 
 markdownlint:
 	$(MDLINT) '**/*.md'

@@ -1,4 +1,4 @@
-import { For, createSignal } from "solid-js";
+import { createSignal, For } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
 
@@ -23,18 +23,29 @@ export const ChatPreview = () => {
   const sessionTime = (sessionId: (typeof CHAT_SESSIONS)[number]) => {
     switch (sessionId) {
       case "good-morning":
-        return "now";
+        return t("chat-session-time-now");
       case "review":
-        return "9h ago";
+        return t("chat-session-time-9h-ago");
       case "scrape":
-        return "1d ago";
+        return t("chat-session-time-1d-ago");
+    }
+  };
+
+  const sessionCardKey = (sessionId: (typeof CHAT_SESSIONS)[number]) => {
+    switch (sessionId) {
+      case "good-morning":
+        return "card-a";
+      case "review":
+        return "card-b";
+      case "scrape":
+        return "card-c";
     }
   };
 
   return (
     <section class="route-preview route-preview--chat">
       <div aria-hidden="true" class="route-preview__watermark">
-        CHAT
+        {t("chat-watermark")}
       </div>
       <div class="route-preview__layout route-preview__layout--chat">
         <aside class="route-sidebar route-sidebar--chat">
@@ -85,7 +96,7 @@ export const ChatPreview = () => {
           <div class="chat-preview__scroll">
             <div class="chat-preview__conversation">
               <header class="route-preview__intro">
-                <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
+                <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
                 <h2 class="route-preview__title">{t("route-chat-label")}</h2>
                 <p class="route-preview__summary">{t("page-chat-summary")}</p>
               </header>
@@ -114,12 +125,12 @@ export const ChatPreview = () => {
               <div class="chat-preview__turn chat-preview__turn--assistant">
                 <div class="chat-preview__bubble chat-preview__bubble--assistant">
                   <div class="chat-preview__markdown">
-                    <h3>{t("page-chat-card-a-title")}</h3>
-                    <p>{t("page-chat-card-a-body")}</p>
-                    <h3>{t("page-chat-card-b-title")}</h3>
-                    <p>{t("page-chat-card-b-body")}</p>
-                    <h3>{t("page-chat-card-c-title")}</h3>
-                    <p>{t("page-chat-card-c-body")}</p>
+                    <h3>
+                      {t(`page-chat-${sessionCardKey(activeSession())}-title`)}
+                    </h3>
+                    <p>
+                      {t(`page-chat-${sessionCardKey(activeSession())}-body`)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -130,25 +141,25 @@ export const ChatPreview = () => {
             <div class="chat-preview__composer-shell">
               <div class="chat-preview__composer">
                 <textarea
-                  aria-label={t("chatComposerLabel")}
+                  aria-label={t("chat-composer-label")}
                   class="chat-preview__textarea"
-                  placeholder={t("chatComposerPlaceholder")}
+                  placeholder={t("chat-composer-placeholder")}
                   rows={1}
                 />
                 <div class="chat-preview__composer-actions">
                   <button
-                    aria-label={t("chatAttachButton")}
+                    aria-label={t("chat-attach-button")}
                     class="chat-preview__ghost-button"
                     type="button"
                   >
                     +
                   </button>
                   <button class="chat-preview__send-button" type="button">
-                    {t("chatSendButton")}
+                    {t("chat-send-button")}
                   </button>
                 </div>
               </div>
-              <p class="chat-preview__safety-note">{t("chatSafetyNote")}</p>
+              <p class="chat-preview__safety-note">{t("chat-safety-note")}</p>
             </div>
           </div>
         </main>

@@ -2,6 +2,7 @@ import { createQuery } from "@tanstack/solid-query";
 import type { Accessor, ParentComponent } from "solid-js";
 import {
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   onCleanup,
@@ -85,6 +86,15 @@ export const FeatureFlagProvider: ParentComponent = (props) => {
     queryKey: ["feature-flags"],
     queryFn: fetchRuntimeFeatureFlags,
   }));
+
+  createEffect(() => {
+    if (runtimeFlags.error && (import.meta.env.DEV || isDebugEnabled())) {
+      console.error(
+        "[feature-flags] Failed to load runtime flags",
+        runtimeFlags.error
+      );
+    }
+  });
 
   const resolvedFlags = createMemo(() =>
     resolveFeatureFlags(runtimeFlags.data ?? {}, overrides())

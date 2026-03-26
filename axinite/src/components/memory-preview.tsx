@@ -1,4 +1,4 @@
-import { For, Show, createMemo, createSignal } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
 
@@ -85,7 +85,11 @@ export const MemoryPreview = () => {
   const [editing, setEditing] = createSignal(false);
   const [draft, setDraft] = createSignal("");
 
-  const activeNode = createMemo<MemoryFileNode>(() => {
+  const firstFileNode = MEMORY_TREE.find(
+    (node): node is MemoryFileNode => node.kind === "file"
+  );
+
+  const activeNode = createMemo<MemoryFileNode | undefined>(() => {
     for (const node of MEMORY_TREE) {
       if (node.kind === "file" && node.id === activeFile()) {
         return node;
@@ -99,7 +103,7 @@ export const MemoryPreview = () => {
       }
     }
 
-    return MEMORY_TREE[0] as MemoryFileNode;
+    return firstFileNode;
   });
 
   const activeContent = createMemo(() => {
@@ -133,16 +137,16 @@ export const MemoryPreview = () => {
         <aside class="route-sidebar route-sidebar--memory">
           <div class="route-sidebar__search">
             <input
-              aria-label={t("memorySearchLabel")}
+              aria-label={t("memory-search-label")}
               class="route-sidebar__search-input"
-              placeholder={t("memorySearchPlaceholder")}
+              placeholder={t("memory-search-placeholder")}
               type="text"
             />
           </div>
 
           <div class="route-tree">
             <For each={MEMORY_TREE}>
-              {(node) => (
+              {(node) =>
                 node.kind === "file" ? (
                   <button
                     class={
@@ -177,7 +181,7 @@ export const MemoryPreview = () => {
                     </div>
                   </section>
                 )
-              )}
+              }
             </For>
           </div>
         </aside>
@@ -185,7 +189,7 @@ export const MemoryPreview = () => {
         <main class="memory-preview__main">
           <div class="memory-preview__toolbar">
             <div class="memory-preview__breadcrumb">
-              <For each={activeNode().path}>
+              <For each={activeNode()?.path ?? []}>
                 {(segment, index) => (
                   <>
                     <Show when={index() > 0}>
@@ -193,7 +197,7 @@ export const MemoryPreview = () => {
                     </Show>
                     <span
                       class={
-                        index() === activeNode().path.length - 1
+                        index() === (activeNode()?.path.length ?? 0) - 1
                           ? "memory-preview__breadcrumb-current"
                           : "memory-preview__breadcrumb-item"
                       }
@@ -214,7 +218,7 @@ export const MemoryPreview = () => {
                     onClick={beginEdit}
                     type="button"
                   >
-                    {t("memoryEditButton")}
+                    {t("memory-edit-button")}
                   </button>
                 }
               >
@@ -223,21 +227,24 @@ export const MemoryPreview = () => {
                   onClick={() => setEditing(false)}
                   type="button"
                 >
-                  {t("memoryCancelButton")}
+                  {t("memory-cancel-button")}
                 </button>
                 <button
                   class="memory-preview__save-button"
-                  onClick={() => setEditing(false)}
+                  onClick={() => {
+                    // TODO: persist draft() here before leaving edit mode.
+                    setEditing(false);
+                  }}
                   type="button"
                 >
-                  {t("memorySaveButton")}
+                  {t("memory-save-button")}
                 </button>
               </Show>
             </div>
           </div>
 
           <header class="route-preview__intro route-preview__intro--memory">
-            <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
+            <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
             <h2 class="route-preview__title">{t("route-memory-label")}</h2>
             <p class="route-preview__summary">{t("page-memory-summary")}</p>
           </header>
@@ -255,7 +262,9 @@ export const MemoryPreview = () => {
             }
           >
             <article class="memory-preview__document">
-              <h2 class="memory-preview__document-title">{activeNode().label}</h2>
+              <h2 class="memory-preview__document-title">
+                {activeNode()?.label}
+              </h2>
               <For each={activeContent()}>
                 {(paragraph) => (
                   <p class="memory-preview__document-paragraph">{paragraph}</p>

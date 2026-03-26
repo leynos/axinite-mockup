@@ -41,7 +41,17 @@ async function main() {
   }
 
   const manifestPath = path.join(ROOT, "dist", "manifest.webmanifest");
-  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  let manifest;
+
+  try {
+    manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  } catch (error) {
+    console.error(
+      `Unable to read or parse manifest at ${manifestPath}: ${error.message}`
+    );
+    process.exitCode = 1;
+    return;
+  }
 
   if (manifest.scope !== DEPLOY_BASE) {
     console.error(`Manifest scope must be ${DEPLOY_BASE}`);
@@ -55,7 +65,13 @@ async function main() {
     return;
   }
 
-  const iconSrc = manifest.icons?.[0]?.src;
+  if (!Array.isArray(manifest.icons) || manifest.icons.length === 0) {
+    console.error("Manifest must contain a non-empty icons array");
+    process.exitCode = 1;
+    return;
+  }
+
+  const iconSrc = manifest.icons[0]?.src;
   if (iconSrc !== `${DEPLOY_BASE}assets/icons/axinite32.ico`) {
     console.error(
       `Manifest icon path must be ${DEPLOY_BASE}assets/icons/axinite32.ico`
@@ -64,12 +80,17 @@ async function main() {
     return;
   }
 
-  const indexHtml = await readFile(path.join(ROOT, "dist", "index.html"), "utf8");
+  const indexHtml = await readFile(
+    path.join(ROOT, "dist", "index.html"),
+    "utf8"
+  );
   if (
     !indexHtml.includes('src="/axinite-mockup/assets/') ||
     !indexHtml.includes('href="/axinite-mockup/assets/')
   ) {
-    console.error("Built index.html must reference assets under /axinite-mockup/");
+    console.error(
+      "Built index.html must reference assets under /axinite-mockup/"
+    );
     process.exitCode = 1;
     return;
   }
@@ -78,8 +99,10 @@ async function main() {
     path.join(ROOT, "dist", "chat", "index.html"),
     "utf8"
   );
-  if (!rootRouteCompatibilityHtml.includes('window.location.replace(target.toString())')) {
-    console.error("Root route compatibility pages must redirect into /axinite-mockup/.");
+  if (!rootRouteCompatibilityHtml.includes('src="/axinite-mockup/assets/')) {
+    console.error(
+      "Root route compatibility pages must preserve /axinite-mockup/ asset URLs."
+    );
     process.exitCode = 1;
     return;
   }

@@ -31,7 +31,9 @@ function main(): void {
     const filePath = path.join(LOCALES_DIR, locale, "common.ftl");
 
     if (!fs.existsSync(filePath)) {
-      console.error(`[ftl-coverage] Missing locale file for ${locale}: ${filePath}`);
+      console.error(
+        `[ftl-coverage] Missing locale file for ${locale}: ${filePath}`
+      );
       hasFailure = true;
       continue;
     }

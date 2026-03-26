@@ -7,7 +7,7 @@ import { I18nProvider } from "@/lib/i18n/provider";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false,
+      retry: 1,
       staleTime: 15_000,
     },
   },

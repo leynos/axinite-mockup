@@ -26,9 +26,16 @@ export const I18nProvider: ParentComponent = (props) => {
     setLanguage(nextLanguage);
   };
 
-  void i18nReady.then(() => {
-    setLanguage(i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LOCALE);
-  });
+  void i18nReady
+    .then(() => {
+      setLanguage(i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LOCALE);
+    })
+    .catch((error) => {
+      console.error(
+        "[i18n] Failed to initialize provider language state",
+        error
+      );
+    });
 
   i18n.on("languageChanged", handleLanguageChanged);
   onCleanup(() => {

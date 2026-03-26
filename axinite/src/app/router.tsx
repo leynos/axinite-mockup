@@ -8,12 +8,21 @@ import {
 } from "@tanstack/solid-router";
 
 import { AppShell } from "@/components/app-shell";
-import { normaliseBasePath } from "@/lib/base-path";
 import { RoutePage } from "@/components/route-page";
+import { normaliseBasePath } from "@/lib/base-path";
 
 const routerBasePath = normaliseBasePath(
   import.meta.env.BASE_URL as string | undefined
 );
+
+const NotFoundRedirect = () => {
+  const invalidPath =
+    typeof window === "undefined" ? "(unknown path)" : window.location.pathname;
+  console.warn(
+    `[router] Redirecting unmatched route "${invalidPath}" to /chat`
+  );
+  return <Navigate to="/chat" />;
+};
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -79,7 +88,7 @@ const router = createRouter({
   routeTree,
   basepath: routerBasePath,
   defaultPreload: "intent",
-  defaultNotFoundComponent: () => <Navigate to="/chat" />,
+  defaultNotFoundComponent: NotFoundRedirect,
 });
 
 declare module "@tanstack/solid-router" {

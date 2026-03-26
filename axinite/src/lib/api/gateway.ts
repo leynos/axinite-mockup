@@ -10,17 +10,32 @@ type RuntimeFeatureResponse =
     };
 
 async function requestJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  const timeoutMs = 5_000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    throw new Error(`Request failed for ${url} with ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed for ${url} with ${response.status}`);
+    }
+
+    return (await response.json()) as T;
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error(`Request timed out after ${timeoutMs}ms`);
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return (await response.json()) as T;
 }
 
 export async function fetchGatewayStatus(): Promise<GatewayStatus> {
@@ -49,17 +64,27 @@ export async function fetchRuntimeFeatureFlags(): Promise<
   try {
     const payload = await requestJson<RuntimeFeatureResponse>("/api/features");
 
-    if (
-      typeof payload === "object" &&
-      payload !== null &&
-      "flags" in payload &&
-      typeof payload.flags === "object" &&
-      payload.flags !== null
-    ) {
-      return payload.flags;
+    const coerceFlags = (value: unknown): Record<string, boolean> => {
+      if (typeof value !== "object" || value === null || Array.isArray(value)) {
+        return {};
+      }
+
+      return Object.entries(value).reduce<Record<string, boolean>>(
+        (flags, [name, flagValue]) => {
+          if (typeof flagValue === "boolean") {
+            flags[name] = flagValue;
+          }
+          return flags;
+        },
+        {}
+      );
+    };
+
+    if (typeof payload === "object" && payload !== null && "flags" in payload) {
+      return coerceFlags(payload.flags);
     }
 
-    return payload as Record<string, boolean>;
+    return coerceFlags(payload);
   } catch {
     return {};
   }

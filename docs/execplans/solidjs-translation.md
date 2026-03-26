@@ -348,7 +348,7 @@ maintainer tool, not a release contract.
 WCAG 2.2 compliance must be designed into the architecture rather than patched
 in later. The migration should adopt the following operational rules:
 
-- Every interactive primitive must be keyboard reachable and must expose visible
+- Every interactive primitive must be keyboard-reachable and must expose visible
   focus states that satisfy WCAG 2.2 focus appearance expectations.
 - No modal, drawer, popover, or menu may ship without tested focus management,
   escape handling, and return-focus behaviour.
@@ -589,7 +589,7 @@ following are true:
 - [x] 2026-03-25 20:47 GMT: Committed the migration as `0cd73d5`
   (`Translate the Axinite mockup into a Solid SPA`).
 - [x] 2026-03-25 20:48 GMT: Pushed `solidjs-translation` to
-  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  `GitHub: leynos/axinite-mockup`. The push output did not include a web
   URL.
 - [x] 2026-03-25 21:04 GMT: Verified the user design-regression report against
   the current code. The original static route pages still exist in
@@ -608,7 +608,7 @@ following are true:
 - [x] 2026-03-25 21:13 GMT: Committed the first restoration slice as `7bd0954`
   (`Restore the original shell, chat, and memory design`).
 - [x] 2026-03-25 21:13 GMT: Pushed `solidjs-translation` to
-  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  `GitHub: leynos/axinite-mockup`. The push output did not include a web
   URL.
 - [x] 2026-03-25 21:28 GMT: Audited the original `jobs/` and `routines/`
   static pages against the current SPA and confirmed both routes were still
@@ -624,7 +624,7 @@ following are true:
 - [x] 2026-03-25 21:47 GMT: Committed the second restoration slice as
   `38edcc5` (`Restore the original jobs and routines design`).
 - [x] 2026-03-25 21:48 GMT: Pushed `solidjs-translation` to
-  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  `GitHub: leynos/axinite-mockup`. The push output did not include a web
   URL.
 - [x] 2026-03-25 21:55 GMT: Audited the original `extensions/` and `skills/`
   static pages against the current SPA and confirmed both routes still
@@ -640,7 +640,7 @@ following are true:
 - [x] 2026-03-25 22:14 GMT: Committed the final restoration slice as `0e6bebc`
   (`Restore the original extensions and skills design`).
 - [x] 2026-03-25 22:14 GMT: Pushed `solidjs-translation` to
-  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  `GitHub: leynos/axinite-mockup`. The push output did not include a web
   URL.
 - [x] 2026-03-25 23:44 GMT: Verified that the deployed SPA still assumed a
   root base path. `vite.config.ts` used Vite's default `/`, the router still
@@ -656,7 +656,7 @@ following are true:
 - [x] 2026-03-25 23:54 GMT: Committed the base-path fix as `058478e`
   (`Configure the GitHub Pages base path explicitly`).
 - [x] 2026-03-25 23:54 GMT: Pushed `solidjs-translation` to
-  `github.com:leynos/axinite-mockup`. The push output did not include a web
+  `GitHub: leynos/axinite-mockup`. The push output did not include a web
   URL.
 - [x] 2026-03-26 09:17 GMT: Verified the user's local-build 404 report against
   the current output. The prefixed Vite `base` was correct for GitHub Pages,
@@ -911,6 +911,13 @@ following are true:
   so treating the non-root prefix as optional leaves navigation and assets one
   config drift away from breaking.
 
+- Decision: keep real SPA entry points at both `dist/<route>/index.html` and
+  `dist/axinite-mockup/<route>/index.html` rather than generating redirect
+  stubs at the root route paths.
+  Rationale: GitHub Pages project URLs can serve `/axinite-mockup/chat` from
+  the top-level `chat/index.html`, so redirect stubs self-loop on reload while
+  duplicated SPA entry points preserve direct navigation under both layouts.
+
 ## Outcomes & Retrospective
 
 - Shipped a Vite-based Solid SPA under `axinite/` with typed TanStack Router
@@ -927,6 +934,10 @@ following are true:
   first-order concerns. `scripts/postbuild-routes.mjs` was needed immediately
   for static route copies, and the feature provider made it possible to keep
   hidden runtime surfaces explicit.
+- The route-copy workaround needed one more iteration after the GitHub Pages
+  base-path fix. Redirect stubs looked tidy, but they broke deep-link reloads
+  on project pages; keeping duplicated SPA entry points is the safer short-term
+  deploy shape for this repository.
 - The plan under-estimated first-paint localization risk. The implementation
   needed both a corrected Vite `publicDir` and a render gate on `i18nReady` to
   avoid raw Fluent message IDs leaking into visible text and accessible names.

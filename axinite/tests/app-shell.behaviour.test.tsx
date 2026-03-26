@@ -1,14 +1,25 @@
 import { render, screen, waitFor } from "@solidjs/testing-library";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { AppProviders } from "@/app/providers";
 import { ShellChrome } from "@/components/app-shell";
-import { AVAILABLE_LOCALES } from "@/lib/i18n/supported-locales";
+import {
+  AVAILABLE_LOCALES,
+  DEFAULT_LOCALE,
+} from "@/lib/i18n/supported-locales";
 import { setupI18nTestHarness } from "./support/i18n-test-runtime";
 
 beforeAll(async () => {
   await setupI18nTestHarness();
+});
+
+beforeEach(async () => {
+  window.localStorage.clear();
+  document.documentElement.lang = "";
+  document.documentElement.dir = "";
+  const runtime = await import("@/lib/i18n/runtime");
+  await runtime.default.changeLanguage(DEFAULT_LOCALE);
 });
 
 describe("app shell behaviour", () => {

@@ -7,9 +7,8 @@ export const LocalePicker = () => {
 
   return (
     <label class="shell-locale">
-      <span class="shell-locale__label">{t("localePickerLabel")}</span>
+      <span class="shell-locale__label">{t("locale-picker-label")}</span>
       <select
-        aria-label={t("localePickerLabel")}
         class="select select-bordered select-sm shell-locale__select"
         value={language()}
         onInput={(event) => void changeLanguage(event.currentTarget.value)}

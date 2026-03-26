@@ -1,16 +1,12 @@
-import { For, createSignal } from "solid-js";
+import { createSignal, For } from "solid-js";
 
 import { useI18n } from "@/lib/i18n/provider";
+import { capitalise, pascalCase } from "@/lib/string-case";
 
 type RoutineStatus = "active" | "disabled" | "failing";
 type RoutineTrigger = "cron" | "event" | "system" | "manual";
 type RoutineAction = "lightweight" | "full_job";
-type RoutineId =
-  | "standup"
-  | "deploy"
-  | "triage"
-  | "weekly"
-  | "health";
+type RoutineId = "standup" | "deploy" | "triage" | "weekly" | "health";
 
 type RoutineRecord = {
   action: RoutineAction;
@@ -79,21 +75,21 @@ const ROUTINE_SUMMARY_KEYS = [
 ] as const;
 
 const STATUS_CLASS: Record<RoutineStatus, string> = {
-  active: "dashboard-pill dashboard-pill--success",
-  disabled: "dashboard-pill dashboard-pill--neutral",
-  failing: "dashboard-pill dashboard-pill--danger",
+  active: "pill pill--success",
+  disabled: "pill pill--neutral",
+  failing: "pill pill--danger",
 };
 
 const TRIGGER_CLASS: Record<RoutineTrigger, string> = {
-  cron: "dashboard-pill dashboard-pill--info",
-  event: "dashboard-pill dashboard-pill--violet",
-  manual: "dashboard-pill dashboard-pill--neutral",
-  system: "dashboard-pill dashboard-pill--warning",
+  cron: "pill pill--info",
+  event: "pill pill--violet",
+  manual: "pill pill--neutral",
+  system: "pill pill--warning",
 };
 
 const ACTION_CLASS: Record<RoutineAction, string> = {
-  full_job: "dashboard-pill dashboard-pill--violet",
-  lightweight: "dashboard-pill dashboard-pill--neutral",
+  full_job: "pill pill--violet",
+  lightweight: "pill pill--neutral",
 };
 
 export const RoutinesPreview = () => {
@@ -101,53 +97,61 @@ export const RoutinesPreview = () => {
   const [activeRoutineId, setActiveRoutineId] =
     createSignal<RoutineId>("standup");
 
+  const toKebabSegment = (value: string) =>
+    pascalCase(value)
+      .replace(/([A-Z])/g, "-$1")
+      .toLowerCase()
+      .replace(/^-/, "");
+
   const activeRoutine = () =>
     ROUTINES.find((routine) => routine.id === activeRoutineId()) ?? ROUTINES[0];
 
-  const summaryCount = (
-    key: (typeof ROUTINE_SUMMARY_KEYS)[number]
-  ): number => {
+  const summaryCount = (key: (typeof ROUTINE_SUMMARY_KEYS)[number]): number => {
     switch (key) {
       case "total":
         return ROUTINES.length;
       case "enabled":
-        return ROUTINES.filter((routine) => routine.status !== "disabled").length;
+        return ROUTINES.filter((routine) => routine.status !== "disabled")
+          .length;
       case "disabled":
-        return ROUTINES.filter((routine) => routine.status === "disabled").length;
+        return ROUTINES.filter((routine) => routine.status === "disabled")
+          .length;
       case "failing":
-        return ROUTINES.filter((routine) => routine.status === "failing").length;
+        return ROUTINES.filter((routine) => routine.status === "failing")
+          .length;
       case "runs_today":
+        // TODO: replace this hardcoded count with runtime-backed runs_today data.
         return 3;
     }
   };
 
   const statusLabel = (status: RoutineStatus) =>
-    t(`routinesStatus${status.slice(0, 1).toUpperCase()}${status.slice(1)}`);
+    t(`routines-status-${capitalise(status).toLowerCase()}`);
 
   const triggerLabel = (trigger: RoutineTrigger) =>
-    t(`routinesTrigger${trigger.slice(0, 1).toUpperCase()}${trigger.slice(1)}`);
+    t(`routines-trigger-${capitalise(trigger).toLowerCase()}`);
 
   const actionLabel = (action: RoutineAction) =>
     t(
       action === "full_job"
-        ? "routinesActionTypeFullJob"
-        : "routinesActionTypeLightweight"
+        ? "routines-action-type-full-job"
+        : "routines-action-type-lightweight"
     );
 
   const nextRunLabel = (routine: RoutineRecord) =>
     routine.nextRunKey === "scheduled"
-      ? t(`routinesItem${routine.id}NextRun`)
-      : t(`routinesNextRun${routine.nextRunKey.slice(0, 1).toUpperCase()}${routine.nextRunKey.slice(1)}`);
+      ? t(`routines-item-${routine.id}-next-run`)
+      : t(`routines-next-run-${routine.nextRunKey}`);
 
   return (
     <section class="route-preview route-preview--dashboard">
       <div aria-hidden="true" class="route-preview__watermark">
-        {t("routinesWatermark")}
+        {t("routines-watermark")}
       </div>
 
       <div class="dashboard-preview">
         <header class="route-preview__intro dashboard-preview__intro">
-          <p class="route-preview__eyebrow">{t("routeHeroEyebrow")}</p>
+          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-routines-label")}</h2>
           <p class="route-preview__summary">{t("page-routines-summary")}</p>
         </header>
@@ -157,17 +161,11 @@ export const RoutinesPreview = () => {
             {(summaryKey) => (
               <article class="dashboard-summary__card">
                 <p class="dashboard-summary__label">
-                  {t(
-                    `routinesSummary${summaryKey
-                      .split("_")
-                      .map(
-                        (segment) =>
-                          `${segment.slice(0, 1).toUpperCase()}${segment.slice(1)}`
-                      )
-                      .join("")}`
-                  )}
+                  {t(`routines-summary-${toKebabSegment(summaryKey)}`)}
                 </p>
-                <p class="dashboard-summary__value">{summaryCount(summaryKey)}</p>
+                <p class="dashboard-summary__value">
+                  {summaryCount(summaryKey)}
+                </p>
               </article>
             )}
           </For>
@@ -176,7 +174,9 @@ export const RoutinesPreview = () => {
         <section class="dashboard-panel">
           <div class="dashboard-panel__header">
             <div>
-              <h3 class="dashboard-panel__title">{t("routinesTableTitle")}</h3>
+              <h3 class="dashboard-panel__title">
+                {t("routines-table-title")}
+              </h3>
               <p class="dashboard-panel__body">{t("page-routines-agenda")}</p>
             </div>
           </div>
@@ -185,14 +185,14 @@ export const RoutinesPreview = () => {
             <table class="dashboard-table dashboard-table--routines">
               <thead>
                 <tr>
-                  <th>{t("routinesColumnName")}</th>
-                  <th>{t("routinesColumnTrigger")}</th>
-                  <th>{t("routinesColumnAction")}</th>
-                  <th>{t("routinesColumnLastRun")}</th>
-                  <th>{t("routinesColumnNextRun")}</th>
-                  <th>{t("routinesColumnRuns")}</th>
-                  <th>{t("routinesColumnStatus")}</th>
-                  <th>{t("routinesColumnActions")}</th>
+                  <th scope="col">{t("routines-column-name")}</th>
+                  <th scope="col">{t("routines-column-trigger")}</th>
+                  <th scope="col">{t("routines-column-action")}</th>
+                  <th scope="col">{t("routines-column-last-run")}</th>
+                  <th scope="col">{t("routines-column-next-run")}</th>
+                  <th scope="col">{t("routines-column-runs")}</th>
+                  <th scope="col">{t("routines-column-status")}</th>
+                  <th scope="col">{t("routines-column-actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -211,7 +211,7 @@ export const RoutinesPreview = () => {
                           onClick={() => setActiveRoutineId(routine.id)}
                           type="button"
                         >
-                          {t(`routinesItem${routine.id}Title`)}
+                          {t(`routines-item-${routine.id}-title`)}
                         </button>
                       </td>
                       <td>
@@ -225,7 +225,9 @@ export const RoutinesPreview = () => {
                         </span>
                       </td>
                       <td class="dashboard-table__meta">{routine.lastRun}</td>
-                      <td class="dashboard-table__meta">{nextRunLabel(routine)}</td>
+                      <td class="dashboard-table__meta">
+                        {nextRunLabel(routine)}
+                      </td>
                       <td class="dashboard-table__meta">{routine.runCount}</td>
                       <td>
                         <span class={STATUS_CLASS[routine.status]}>
@@ -238,7 +240,7 @@ export const RoutinesPreview = () => {
                           onClick={() => setActiveRoutineId(routine.id)}
                           type="button"
                         >
-                          {t("routinesActionInspect")}
+                          {t("routines-action-inspect")}
                         </button>
                       </td>
                     </tr>
@@ -252,9 +254,11 @@ export const RoutinesPreview = () => {
         <section class="dashboard-detail">
           <div class="dashboard-detail__header">
             <div>
-              <p class="dashboard-detail__eyebrow">{t("routinesDetailEyebrow")}</p>
+              <p class="dashboard-detail__eyebrow">
+                {t("routines-detail-eyebrow")}
+              </p>
               <h3 class="dashboard-detail__title">
-                {t(`routinesItem${activeRoutine().id}Title`)}
+                {t(`routines-item-${activeRoutine().id}-title`)}
               </h3>
             </div>
             <div class="dashboard-detail__pills">
@@ -268,33 +272,33 @@ export const RoutinesPreview = () => {
           </div>
 
           <p class="dashboard-detail__body">
-            {t(`routinesItem${activeRoutine().id}Body`)}
+            {t(`routines-item-${activeRoutine().id}-body`)}
           </p>
 
           <dl class="dashboard-detail__meta-grid">
             <div>
-              <dt>{t("routinesMetaLastRun")}</dt>
+              <dt>{t("routines-meta-last-run")}</dt>
               <dd>{activeRoutine().lastRun}</dd>
             </div>
             <div>
-              <dt>{t("routinesMetaNextRun")}</dt>
+              <dt>{t("routines-meta-next-run")}</dt>
               <dd>{nextRunLabel(activeRoutine())}</dd>
             </div>
             <div>
-              <dt>{t("routinesMetaGuardrail")}</dt>
+              <dt>{t("routines-meta-guardrail")}</dt>
               <dd>{t("page-routines-guardrail")}</dd>
             </div>
           </dl>
 
           <div class="dashboard-detail__actions">
             <button class="dashboard-detail__ghost" type="button">
-              {t("routinesActionInspect")}
+              {t("routines-action-inspect")}
             </button>
             <button class="dashboard-detail__ghost" disabled type="button">
-              {t("routinesActionRunNow")}
+              {t("routines-action-run-now")}
             </button>
             <button class="dashboard-detail__ghost" disabled type="button">
-              {t("routinesActionDisable")}
+              {t("routines-action-disable")}
             </button>
           </div>
         </section>

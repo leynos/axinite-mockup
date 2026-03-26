@@ -105,7 +105,19 @@ function readLocalePlaceholders(
   const results = new Map<string, PlaceholderReport>();
 
   files.forEach((filePath) => {
-    const contents = fs.readFileSync(filePath, "utf8");
+    let contents: string;
+
+    try {
+      contents = fs.readFileSync(filePath, "utf8");
+    } catch (error) {
+      console.error(
+        `[ftl-vars] Unable to read ${filePath}:`,
+        (error as Error).message
+      );
+      process.exitCode = 1;
+      return;
+    }
+
     const resource = parseResource(contents, filePath);
     if (!resource) {
       return;
