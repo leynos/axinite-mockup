@@ -231,7 +231,6 @@ extensions-action-inspect = Inspecteren
 extensions-action-configure = Configureren
 extensions-action-disable = Uitschakelen
 extensions-tools-title = Geregistreerde tools
-extensions-column-kind = Type
 extensions-column-description = Beschrijving
 extensions-column-endpoint = Eindpunt
 extensions-column-tool = Tool

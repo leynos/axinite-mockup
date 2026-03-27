@@ -218,7 +218,6 @@ extensions-action-inspect = Inspecter
 extensions-action-configure = Configurer
 extensions-action-disable = Désactiver
 extensions-tools-title = Outils enregistrés
-extensions-column-kind = Type
 extensions-column-description = Description
 extensions-column-endpoint = Point de terminaison
 extensions-column-tool = Outil

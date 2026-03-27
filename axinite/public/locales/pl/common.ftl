@@ -231,7 +231,6 @@ extensions-action-inspect = Sprawdź
 extensions-action-configure = Konfiguruj
 extensions-action-disable = Wyłącz
 extensions-tools-title = Zarejestrowane narzędzia
-extensions-column-kind = Typ
 extensions-column-description = Opis
 extensions-column-endpoint = Punkt końcowy
 extensions-column-tool = Narzędzie

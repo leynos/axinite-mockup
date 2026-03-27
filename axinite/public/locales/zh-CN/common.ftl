@@ -231,7 +231,6 @@ extensions-action-inspect = 查看
 extensions-action-configure = 配置
 extensions-action-disable = 禁用
 extensions-tools-title = 已注册工具
-extensions-column-kind = 类型
 extensions-column-description = 描述
 extensions-column-endpoint = 端点
 extensions-column-tool = 工具

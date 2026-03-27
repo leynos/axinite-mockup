@@ -257,7 +257,6 @@ export const ExtensionsPreview = () => {
         const row = document.createElement("tr");
         row.className = "catalogue-list__row";
 
-        appendKeyCell(row, extensionKindLabel(entry.kind));
         appendTextCell(
           row,
           "catalogue-list__content",
@@ -549,9 +548,6 @@ export const ExtensionsPreview = () => {
                   </caption>
                   <thead>
                     <tr class="catalogue-list__row">
-                      <th class="catalogue-list__key" scope="col">
-                        {t("extensions-column-kind")}
-                      </th>
                       <th class="catalogue-list__content" scope="col">
                         {t("routines-column-name")}
                       </th>

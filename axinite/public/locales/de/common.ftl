@@ -218,7 +218,6 @@ extensions-action-inspect = Prüfen
 extensions-action-configure = Konfigurieren
 extensions-action-disable = Deaktivieren
 extensions-tools-title = Registrierte Werkzeuge
-extensions-column-kind = Art
 extensions-column-description = Beschreibung
 extensions-column-endpoint = Endpunkt
 extensions-column-tool = Werkzeug

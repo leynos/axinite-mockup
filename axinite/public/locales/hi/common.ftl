@@ -231,7 +231,6 @@ extensions-action-inspect = निरीक्षण
 extensions-action-configure = कॉन्फ़िगर करें
 extensions-action-disable = अक्षम करें
 extensions-tools-title = पंजीकृत उपकरण
-extensions-column-kind = प्रकार
 extensions-column-description = विवरण
 extensions-column-endpoint = एंडपॉइंट
 extensions-column-tool = उपकरण

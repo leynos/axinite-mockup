@@ -231,7 +231,6 @@ extensions-action-inspect = فحص
 extensions-action-configure = تهيئة
 extensions-action-disable = تعطيل
 extensions-tools-title = الأدوات المسجّلة
-extensions-column-kind = النوع
 extensions-column-description = الوصف
 extensions-column-endpoint = نقطة النهاية
 extensions-column-tool = الأداة

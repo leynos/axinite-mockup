@@ -218,7 +218,6 @@ extensions-action-inspect = Inspect
 extensions-action-configure = Configure
 extensions-action-disable = Disable
 extensions-tools-title = Registered tools
-extensions-column-kind = Type
 extensions-column-description = Description
 extensions-column-endpoint = Endpoint
 extensions-column-tool = Tool

@@ -231,7 +231,6 @@ extensions-action-inspect = 詳細
 extensions-action-configure = 設定
 extensions-action-disable = 無効にする
 extensions-tools-title = 登録済みツール
-extensions-column-kind = 種別
 extensions-column-description = 説明
 extensions-column-endpoint = エンドポイント
 extensions-column-tool = ツール
