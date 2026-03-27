@@ -22,32 +22,42 @@ export async function postbuildRoutes() {
     return;
   }
 
-  await writeFile(path.join(DIST_DIR, ".nojekyll"), "");
+  try {
+    await writeFile(path.join(DIST_DIR, ".nojekyll"), "");
 
-  // GitHub Pages project deploys for this repo serve both `/chat` and
-  // `/axinite-mockup/chat` from the published artifact tree. Keep full SPA entry
-  // points at the root route folders, then mirror the complete build under the
-  // deploy-prefixed directory so deep links and reloads work in both layouts
-  // without self-redirect stubs.
-  for (const route of ROUTES) {
-    const routeDir = path.join(DIST_DIR, route);
-    await mkdir(routeDir, { recursive: true });
-    await cp(indexPath, path.join(routeDir, "index.html"));
-  }
-
-  await mkdir(DEPLOY_DIR, { recursive: true });
-
-  const topLevelEntries = await readdir(DIST_DIR, { withFileTypes: true });
-
-  for (const entry of topLevelEntries) {
-    if (entry.name === path.basename(DEPLOY_DIR)) {
-      continue;
+    // GitHub Pages project deploys for this repo serve both `/chat` and
+    // `/axinite-mockup/chat` from the published artifact tree. Keep full SPA
+    // entry points at the root route folders, then mirror the complete build
+    // under the deploy-prefixed directory so deep links and reloads work in
+    // both layouts without self-redirect stubs.
+    for (const route of ROUTES) {
+      const routeDir = path.join(DIST_DIR, route);
+      await mkdir(routeDir, { recursive: true });
+      await cp(indexPath, path.join(routeDir, "index.html"));
     }
 
-    const sourcePath = path.join(DIST_DIR, entry.name);
-    const targetPath = path.join(DEPLOY_DIR, entry.name);
+    await mkdir(DEPLOY_DIR, { recursive: true });
 
-    await cp(sourcePath, targetPath, { recursive: true });
+    const topLevelEntries = await readdir(DIST_DIR, { withFileTypes: true });
+
+    for (const entry of topLevelEntries) {
+      if (entry.name === path.basename(DEPLOY_DIR)) {
+        continue;
+      }
+
+      const sourcePath = path.join(DIST_DIR, entry.name);
+      const targetPath = path.join(DEPLOY_DIR, entry.name);
+
+      await cp(sourcePath, targetPath, { recursive: true });
+    }
+  } catch (error) {
+    // During watch-mode rebuilds the dist tree can be in a transient state
+    // (partially cleaned or still being written). Log and continue so the
+    // dev server stays alive — the next successful build will run this again.
+    console.warn(
+      "[postbuild-routes] mirroring failed (transient during watch rebuild):",
+      error.message
+    );
   }
 }
 
