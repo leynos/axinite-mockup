@@ -5,7 +5,14 @@ import {
   keepPreviousData,
   useQueryClient,
 } from "@tanstack/solid-query";
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  Show,
+} from "solid-js";
 import type { ExtensionInfo } from "@/lib/api/contracts";
 import {
   activateExtension,
@@ -56,6 +63,47 @@ function kindMatchesRegistry(
   );
 }
 
+function appendKeyCell(row: HTMLTableRowElement, text: string) {
+  const cell = document.createElement("td");
+  cell.className = "catalogue-list__key";
+  cell.textContent = text;
+  row.append(cell);
+}
+
+function appendTextCell(
+  row: HTMLTableRowElement,
+  className: string,
+  textClassName: string,
+  text: string
+) {
+  const cell = document.createElement("td");
+  cell.className = className;
+  const paragraph = document.createElement("p");
+  paragraph.className = textClassName;
+  paragraph.textContent = text;
+  cell.append(paragraph);
+  row.append(cell);
+}
+
+function renderRows(
+  body: HTMLTableSectionElement | undefined,
+  buildRows: () => HTMLTableRowElement[]
+) {
+  if (!body) {
+    return;
+  }
+
+  body.replaceChildren(...buildRows());
+}
+
+function useTableBodyCleanup(
+  getBody: () => HTMLTableSectionElement | undefined
+) {
+  onCleanup(() => {
+    getBody()?.replaceChildren();
+  });
+}
+
 export const ExtensionsPreview = () => {
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -66,6 +114,9 @@ export const ExtensionsPreview = () => {
   const [setupValues, setSetupValues] = createSignal<Record<string, string>>(
     {}
   );
+  let registryBodyRef: HTMLTableSectionElement | undefined;
+  let mcpBodyRef: HTMLTableSectionElement | undefined;
+  let toolsBodyRef: HTMLTableSectionElement | undefined;
 
   const extensions = createQuery(() => ({
     queryKey: ["extensions", "list"],
@@ -199,6 +250,92 @@ export const ExtensionsPreview = () => {
 
     return capitalise(kind).toLowerCase();
   };
+
+  createEffect(() => {
+    renderRows(registryBodyRef, () =>
+      (registry.data?.entries ?? []).map((entry) => {
+        const row = document.createElement("tr");
+        row.className = "catalogue-list__row";
+
+        appendKeyCell(row, extensionKindLabel(entry.kind));
+        appendTextCell(
+          row,
+          "catalogue-list__content",
+          "catalogue-list__source",
+          entry.display_name
+        );
+        appendTextCell(
+          row,
+          "catalogue-list__content",
+          "catalogue-list__body",
+          entry.description
+        );
+
+        const actionCell = document.createElement("td");
+        actionCell.className = "catalogue-list__action";
+        const actionButton = document.createElement("button");
+        actionButton.className = "catalogue-card__action";
+        actionButton.type = "button";
+        actionButton.disabled = entry.installed;
+        actionButton.textContent = entry.installed
+          ? t("extensions-action-installed")
+          : t("extensions-action-install");
+        actionButton.addEventListener("click", () =>
+          installMutation.mutate(entry.name)
+        );
+        actionCell.append(actionButton);
+        row.append(actionCell);
+
+        return row;
+      })
+    );
+  });
+
+  createEffect(() => {
+    renderRows(mcpBodyRef, () =>
+      mcpExtensions().map((extension) => {
+        const row = document.createElement("tr");
+        row.className = "catalogue-list__row";
+        appendKeyCell(row, extension.display_name ?? extension.name);
+        appendTextCell(
+          row,
+          "catalogue-list__content",
+          "catalogue-list__source",
+          extension.url ?? t("extensions-url-local")
+        );
+        return row;
+      })
+    );
+  });
+
+  createEffect(() => {
+    renderRows(toolsBodyRef, () =>
+      (tools.data?.tools ?? []).map((tool) => {
+        const row = document.createElement("tr");
+        row.className = "catalogue-list__row";
+        appendKeyCell(row, tool.name);
+        appendTextCell(
+          row,
+          "catalogue-list__content",
+          "catalogue-list__source",
+          tool.name.includes("_")
+            ? t("extensions-tool-source-mock")
+            : t("extensions-tool-source-core")
+        );
+        appendTextCell(
+          row,
+          "catalogue-list__content",
+          "catalogue-list__body",
+          tool.description
+        );
+        return row;
+      })
+    );
+  });
+
+  useTableBodyCleanup(() => registryBodyRef);
+  useTableBodyCleanup(() => mcpBodyRef);
+  useTableBodyCleanup(() => toolsBodyRef);
 
   return (
     <section class="route-preview route-preview--catalogue route-preview--extensions">
@@ -405,30 +542,29 @@ export const ExtensionsPreview = () => {
                   />
                 </div>
               </div>
-              <div class="catalogue-list catalogue-list--extensions">
-                <For each={registry.data?.entries ?? []}>
-                  {(entry) => (
-                    <article class="catalogue-list__row">
-                      <div class="catalogue-list__key">{entry.kind}</div>
-                      <div class="catalogue-list__content">
-                        <p class="catalogue-list__source">
-                          {entry.display_name}
-                        </p>
-                        <p class="catalogue-list__body">{entry.description}</p>
-                      </div>
-                      <button
-                        class="catalogue-card__action"
-                        type="button"
-                        onClick={() => installMutation.mutate(entry.name)}
-                        disabled={entry.installed}
-                      >
-                        {entry.installed
-                          ? t("extensions-action-installed")
-                          : t("extensions-action-install")}
-                      </button>
-                    </article>
-                  )}
-                </For>
+              <div class="catalogue-table-wrap">
+                <table class="catalogue-list catalogue-list--extensions">
+                  <caption class="catalogue-table__caption">
+                    {t("extensions-wasm-title")}
+                  </caption>
+                  <thead>
+                    <tr class="catalogue-list__row">
+                      <th class="catalogue-list__key" scope="col">
+                        {t("extensions-column-kind")}
+                      </th>
+                      <th class="catalogue-list__content" scope="col">
+                        {t("routines-column-name")}
+                      </th>
+                      <th class="catalogue-list__content" scope="col">
+                        {t("extensions-column-description")}
+                      </th>
+                      <th class="catalogue-list__action" scope="col">
+                        {t("routines-column-action")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody ref={registryBodyRef} />
+                </table>
               </div>
             </div>
           </section>
@@ -447,21 +583,23 @@ export const ExtensionsPreview = () => {
                   </p>
                 }
               >
-                <div class="catalogue-list catalogue-list--extensions">
-                  <For each={mcpExtensions()}>
-                    {(ext) => (
-                      <article class="catalogue-list__row">
-                        <div class="catalogue-list__key">
-                          {ext.display_name ?? ext.name}
-                        </div>
-                        <div class="catalogue-list__content">
-                          <p class="catalogue-list__source">
-                            {ext.url ?? t("extensions-url-local")}
-                          </p>
-                        </div>
-                      </article>
-                    )}
-                  </For>
+                <div class="catalogue-table-wrap">
+                  <table class="catalogue-list catalogue-list--extensions">
+                    <caption class="catalogue-table__caption">
+                      {t("extensions-mcp-title")}
+                    </caption>
+                    <thead>
+                      <tr class="catalogue-list__row">
+                        <th class="catalogue-list__key" scope="col">
+                          {t("routines-column-name")}
+                        </th>
+                        <th class="catalogue-list__content" scope="col">
+                          {t("extensions-column-endpoint")}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody ref={mcpBodyRef} />
+                  </table>
                 </div>
               </Show>
               <h4 class="catalogue-panel__subtitle">
@@ -513,22 +651,26 @@ export const ExtensionsPreview = () => {
             </div>
           </div>
 
-          <div class="catalogue-list catalogue-list--extensions">
-            <For each={tools.data?.tools ?? []}>
-              {(tool) => (
-                <article class="catalogue-list__row">
-                  <div class="catalogue-list__key">{tool.name}</div>
-                  <div class="catalogue-list__content">
-                    <p class="catalogue-list__source">
-                      {tool.name.includes("_")
-                        ? t("extensions-tool-source-mock")
-                        : t("extensions-tool-source-core")}
-                    </p>
-                    <p class="catalogue-list__body">{tool.description}</p>
-                  </div>
-                </article>
-              )}
-            </For>
+          <div class="catalogue-table-wrap">
+            <table class="catalogue-list catalogue-list--extensions">
+              <caption class="catalogue-table__caption">
+                {t("extensions-tools-title")}
+              </caption>
+              <thead>
+                <tr class="catalogue-list__row">
+                  <th class="catalogue-list__key" scope="col">
+                    {t("extensions-column-tool")}
+                  </th>
+                  <th class="catalogue-list__content" scope="col">
+                    {t("extensions-tools-source-label")}
+                  </th>
+                  <th class="catalogue-list__content" scope="col">
+                    {t("extensions-column-description")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody ref={toolsBodyRef} />
+            </table>
           </div>
         </section>
 
@@ -544,7 +686,7 @@ export const ExtensionsPreview = () => {
             <AlertDialog.Overlay class="dialog-overlay" />
             <Show when={pendingRemovalExtension()}>
               {(extension) => (
-                <AlertDialog.Content class="dialog-surface">
+                <AlertDialog.Content class="dialog-surface extensions-remove-dialog">
                   <AlertDialog.Title class="dialog-title">
                     {t("extensions-remove-title", {
                       name: extensionDisplayName(extension()),
@@ -560,21 +702,21 @@ export const ExtensionsPreview = () => {
                       {t("extensions-remove-reinstall-hint")}
                     </p>
                   </Show>
-                  <div class="dialog-actions">
-                    <AlertDialog.CloseButton
-                      class="btn btn-ghost btn-sm"
-                      disabled={removeMutation.isPending}
-                    >
-                      {t("extensions-action-cancel")}
-                    </AlertDialog.CloseButton>
+                  <div class="dashboard-detail__actions extensions-remove-dialog__actions">
                     <button
-                      class="btn btn-primary btn-sm"
+                      class="dashboard-detail__ghost"
                       disabled={removeMutation.isPending}
                       onClick={() => removeMutation.mutate(extension().name)}
                       type="button"
                     >
                       {t("extensions-remove-confirm")}
                     </button>
+                    <AlertDialog.CloseButton
+                      class="dashboard-detail__ghost dashboard-detail__ghost--danger"
+                      disabled={removeMutation.isPending}
+                    >
+                      {t("extensions-action-cancel")}
+                    </AlertDialog.CloseButton>
                   </div>
                 </AlertDialog.Content>
               )}

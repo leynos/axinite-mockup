@@ -148,8 +148,18 @@ describe("extensions preview behaviour", () => {
       </AppProviders>
     ));
 
+    expect(
+      await screen.findByRole("table", { name: "Available WASM extensions" })
+    ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Type" })).toBeVisible();
+
     await screen.findByRole("button", { name: "Remove Firecrawl" });
-    expect(screen.getByRole("button", { name: "Installed" })).toBeDisabled();
+    const firecrawlRow = screen.getByRole("row", {
+      name: /WASM Firecrawl Browser automation and retrieval toolkit\. Installed/,
+    });
+    expect(
+      within(firecrawlRow).getByRole("button", { name: "Installed" })
+    ).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "Remove Firecrawl" }));
 
