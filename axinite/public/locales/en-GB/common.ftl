@@ -219,7 +219,6 @@ extensions-action-configure = Configure
 extensions-action-disable = Disable
 extensions-tools-title = Registered tools
 extensions-tools-source-label = Source
-extensions-tool-source-core = Core
 extensions-detail-eyebrow = Selected extension
 extensions-meta-path = Source
 extensions-meta-config = Configuration

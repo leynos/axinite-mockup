@@ -232,7 +232,6 @@ extensions-action-configure = कॉन्फ़िगर करें
 extensions-action-disable = अक्षम करें
 extensions-tools-title = पंजीकृत उपकरण
 extensions-tools-source-label = स्रोत
-extensions-tool-source-core = मूल
 extensions-detail-eyebrow = चयनित एक्सटेंशन
 extensions-meta-path = स्रोत
 extensions-meta-config = कॉन्फ़िगरेशन

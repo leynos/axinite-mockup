@@ -44,11 +44,11 @@ test("navigates routes and only exposes complete locales", async ({ page }) => {
   await page.keyboard.press("Escape");
   const languagePicker = page.getByLabel("Language");
   await expect(languagePicker).toHaveValue("en-GB");
-  await expect(languagePicker.locator("option")).toHaveCount(1);
+  await expect(languagePicker.locator("option")).toHaveCount(10);
 
   await page.goto(`${DEPLOY_BASE}/skills?lng=fr`);
-  await expect(page.locator("html")).toHaveAttribute("lang", "en-GB");
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(
-    page.getByRole("heading", { name: "Skills", level: 2 })
+    page.getByRole("heading", { name: "Compétences", level: 2 })
   ).toBeVisible();
 });

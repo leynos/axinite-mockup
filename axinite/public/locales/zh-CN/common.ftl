@@ -232,7 +232,6 @@ extensions-action-configure = 配置
 extensions-action-disable = 禁用
 extensions-tools-title = 已注册工具
 extensions-tools-source-label = 来源
-extensions-tool-source-core = 核心
 extensions-detail-eyebrow = 选中的扩展
 extensions-meta-path = 来源
 extensions-meta-config = 配置

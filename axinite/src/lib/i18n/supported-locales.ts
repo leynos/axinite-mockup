@@ -20,10 +20,18 @@ export const SUPPORTED_LOCALES = [
   { code: "ar", label: "Arabic", nativeLabel: "العربية", direction: "rtl" },
 ] as const satisfies Readonly<[SupportedLocale, ...SupportedLocale[]]>;
 
-export const COMPLETE_LOCALE_CODES = ["en-GB"] as const satisfies readonly [
-  string,
-  ...string[],
-];
+export const COMPLETE_LOCALE_CODES = [
+  "en-GB",
+  "fr",
+  "de",
+  "it",
+  "nl",
+  "pl",
+  "hi",
+  "ja",
+  "zh-CN",
+  "ar",
+] as const satisfies readonly [string, ...string[]];
 
 const COMPLETE_LOCALE_CODE_SET = new Set<string>(COMPLETE_LOCALE_CODES);
 

@@ -232,7 +232,6 @@ extensions-action-configure = 設定
 extensions-action-disable = 無効にする
 extensions-tools-title = 登録済みツール
 extensions-tools-source-label = ソース
-extensions-tool-source-core = コア
 extensions-detail-eyebrow = 選択された拡張機能
 extensions-meta-path = ソース
 extensions-meta-config = 設定

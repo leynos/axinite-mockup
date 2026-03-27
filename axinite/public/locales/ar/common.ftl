@@ -232,7 +232,6 @@ extensions-action-configure = تهيئة
 extensions-action-disable = تعطيل
 extensions-tools-title = الأدوات المسجّلة
 extensions-tools-source-label = المصدر
-extensions-tool-source-core = أساسي
 extensions-detail-eyebrow = الامتداد المحدد
 extensions-meta-path = المصدر
 extensions-meta-config = التهيئة

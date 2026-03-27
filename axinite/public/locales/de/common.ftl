@@ -219,7 +219,6 @@ extensions-action-configure = Konfigurieren
 extensions-action-disable = Deaktivieren
 extensions-tools-title = Registrierte Werkzeuge
 extensions-tools-source-label = Quelle
-extensions-tool-source-core = Kern
 extensions-detail-eyebrow = Ausgewählte Erweiterung
 extensions-meta-path = Quelle
 extensions-meta-config = Konfiguration
