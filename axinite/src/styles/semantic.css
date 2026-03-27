@@ -638,6 +638,14 @@
   margin: 0 0 1rem;
 }
 
+.catalogue-panel__subtitle {
+  margin: 1.25rem 0 0.75rem;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
+  font-weight: 600;
+}
+
 .catalogue-form {
   margin-bottom: 1rem;
 }

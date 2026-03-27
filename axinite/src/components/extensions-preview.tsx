@@ -35,6 +35,7 @@ export const ExtensionsPreview = () => {
   const queryClient = useQueryClient();
   const [activeExtensionName, setActiveExtensionName] = createSignal<string>();
   const [registryQuery, setRegistryQuery] = createSignal("");
+  const [mcpServerName, setMcpServerName] = createSignal("");
   const [setupValues, setSetupValues] = createSignal<Record<string, string>>(
     {}
   );
@@ -60,6 +61,13 @@ export const ExtensionsPreview = () => {
       setActiveExtensionName(firstName);
     }
   });
+
+  const mcpExtensions = createMemo(
+    () =>
+      extensions.data?.extensions.filter(
+        (extension) => extension.kind === "mcp"
+      ) ?? []
+  );
 
   const activeExtension = createMemo<ExtensionInfo | null>(
     () =>
@@ -280,6 +288,41 @@ export const ExtensionsPreview = () => {
                   </div>
                 </dl>
 
+                <Show when={(setup.data?.secrets ?? []).length > 0}>
+                  <div class="catalogue-detail__setup">
+                    <For each={setup.data?.secrets ?? []}>
+                      {(field) => (
+                        <div class="catalogue-form">
+                          <label
+                            class="catalogue-form__label"
+                            for={`setup-${field.name}`}
+                          >
+                            {field.prompt}
+                          </label>
+                          <div class="catalogue-form__row">
+                            <input
+                              class="catalogue-form__input"
+                              id={`setup-${field.name}`}
+                              onInput={(event) =>
+                                setSetupValues((current) => ({
+                                  ...current,
+                                  [field.name]: event.currentTarget.value,
+                                }))
+                              }
+                              placeholder={
+                                field.provided
+                                  ? t("extensions-setup-stored")
+                                  : field.prompt
+                              }
+                              type="text"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </For>
+                  </div>
+                </Show>
+
                 <div class="dashboard-detail__actions">
                   <button
                     class="dashboard-detail__ghost"
@@ -371,40 +414,63 @@ export const ExtensionsPreview = () => {
               <h3 class="catalogue-panel__title">
                 {t("extensions-mcp-title")}
               </h3>
-              <For each={setup.data?.secrets ?? []}>
-                {(field) => (
-                  <div class="catalogue-form">
-                    <label
-                      class="catalogue-form__label"
-                      for={`setup-${field.name}`}
-                    >
-                      {field.prompt}
-                    </label>
-                    <div class="catalogue-form__row">
-                      <input
-                        class="catalogue-form__input"
-                        id={`setup-${field.name}`}
-                        onInput={(event) =>
-                          setSetupValues((current) => ({
-                            ...current,
-                            [field.name]: event.currentTarget.value,
-                          }))
-                        }
-                        placeholder={
-                          field.provided ? "Stored value present" : field.prompt
-                        }
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                )}
-              </For>
+              <Show
+                when={mcpExtensions().length > 0}
+                fallback={
+                  <p class="catalogue-panel__empty">
+                    {t("extensions-mcp-empty")}
+                  </p>
+                }
+              >
+                <div class="catalogue-list catalogue-list--extensions">
+                  <For each={mcpExtensions()}>
+                    {(ext) => (
+                      <article class="catalogue-list__row">
+                        <div class="catalogue-list__key">
+                          {ext.display_name ?? ext.name}
+                        </div>
+                        <div class="catalogue-list__content">
+                          <p class="catalogue-list__source">
+                            {ext.url ?? t("extensions-url-local")}
+                          </p>
+                        </div>
+                      </article>
+                    )}
+                  </For>
+                </div>
+              </Show>
+              <h4 class="catalogue-panel__subtitle">
+                {t("extensions-mcp-add-title")}
+              </h4>
+              <div class="catalogue-form">
+                <label class="catalogue-form__label" for="mcp-server-name">
+                  {t("extensions-mcp-field-label")}
+                </label>
+                <div class="catalogue-form__row">
+                  <input
+                    class="catalogue-form__input"
+                    id="mcp-server-name"
+                    onInput={(event) =>
+                      setMcpServerName(event.currentTarget.value)
+                    }
+                    placeholder={t("extensions-mcp-placeholder")}
+                    type="text"
+                    value={mcpServerName()}
+                  />
+                </div>
+              </div>
               <button
                 class="catalogue-form__button"
                 type="button"
-                onClick={() => setupMutation.mutate()}
+                onClick={() => {
+                  const name = mcpServerName().trim();
+                  if (name) {
+                    installMutation.mutate(name);
+                    setMcpServerName("");
+                  }
+                }}
               >
-                {t("extensions-action-save-setup")}
+                {t("extensions-mcp-action")}
               </button>
             </div>
           </section>

@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -12,6 +12,16 @@ const ROUTES = ["chat", "memory", "jobs", "routines", "extensions", "skills"];
 
 export async function postbuildRoutes() {
   const indexPath = path.join(DIST_DIR, "index.html");
+
+  try {
+    await access(indexPath);
+  } catch {
+    console.warn(
+      "[postbuild-routes] dist/index.html not found — skipping (expected during watch startup)"
+    );
+    return;
+  }
+
   await writeFile(path.join(DIST_DIR, ".nojekyll"), "");
 
   // GitHub Pages project deploys for this repo serve both `/chat` and
