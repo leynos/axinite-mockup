@@ -1793,10 +1793,18 @@
   .catalogue-panel-grid--extensions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .skills-panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 959px) {
   .catalogue-panel-grid--extensions {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-panel-grid {
     grid-template-columns: 1fr;
   }
 }
