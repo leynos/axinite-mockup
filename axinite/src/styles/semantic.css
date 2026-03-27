@@ -771,6 +771,21 @@
   align-items: stretch;
 }
 
+.catalogue-form__row--indicator {
+  flex-wrap: nowrap;
+}
+
+.catalogue-form__provided-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  flex-shrink: 0;
+  color: var(--colour-brand-accent, #22c55e);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .dashboard-detail .catalogue-form__button {
   min-height: 2rem;
   padding-inline: 0.8rem;

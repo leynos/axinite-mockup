@@ -13,7 +13,6 @@ import {
   fetchExtensions,
   fetchExtensionTools,
   installExtension,
-  removeExtension,
   submitExtensionSetup,
 } from "@/lib/api/extensions";
 import { useI18n } from "@/lib/i18n/provider";
@@ -33,7 +32,7 @@ const STATUS_CLASS: Record<string, string> = {
 export const ExtensionsPreview = () => {
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [activeExtensionName, setActiveExtensionName] = createSignal<string>();
+  const [configuringName, setConfiguringName] = createSignal<string>();
   const [registryQuery, setRegistryQuery] = createSignal("");
   const [mcpServerName, setMcpServerName] = createSignal("");
   const [setupValues, setSetupValues] = createSignal<Record<string, string>>(
@@ -55,13 +54,6 @@ export const ExtensionsPreview = () => {
     queryFn: () => fetchExtensionRegistry(registryQuery().trim()),
   }));
 
-  createEffect(() => {
-    const firstName = extensions.data?.extensions[0]?.name;
-    if (!activeExtensionName() && firstName) {
-      setActiveExtensionName(firstName);
-    }
-  });
-
   const mcpExtensions = createMemo(
     () =>
       extensions.data?.extensions.filter(
@@ -72,14 +64,14 @@ export const ExtensionsPreview = () => {
   const activeExtension = createMemo<ExtensionInfo | null>(
     () =>
       extensions.data?.extensions.find(
-        (extension) => extension.name === activeExtensionName()
+        (extension) => extension.name === configuringName()
       ) ?? null
   );
 
   const setup = createQuery(() => ({
-    queryKey: ["extensions", "setup", activeExtensionName()],
-    queryFn: () => fetchExtensionSetup(activeExtensionName() ?? ""),
-    enabled: typeof activeExtensionName() === "string",
+    queryKey: ["extensions", "setup", configuringName()],
+    queryFn: () => fetchExtensionSetup(configuringName() ?? ""),
+    enabled: typeof configuringName() === "string",
     placeholderData: keepPreviousData,
   }));
 
@@ -100,18 +92,13 @@ export const ExtensionsPreview = () => {
   }));
 
   const activateMutation = createMutation(() => ({
-    mutationFn: () => activateExtension(activeExtensionName() ?? ""),
-    onSuccess: refresh,
-  }));
-
-  const removeMutation = createMutation(() => ({
-    mutationFn: () => removeExtension(activeExtensionName() ?? ""),
+    mutationFn: (name: string) => activateExtension(name),
     onSuccess: refresh,
   }));
 
   const setupMutation = createMutation(() => ({
     mutationFn: () =>
-      submitExtensionSetup(activeExtensionName() ?? "", {
+      submitExtensionSetup(configuringName() ?? "", {
         secrets: setupValues(),
       }),
     onSuccess: refresh,
@@ -164,13 +151,7 @@ export const ExtensionsPreview = () => {
           <div class="catalogue-grid catalogue-grid--extensions">
             <For each={extensions.data?.extensions ?? []}>
               {(extension) => (
-                <article
-                  class={
-                    activeExtensionName() === extension.name
-                      ? "catalogue-card catalogue-card--active extensions-card"
-                      : "catalogue-card extensions-card"
-                  }
-                >
+                <article class="catalogue-card extensions-card">
                   <div class="catalogue-card__header">
                     <div class="catalogue-card__title-wrap">
                       <h4 class="catalogue-card__title">
@@ -214,21 +195,14 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-card__actions">
                     <button
                       class="catalogue-card__action"
-                      onClick={() => setActiveExtensionName(extension.name)}
-                      type="button"
-                    >
-                      {t("extensions-action-inspect")}
-                    </button>
-                    <button
-                      class="catalogue-card__action"
-                      onClick={() => setActiveExtensionName(extension.name)}
+                      onClick={() => setConfiguringName(extension.name)}
                       type="button"
                     >
                       {t("extensions-action-configure")}
                     </button>
                     <button
                       class="catalogue-card__action"
-                      onClick={() => setActiveExtensionName(extension.name)}
+                      onClick={() => activateMutation.mutate(extension.name)}
                       type="button"
                     >
                       {extension.active
@@ -244,108 +218,72 @@ export const ExtensionsPreview = () => {
           <Show when={activeExtension()}>
             {(extension) => (
               <aside class="catalogue-detail catalogue-detail--inline extensions-detail">
-                <div class="catalogue-detail__header">
-                  <div>
-                    <p class="catalogue-detail__eyebrow">
-                      {t("extensions-detail-eyebrow")}
-                    </p>
-                    <h3 class="catalogue-detail__title">
-                      {extension().display_name ?? extension().name}
-                    </h3>
-                  </div>
-                  <div class="catalogue-detail__pills">
-                    <span
-                      class={
-                        KIND_CLASS[extension().kind] ?? "pill pill--neutral"
-                      }
-                    >
-                      {extension().kind}
-                    </span>
-                    <span class="pill pill--neutral">
-                      {extension().version ?? t("extensions-version-preview")}
-                    </span>
-                  </div>
-                </div>
+                <h3 class="catalogue-detail__title">
+                  {t("extensions-configure-title", {
+                    name: extension().name,
+                  })}
+                </h3>
 
-                <p class="catalogue-detail__body">{extension().description}</p>
-
-                <dl class="catalogue-detail__meta-grid">
-                  <div>
-                    <dt>{t("extensions-meta-path")}</dt>
-                    <dd>{extension().url ?? t("extensions-url-local")}</dd>
-                  </div>
-                  <div>
-                    <dt>{t("extensions-meta-config")}</dt>
-                    <dd>
-                      {extension().needs_setup
-                        ? t("extensions-setup-required")
-                        : t("extensions-setup-none")}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{t("extensions-meta-guardrail")}</dt>
-                    <dd>{t("page-extensions-guardrail")}</dd>
-                  </div>
-                </dl>
-
-                <Show when={(setup.data?.secrets ?? []).length > 0}>
-                  <div class="catalogue-detail__setup">
-                    <For each={setup.data?.secrets ?? []}>
-                      {(field) => (
-                        <div class="catalogue-form">
-                          <label
-                            class="catalogue-form__label"
-                            for={`setup-${field.name}`}
+                <For each={setup.data?.secrets ?? []}>
+                  {(field) => (
+                    <div class="catalogue-form">
+                      <label
+                        class="catalogue-form__label"
+                        for={`setup-${field.name}`}
+                      >
+                        {field.prompt}
+                      </label>
+                      <div class="catalogue-form__row catalogue-form__row--indicator">
+                        <input
+                          class="catalogue-form__input"
+                          id={`setup-${field.name}`}
+                          onInput={(event) =>
+                            setSetupValues((current) => ({
+                              ...current,
+                              [field.name]: event.currentTarget.value,
+                            }))
+                          }
+                          placeholder={
+                            field.provided
+                              ? t("extensions-setup-provided-hint")
+                              : field.prompt
+                          }
+                          type="text"
+                        />
+                        <Show when={field.provided}>
+                          <span
+                            class="catalogue-form__provided-icon"
+                            role="img"
+                            aria-label={t("extensions-setup-stored")}
                           >
-                            {field.prompt}
-                          </label>
-                          <div class="catalogue-form__row">
-                            <input
-                              class="catalogue-form__input"
-                              id={`setup-${field.name}`}
-                              onInput={(event) =>
-                                setSetupValues((current) => ({
-                                  ...current,
-                                  [field.name]: event.currentTarget.value,
-                                }))
-                              }
-                              placeholder={
-                                field.provided
-                                  ? t("extensions-setup-stored")
-                                  : field.prompt
-                              }
-                              type="text"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </For>
-                  </div>
+                            ✓
+                          </span>
+                        </Show>
+                      </div>
+                    </div>
+                  )}
+                </For>
+
+                <Show when={(setup.data?.secrets ?? []).length === 0}>
+                  <p class="catalogue-panel__empty">
+                    {t("extensions-setup-none")}
+                  </p>
                 </Show>
 
                 <div class="dashboard-detail__actions">
                   <button
                     class="dashboard-detail__ghost"
                     type="button"
-                    onClick={() => activateMutation.mutate()}
-                  >
-                    {extension().active
-                      ? t("extensions-action-reactivate")
-                      : t("extensions-action-activate")}
-                  </button>
-                  <button
-                    class="dashboard-detail__ghost"
-                    type="button"
                     onClick={() => setupMutation.mutate()}
                   >
-                    {t("extensions-action-save-setup")}
+                    {t("extensions-action-save")}
                   </button>
                   <button
-                    class="dashboard-detail__ghost"
+                    class="dashboard-detail__ghost dashboard-detail__ghost--danger"
                     type="button"
-                    onClick={() => removeMutation.mutate()}
+                    onClick={() => setConfiguringName(undefined)}
                   >
-                    {t("extensions-action-remove")}
+                    {t("extensions-action-cancel")}
                   </button>
                 </div>
               </aside>
