@@ -117,7 +117,7 @@ export const SkillsPreview = () => {
     if (format === "single") {
       return t("skills-format-single");
     }
-    return "Preview";
+    return t("skills-format-preview");
   };
 
   return (
@@ -190,7 +190,7 @@ export const SkillsPreview = () => {
                           type="button"
                           onClick={() => installMutation.mutate(result.name)}
                         >
-                          Install
+                          {t("skills-action-install")}
                         </button>
                       </div>
                     </article>

@@ -23,9 +23,12 @@ import {
 import type { ThreadInfo } from "@/lib/api/contracts";
 import { useI18n } from "@/lib/i18n/provider";
 
-function formatTimestamp(value: string | null | undefined): string {
+function formatTimestamp(
+  value: string | null | undefined,
+  fallback: string
+): string {
   if (!value) {
-    return "Pending";
+    return fallback;
   }
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
@@ -111,10 +114,10 @@ export const ChatPreview = () => {
       setComposerText("");
       setStreamingResponse("");
       setIsAwaitingResponse(true);
-      setLiveStatus("Waiting for assistant response...");
+      setLiveStatus(t("chat-status-waiting"));
     },
     onSuccess: () => {
-      setLiveStatus("Streaming assistant response...");
+      setLiveStatus(t("chat-status-streaming"));
       void queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
       void queryClient.invalidateQueries({ queryKey: ["chat", "threads"] });
     },
@@ -123,7 +126,7 @@ export const ChatPreview = () => {
       setPendingUserMessage("");
       setStreamingResponse("");
       setIsAwaitingResponse(false);
-      setLiveStatus("Message failed to send.");
+      setLiveStatus(t("chat-status-failed"));
     },
   }));
 
@@ -157,7 +160,7 @@ export const ChatPreview = () => {
           setLiveStatus(event.message);
           break;
         case "tool_started":
-          setLiveStatus(`Running ${event.name}...`);
+          setLiveStatus(t("chat-status-tool-running", { name: event.name }));
           break;
         case "tool_result":
           setLiveStatus(event.preview);
@@ -165,8 +168,9 @@ export const ChatPreview = () => {
         case "tool_completed":
           setLiveStatus(
             event.success
-              ? `${event.name} completed successfully.`
-              : (event.error ?? `${event.name} failed.`)
+              ? t("chat-status-tool-success", { name: event.name })
+              : (event.error ??
+                  t("chat-status-tool-failed", { name: event.name }))
           );
           break;
         case "stream_chunk":
@@ -177,7 +181,7 @@ export const ChatPreview = () => {
           setPendingUserMessage("");
           setIsAwaitingResponse(false);
           setStreamingResponse("");
-          setLiveStatus("Response completed.");
+          setLiveStatus(t("chat-status-complete"));
           void queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
           void queryClient.invalidateQueries({ queryKey: ["chat", "threads"] });
           break;
@@ -236,7 +240,10 @@ export const ChatPreview = () => {
                     {thread().title ?? t("route-chat-label")}
                   </span>
                   <span class="route-sidebar__session-time">
-                    {formatTimestamp(thread().updated_at)}
+                    {formatTimestamp(
+                      thread().updated_at,
+                      t("timestamp-pending")
+                    )}
                   </span>
                 </button>
               </div>
@@ -262,7 +269,7 @@ export const ChatPreview = () => {
                     {thread.title ?? thread.id}
                   </span>
                   <span class="route-sidebar__list-time">
-                    {formatTimestamp(thread.updated_at)}
+                    {formatTimestamp(thread.updated_at, t("timestamp-pending"))}
                   </span>
                 </button>
               )}
@@ -290,7 +297,7 @@ export const ChatPreview = () => {
                     <div class="chat-preview__turn chat-preview__turn--assistant">
                       <div class="chat-preview__bubble chat-preview__bubble--assistant">
                         <div class="chat-preview__markdown">
-                          <p>{turn.response ?? "Awaiting completion..."}</p>
+                          <p>{turn.response ?? t("chat-response-pending")}</p>
                           <Show when={turn.tool_calls.length > 0}>
                             <p class="chat-preview__safety-note">
                               {turn.tool_calls
@@ -324,9 +331,7 @@ export const ChatPreview = () => {
                       class="chat-preview__spinner-row"
                     >
                       <span aria-hidden="true" class="chat-preview__spinner" />
-                      <p>
-                        {liveStatus() || "Waiting for assistant response..."}
-                      </p>
+                      <p>{liveStatus() || t("chat-status-waiting")}</p>
                     </div>
                   </div>
                 </div>
@@ -356,14 +361,14 @@ export const ChatPreview = () => {
                             type="button"
                             onClick={() => approvalMutation.mutate("approve")}
                           >
-                            Approve
+                            {t("chat-approval-approve")}
                           </button>
                           <button
                             class="dashboard-detail__ghost"
                             type="button"
                             onClick={() => approvalMutation.mutate("deny")}
                           >
-                            Deny
+                            {t("chat-approval-deny")}
                           </button>
                         </div>
                       </div>
@@ -395,11 +400,7 @@ export const ChatPreview = () => {
                     aria-label={t("chat-attach-button")}
                     class="chat-preview__ghost-button"
                     type="button"
-                    onClick={() =>
-                      setLiveStatus(
-                        "Mock backend preview does not persist file uploads."
-                      )
-                    }
+                    onClick={() => setLiveStatus(t("chat-upload-unavailable"))}
                   >
                     +
                   </button>

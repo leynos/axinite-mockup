@@ -48,7 +48,7 @@ export const LogsDialog = () => {
 
           <div class="catalogue-form">
             <label class="catalogue-form__label" for="logs-level">
-              Log level
+              {t("logs-level-label")}
             </label>
             <div class="catalogue-form__row">
               <select
@@ -59,10 +59,10 @@ export const LogsDialog = () => {
                 }
                 value={level.data?.level ?? "info"}
               >
-                <option value="debug">debug</option>
-                <option value="info">info</option>
-                <option value="warn">warn</option>
-                <option value="error">error</option>
+                <option value="debug">{t("logs-level-debug")}</option>
+                <option value="info">{t("logs-level-info")}</option>
+                <option value="warn">{t("logs-level-warn")}</option>
+                <option value="error">{t("logs-level-error")}</option>
               </select>
             </div>
           </div>

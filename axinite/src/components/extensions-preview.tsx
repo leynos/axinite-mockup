@@ -177,7 +177,9 @@ export const ExtensionsPreview = () => {
                       </span>
                     </div>
                     <div class="catalogue-card__meta">
-                      <span>{extension.version ?? "preview"}</span>
+                      <span>
+                        {extension.version ?? t("extensions-version-preview")}
+                      </span>
                       <span
                         class={
                           extension.active
@@ -189,7 +191,7 @@ export const ExtensionsPreview = () => {
                   </div>
 
                   <p class="catalogue-card__path">
-                    {extension.url ?? "Local preview"}
+                    {extension.url ?? t("extensions-url-local")}
                   </p>
                   <p class="catalogue-card__body">{extension.description}</p>
 
@@ -223,7 +225,7 @@ export const ExtensionsPreview = () => {
                     >
                       {extension.active
                         ? t("extensions-action-disable")
-                        : "Activate"}
+                        : t("extensions-action-activate")}
                     </button>
                   </div>
                 </article>
@@ -252,7 +254,7 @@ export const ExtensionsPreview = () => {
                       {extension().kind}
                     </span>
                     <span class="pill pill--neutral">
-                      {extension().version ?? "preview"}
+                      {extension().version ?? t("extensions-version-preview")}
                     </span>
                   </div>
                 </div>
@@ -262,14 +264,14 @@ export const ExtensionsPreview = () => {
                 <dl class="catalogue-detail__meta-grid">
                   <div>
                     <dt>{t("extensions-meta-path")}</dt>
-                    <dd>{extension().url ?? "Local preview"}</dd>
+                    <dd>{extension().url ?? t("extensions-url-local")}</dd>
                   </div>
                   <div>
                     <dt>{t("extensions-meta-config")}</dt>
                     <dd>
                       {extension().needs_setup
-                        ? "Setup values required"
-                        : "No setup needed"}
+                        ? t("extensions-setup-required")
+                        : t("extensions-setup-none")}
                     </dd>
                   </div>
                   <div>
@@ -284,21 +286,23 @@ export const ExtensionsPreview = () => {
                     type="button"
                     onClick={() => activateMutation.mutate()}
                   >
-                    {extension().active ? "Re-activate" : "Activate"}
+                    {extension().active
+                      ? t("extensions-action-reactivate")
+                      : t("extensions-action-activate")}
                   </button>
                   <button
                     class="dashboard-detail__ghost"
                     type="button"
                     onClick={() => setupMutation.mutate()}
                   >
-                    Save setup
+                    {t("extensions-action-save-setup")}
                   </button>
                   <button
                     class="dashboard-detail__ghost"
                     type="button"
                     onClick={() => removeMutation.mutate()}
                   >
-                    Remove
+                    {t("extensions-action-remove")}
                   </button>
                 </div>
               </aside>
@@ -318,7 +322,7 @@ export const ExtensionsPreview = () => {
                   class="catalogue-form__label"
                   for="extensions-registry-search"
                 >
-                  Search registry
+                  {t("extensions-registry-label")}
                 </label>
                 <div class="catalogue-form__row">
                   <input
@@ -350,7 +354,9 @@ export const ExtensionsPreview = () => {
                         onClick={() => installMutation.mutate(entry.name)}
                         disabled={entry.installed}
                       >
-                        {entry.installed ? "Installed" : "Install"}
+                        {entry.installed
+                          ? t("extensions-action-installed")
+                          : t("extensions-action-install")}
                       </button>
                     </article>
                   )}
@@ -398,7 +404,7 @@ export const ExtensionsPreview = () => {
                 type="button"
                 onClick={() => setupMutation.mutate()}
               >
-                Save setup
+                {t("extensions-action-save-setup")}
               </button>
             </div>
           </section>
@@ -423,7 +429,9 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-list__key">{tool.name}</div>
                   <div class="catalogue-list__content">
                     <p class="catalogue-list__source">
-                      {tool.name.includes("_") ? "Mock tool" : "Core tool"}
+                      {tool.name.includes("_")
+                        ? t("extensions-tool-source-mock")
+                        : t("extensions-tool-source-core")}
                     </p>
                     <p class="catalogue-list__body">{tool.description}</p>
                   </div>

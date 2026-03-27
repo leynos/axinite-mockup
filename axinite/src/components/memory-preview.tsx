@@ -101,7 +101,7 @@ export const MemoryPreview = () => {
   return (
     <section class="route-preview route-preview--memory">
       <div aria-hidden="true" class="route-preview__watermark">
-        MEM
+        {t("memory-watermark")}
       </div>
       <div class="route-preview__layout route-preview__layout--memory">
         <aside class="route-sidebar route-sidebar--memory">

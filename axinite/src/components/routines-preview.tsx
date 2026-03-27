@@ -43,9 +43,12 @@ function toKebabSegment(value: string): string {
     .replace(/^-/, "");
 }
 
-function formatTimestamp(value: string | null | undefined): string {
+function formatTimestamp(
+  value: string | null | undefined,
+  fallback: string
+): string {
   if (!value) {
-    return "Pending";
+    return fallback;
   }
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
@@ -219,10 +222,16 @@ export const RoutinesPreview = () => {
                         </span>
                       </td>
                       <td class="dashboard-table__meta">
-                        {formatTimestamp(routine.last_run_at)}
+                        {formatTimestamp(
+                          routine.last_run_at,
+                          t("timestamp-pending")
+                        )}
                       </td>
                       <td class="dashboard-table__meta">
-                        {formatTimestamp(routine.next_fire_at)}
+                        {formatTimestamp(
+                          routine.next_fire_at,
+                          t("timestamp-pending")
+                        )}
                       </td>
                       <td class="dashboard-table__meta">{routine.run_count}</td>
                       <td>
@@ -283,7 +292,9 @@ export const RoutinesPreview = () => {
                       ] ?? "pill pill--neutral"
                     }
                   >
-                    {routine().enabled ? "enabled" : "disabled"}
+                    {routine().enabled
+                      ? t("routines-enabled-label")
+                      : t("routines-disabled-label")}
                   </span>
                 </div>
               </div>
@@ -293,11 +304,21 @@ export const RoutinesPreview = () => {
               <dl class="dashboard-detail__meta-grid">
                 <div>
                   <dt>{t("routines-meta-last-run")}</dt>
-                  <dd>{formatTimestamp(routine().last_run_at)}</dd>
+                  <dd>
+                    {formatTimestamp(
+                      routine().last_run_at,
+                      t("timestamp-pending")
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt>{t("routines-meta-next-run")}</dt>
-                  <dd>{formatTimestamp(routine().next_fire_at)}</dd>
+                  <dd>
+                    {formatTimestamp(
+                      routine().next_fire_at,
+                      t("timestamp-pending")
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt>{t("routines-meta-guardrail")}</dt>
@@ -318,20 +339,24 @@ export const RoutinesPreview = () => {
                   type="button"
                   onClick={() => toggleMutation.mutate()}
                 >
-                  {routine().enabled ? t("routines-action-disable") : "Enable"}
+                  {routine().enabled
+                    ? t("routines-action-disable")
+                    : t("routines-action-enable")}
                 </button>
                 <button
                   class="dashboard-detail__ghost"
                   type="button"
                   onClick={() => deleteMutation.mutate()}
                 >
-                  Delete
+                  {t("routines-action-delete")}
                 </button>
               </div>
 
               <section class="catalogue-panel">
                 <div class="catalogue-panel__content">
-                  <h3 class="catalogue-panel__title">Recent runs</h3>
+                  <h3 class="catalogue-panel__title">
+                    {t("routines-runs-title")}
+                  </h3>
                   <div class="catalogue-list catalogue-list--extensions">
                     <For each={runs.data?.runs ?? []}>
                       {(run) => (
@@ -339,10 +364,14 @@ export const RoutinesPreview = () => {
                           <div class="catalogue-list__key">{run.status}</div>
                           <div class="catalogue-list__content">
                             <p class="catalogue-list__source">
-                              {formatTimestamp(run.started_at)}
+                              {formatTimestamp(
+                                run.started_at,
+                                t("timestamp-pending")
+                              )}
                             </p>
                             <p class="catalogue-list__body">
-                              {run.result_summary ?? "No summary recorded."}
+                              {run.result_summary ??
+                                t("routines-run-no-summary")}
                             </p>
                           </div>
                         </article>

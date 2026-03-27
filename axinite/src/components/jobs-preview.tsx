@@ -41,9 +41,12 @@ function toKebabSegment(value: string): string {
     .replace(/^-/, "");
 }
 
-function formatTimestamp(value: string | null | undefined): string {
+function formatTimestamp(
+  value: string | null | undefined,
+  fallback: string
+): string {
   if (!value) {
-    return "Pending";
+    return fallback;
   }
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
@@ -70,9 +73,7 @@ export const JobsPreview = () => {
   const queryClient = useQueryClient();
   const [activeJobId, setActiveJobId] = createSignal<string>();
   const [activeFilePath, setActiveFilePath] = createSignal<string>();
-  const [promptText, setPromptText] = createSignal(
-    "Summarise the current blocker."
-  );
+  const [promptText, setPromptText] = createSignal("");
 
   const jobs = createQuery(() => ({
     queryKey: ["jobs", "list"],
@@ -250,7 +251,10 @@ export const JobsPreview = () => {
                         </span>
                       </td>
                       <td class="dashboard-table__meta">
-                        {formatTimestamp(job.created_at)}
+                        {formatTimestamp(
+                          job.created_at,
+                          t("timestamp-pending")
+                        )}
                       </td>
                       <td>
                         <button
@@ -300,12 +304,16 @@ export const JobsPreview = () => {
               <dl class="dashboard-detail__meta-grid">
                 <div>
                   <dt>{t("jobs-meta-created")}</dt>
-                  <dd>{formatTimestamp(job().created_at)}</dd>
+                  <dd>
+                    {formatTimestamp(job().created_at, t("timestamp-pending"))}
+                  </dd>
                 </div>
                 <div>
                   <dt>{t("jobs-meta-elapsed")}</dt>
                   <dd>
-                    {job().elapsed_secs ? `${job().elapsed_secs}s` : "Pending"}
+                    {job().elapsed_secs
+                      ? `${job().elapsed_secs}s`
+                      : t("jobs-elapsed-pending")}
                   </dd>
                 </div>
                 <div>
@@ -338,7 +346,9 @@ export const JobsPreview = () => {
               <div class="catalogue-panel-grid catalogue-panel-grid--extensions">
                 <section class="catalogue-panel">
                   <div class="catalogue-panel__content">
-                    <h3 class="catalogue-panel__title">Activity</h3>
+                    <h3 class="catalogue-panel__title">
+                      {t("jobs-activity-title")}
+                    </h3>
                     <div class="catalogue-list catalogue-list--extensions">
                       <For each={events.data?.events ?? []}>
                         {(event) => (
@@ -346,7 +356,10 @@ export const JobsPreview = () => {
                             <div class="catalogue-list__key">{event.level}</div>
                             <div class="catalogue-list__content">
                               <p class="catalogue-list__source">
-                                {formatTimestamp(event.timestamp)}
+                                {formatTimestamp(
+                                  event.timestamp,
+                                  t("timestamp-pending")
+                                )}
                               </p>
                               <p class="catalogue-list__body">
                                 {event.message}
@@ -361,7 +374,9 @@ export const JobsPreview = () => {
 
                 <section class="catalogue-panel">
                   <div class="catalogue-panel__content">
-                    <h3 class="catalogue-panel__title">Files</h3>
+                    <h3 class="catalogue-panel__title">
+                      {t("jobs-files-title")}
+                    </h3>
                     <div class="catalogue-files skills-detail__files">
                       <div class="catalogue-files__list skills-files__list">
                         <For each={files.data?.entries ?? []}>

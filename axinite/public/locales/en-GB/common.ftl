@@ -350,3 +350,54 @@ skills-search-python-typing-title = python-typing
 skills-search-python-typing-body = Python type-annotation guidance and mypy integration for stricter review loops.
 skills-search-docker-compose-title = docker-compose
 skills-search-docker-compose-body = Docker Compose patterns for development and production service orchestration.
+
+timestamp-pending = Pending
+
+chat-status-waiting = Waiting for assistant response…
+chat-status-streaming = Streaming assistant response…
+chat-status-failed = Message failed to send.
+chat-status-tool-running = Running { $name }…
+chat-status-tool-success = { $name } completed successfully.
+chat-status-tool-failed = { $name } failed.
+chat-status-complete = Response completed.
+chat-response-pending = Awaiting completion…
+chat-approval-approve = Approve
+chat-approval-deny = Deny
+chat-upload-unavailable = Mock backend preview does not persist file uploads.
+
+routines-enabled-label = enabled
+routines-disabled-label = disabled
+routines-action-enable = Enable
+routines-action-delete = Delete
+routines-runs-title = Recent runs
+routines-run-no-summary = No summary recorded.
+
+extensions-version-preview = preview
+extensions-url-local = Local preview
+extensions-action-activate = Activate
+extensions-action-reactivate = Re-activate
+extensions-action-save-setup = Save setup
+extensions-action-remove = Remove
+extensions-action-install = Install
+extensions-action-installed = Installed
+extensions-setup-required = Setup values required
+extensions-setup-none = No setup needed
+extensions-registry-label = Search registry
+extensions-tool-source-mock = Mock tool
+extensions-tool-source-core = Core tool
+
+jobs-default-prompt = Summarise the current blocker.
+jobs-elapsed-pending = Pending
+jobs-activity-title = Activity
+jobs-files-title = Files
+
+skills-format-preview = Preview
+skills-action-install = Install
+
+memory-watermark = MEM
+
+logs-level-label = Log level
+logs-level-debug = debug
+logs-level-info = info
+logs-level-warn = warn
+logs-level-error = error
