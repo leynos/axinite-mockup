@@ -1,6 +1,8 @@
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 
+import { isStreamingApiPath } from "./streaming-routes";
+
 const previewPort = Number(process.env.PREVIEW_PORT ?? "2020");
 const apiPort = Number(process.env.MOCK_API_PORT ?? "8787");
 const distDir = path.join(process.cwd(), "dist");
@@ -65,8 +67,11 @@ function serveStatic(pathname: string): Response {
 
 const server = Bun.serve({
   port: previewPort,
-  async fetch(request) {
+  async fetch(request, server) {
     const url = new URL(request.url);
+    if (isStreamingApiPath(url.pathname)) {
+      server.timeout(request, 0);
+    }
     if (url.pathname.startsWith("/api/")) {
       return proxyRequest(request);
     }

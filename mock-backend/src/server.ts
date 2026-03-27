@@ -11,6 +11,7 @@ import type {
   SkillSearchRequest,
   ToggleRequest,
 } from "../../axinite/src/lib/api/contracts";
+import { isStreamingApiPath } from "./streaming-routes";
 import { MockBackendState } from "./state";
 
 export const DEFAULT_API_PORT = Number(process.env.MOCK_API_PORT ?? "8787");
@@ -383,7 +384,11 @@ export function createMockBackendServer(
 } {
   const server = Bun.serve({
     port,
-    fetch(request) {
+    fetch(request, server) {
+      const pathname = new URL(request.url).pathname;
+      if (isStreamingApiPath(pathname)) {
+        server.timeout(request, 0);
+      }
       return handleMockRequest(request, state);
     },
   });
