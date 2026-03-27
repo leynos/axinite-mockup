@@ -386,31 +386,37 @@ export const JobsPreview = () => {
                 </section>
               </div>
 
-              <section class="catalogue-panel">
-                <div class="catalogue-panel__content">
-                  <h3 class="catalogue-panel__title">Follow-up prompt</h3>
-                  <div class="catalogue-form">
-                    <div class="catalogue-form__row">
-                      <input
-                        class="catalogue-form__input"
-                        onInput={(event) =>
-                          setPromptText(event.currentTarget.value)
-                        }
-                        type="text"
-                        value={promptText()}
-                      />
+              <div class="chat-preview__composer-wrap">
+                <div class="chat-preview__composer-shell">
+                  <div class="chat-preview__composer">
+                    <textarea
+                      aria-label={t("jobs-prompt-label")}
+                      class="chat-preview__textarea"
+                      onInput={(event) =>
+                        setPromptText(event.currentTarget.value)
+                      }
+                      placeholder={t("jobs-prompt-placeholder")}
+                      rows={1}
+                      value={promptText()}
+                    />
+                    <div class="chat-preview__composer-actions">
                       <button
-                        class="catalogue-form__button"
+                        class="chat-preview__send-button"
+                        disabled={
+                          !job().can_prompt || promptText().trim().length === 0
+                        }
                         type="button"
                         onClick={() => promptMutation.mutate()}
-                        disabled={!job().can_prompt}
                       >
-                        Send
+                        {t("jobs-prompt-send")}
                       </button>
                     </div>
                   </div>
+                  <p class="chat-preview__safety-note">
+                    {t("jobs-prompt-safety")}
+                  </p>
                 </div>
-              </section>
+              </div>
             </section>
           )}
         </Show>
