@@ -386,6 +386,11 @@ extensions-setup-none = Aucune configuration nécessaire
 extensions-registry-label = Rechercher le registre
 extensions-tool-source-mock = Outil mock
 extensions-tool-source-core = Outil noyau
+extensions-action-remove-label = Supprimer { $name }
+extensions-remove-title = Supprimer { $name } ?
+extensions-remove-description = Ceci désinstallera l’extension de l’aperçu actuel.
+extensions-remove-reinstall-hint = Les extensions WASM intégrées redeviennent installables après leur suppression.
+extensions-remove-confirm = Supprimer l’extension
 
 jobs-default-prompt = Résumez le blocage actuel.
 jobs-elapsed-pending = En attente

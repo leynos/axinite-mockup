@@ -771,7 +771,7 @@ export class MockBackendState {
         info: {
           name: "firecrawl",
           display_name: "Firecrawl",
-          kind: "mcp",
+          kind: "mcp_server",
           description:
             "Remote browsing and extraction tools for live web research within the preview shell.",
           url: "https://firecrawl.dev",
@@ -792,7 +792,7 @@ export class MockBackendState {
         info: {
           name: "github",
           display_name: "GitHub",
-          kind: "wasm",
+          kind: "wasm_tool",
           description:
             "Repository and pull-request operations backed by a mock token-auth flow.",
           url: "https://github.com",
@@ -821,7 +821,7 @@ export class MockBackendState {
         info: {
           name: "jmap",
           display_name: "JMAP Mail",
-          kind: "wasm",
+          kind: "wasm_tool",
           description:
             "Mailbox reads and message triage surfaces used to prove extension setup UI paths.",
           url: "https://jmap.io",
@@ -857,7 +857,7 @@ export class MockBackendState {
         info: {
           name: "telegram",
           display_name: "Telegram",
-          kind: "grpcm",
+          kind: "wasm_channel",
           description:
             "Event-driven notification transport with pairing, trigger, and auth state changes.",
           url: "https://telegram.org",
@@ -888,7 +888,7 @@ export class MockBackendState {
       {
         name: "firecrawl",
         display_name: "Firecrawl",
-        kind: "mcp",
+        kind: "mcp_server",
         description:
           "Remote browsing, scraping, crawling, and browser session tools.",
         keywords: ["web", "browser", "scrape", "research"],
@@ -901,7 +901,7 @@ export class MockBackendState {
       {
         name: "github",
         display_name: "GitHub",
-        kind: "wasm",
+        kind: "wasm_tool",
         description: "Repository, pull request, and issue tools.",
         keywords: ["git", "pr", "repo"],
         installed: true,
@@ -913,7 +913,7 @@ export class MockBackendState {
       {
         name: "slack",
         display_name: "Slack",
-        kind: "grpcm",
+        kind: "wasm_tool",
         description: "Workspace messaging, channels, and notification tools.",
         keywords: ["chat", "messaging", "alerts"],
         installed: false,

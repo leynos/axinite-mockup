@@ -386,6 +386,11 @@ extensions-setup-none = Keine Einrichtung nötig
 extensions-registry-label = Registrierung durchsuchen
 extensions-tool-source-mock = Mock-Werkzeug
 extensions-tool-source-core = Kern-Werkzeug
+extensions-action-remove-label = Entfernen { $name }
+extensions-remove-title = { $name } entfernen?
+extensions-remove-description = Dadurch wird die Erweiterung aus der aktuellen Vorschau deinstalliert.
+extensions-remove-reinstall-hint = Integrierte WASM-Erweiterungen können nach dem Entfernen erneut installiert werden.
+extensions-remove-confirm = Erweiterung entfernen
 
 jobs-default-prompt = Fassen Sie den aktuellen Blocker zusammen.
 jobs-elapsed-pending = Ausstehend

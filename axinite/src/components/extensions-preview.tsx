@@ -1,3 +1,4 @@
+import { AlertDialog } from "@kobalte/core/alert-dialog";
 import {
   createMutation,
   createQuery,
@@ -13,6 +14,7 @@ import {
   fetchExtensions,
   fetchExtensionTools,
   installExtension,
+  removeExtension,
   submitExtensionSetup,
 } from "@/lib/api/extensions";
 import { useI18n } from "@/lib/i18n/provider";
@@ -21,7 +23,10 @@ import { capitalise, pascalCase } from "@/lib/string-case";
 const KIND_CLASS: Record<string, string> = {
   grpcm: "pill pill--info",
   mcp: "pill pill--success",
+  mcp_server: "pill pill--success",
   wasm: "pill pill--warning",
+  wasm_tool: "pill pill--warning",
+  wasm_channel: "pill pill--warning",
 };
 
 const STATUS_CLASS: Record<string, string> = {
@@ -29,10 +34,33 @@ const STATUS_CLASS: Record<string, string> = {
   inactive: "catalogue-status-dot",
 };
 
+function isMcpExtensionKind(kind: string): boolean {
+  return kind === "mcp" || kind === "mcp_server";
+}
+
+function isWasmExtensionKind(kind: string): boolean {
+  return kind === "wasm" || kind === "wasm_tool" || kind === "wasm_channel";
+}
+
+function kindMatchesRegistry(
+  extensionKind: string,
+  registryKind: string
+): boolean {
+  if (extensionKind === registryKind) {
+    return true;
+  }
+
+  return (
+    (isMcpExtensionKind(extensionKind) && isMcpExtensionKind(registryKind)) ||
+    (isWasmExtensionKind(extensionKind) && isWasmExtensionKind(registryKind))
+  );
+}
+
 export const ExtensionsPreview = () => {
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const [configuringName, setConfiguringName] = createSignal<string>();
+  const [pendingRemovalName, setPendingRemovalName] = createSignal<string>();
   const [registryQuery, setRegistryQuery] = createSignal("");
   const [mcpServerName, setMcpServerName] = createSignal("");
   const [setupValues, setSetupValues] = createSignal<Record<string, string>>(
@@ -56,8 +84,8 @@ export const ExtensionsPreview = () => {
 
   const mcpExtensions = createMemo(
     () =>
-      extensions.data?.extensions.filter(
-        (extension) => extension.kind === "mcp"
+      extensions.data?.extensions.filter((extension) =>
+        isMcpExtensionKind(extension.kind)
       ) ?? []
   );
 
@@ -67,6 +95,29 @@ export const ExtensionsPreview = () => {
         (extension) => extension.name === configuringName()
       ) ?? null
   );
+
+  const pendingRemovalExtension = createMemo<ExtensionInfo | null>(
+    () =>
+      extensions.data?.extensions.find(
+        (extension) => extension.name === pendingRemovalName()
+      ) ?? null
+  );
+
+  const pendingRemovalWasmRegistryEntry = createMemo(() => {
+    const extension = pendingRemovalExtension();
+    if (!extension) {
+      return null;
+    }
+
+    return (
+      registry.data?.entries.find(
+        (entry) =>
+          entry.name === extension.name &&
+          kindMatchesRegistry(extension.kind, entry.kind) &&
+          isWasmExtensionKind(entry.kind)
+      ) ?? null
+    );
+  });
 
   const setup = createQuery(() => ({
     queryKey: ["extensions", "setup", configuringName()],
@@ -96,6 +147,17 @@ export const ExtensionsPreview = () => {
     onSuccess: refresh,
   }));
 
+  const removeMutation = createMutation(() => ({
+    mutationFn: (name: string) => removeExtension(name),
+    onSuccess: (_, name) => {
+      if (configuringName() === name) {
+        setConfiguringName(undefined);
+      }
+      setPendingRemovalName(undefined);
+      refresh();
+    },
+  }));
+
   const setupMutation = createMutation(() => ({
     mutationFn: () =>
       submitExtensionSetup(configuringName() ?? "", {
@@ -122,6 +184,21 @@ export const ExtensionsPreview = () => {
         .toLowerCase()
         .replace(/^-/, "")}`
     );
+
+  const extensionDisplayName = (extension: ExtensionInfo) =>
+    extension.display_name ?? extension.name;
+
+  const extensionKindLabel = (kind: string) => {
+    if (isMcpExtensionKind(kind)) {
+      return t("extensions-kind-mcp");
+    }
+
+    if (isWasmExtensionKind(kind)) {
+      return t("extensions-kind-wasm");
+    }
+
+    return capitalise(kind).toLowerCase();
+  };
 
   return (
     <section class="route-preview route-preview--catalogue route-preview--extensions">
@@ -155,14 +232,14 @@ export const ExtensionsPreview = () => {
                   <div class="catalogue-card__header">
                     <div class="catalogue-card__title-wrap">
                       <h4 class="catalogue-card__title">
-                        {extension.display_name ?? extension.name}
+                        {extensionDisplayName(extension)}
                       </h4>
                       <span
                         class={
                           KIND_CLASS[extension.kind] ?? "pill pill--neutral"
                         }
                       >
-                        {capitalise(extension.kind).toLowerCase()}
+                        {extensionKindLabel(extension.kind)}
                       </span>
                     </div>
                     <div class="catalogue-card__meta">
@@ -208,6 +285,16 @@ export const ExtensionsPreview = () => {
                       {extension.active
                         ? t("extensions-action-disable")
                         : t("extensions-action-activate")}
+                    </button>
+                    <button
+                      aria-label={t("extensions-action-remove-label", {
+                        name: extensionDisplayName(extension),
+                      })}
+                      class="catalogue-card__action"
+                      onClick={() => setPendingRemovalName(extension.name)}
+                      type="button"
+                    >
+                      {t("extensions-action-remove")}
                     </button>
                   </div>
                 </article>
@@ -444,6 +531,56 @@ export const ExtensionsPreview = () => {
             </For>
           </div>
         </section>
+
+        <AlertDialog
+          onOpenChange={(open) => {
+            if (!open && !removeMutation.isPending) {
+              setPendingRemovalName(undefined);
+            }
+          }}
+          open={pendingRemovalExtension() !== null}
+        >
+          <AlertDialog.Portal>
+            <AlertDialog.Overlay class="dialog-overlay" />
+            <Show when={pendingRemovalExtension()}>
+              {(extension) => (
+                <AlertDialog.Content class="dialog-surface">
+                  <AlertDialog.Title class="dialog-title">
+                    {t("extensions-remove-title", {
+                      name: extensionDisplayName(extension()),
+                    })}
+                  </AlertDialog.Title>
+                  <AlertDialog.Description class="dialog-description">
+                    {t("extensions-remove-description", {
+                      name: extensionDisplayName(extension()),
+                    })}
+                  </AlertDialog.Description>
+                  <Show when={pendingRemovalWasmRegistryEntry()}>
+                    <p class="dialog-description">
+                      {t("extensions-remove-reinstall-hint")}
+                    </p>
+                  </Show>
+                  <div class="dialog-actions">
+                    <AlertDialog.CloseButton
+                      class="btn btn-ghost btn-sm"
+                      disabled={removeMutation.isPending}
+                    >
+                      {t("extensions-action-cancel")}
+                    </AlertDialog.CloseButton>
+                    <button
+                      class="btn btn-primary btn-sm"
+                      disabled={removeMutation.isPending}
+                      onClick={() => removeMutation.mutate(extension().name)}
+                      type="button"
+                    >
+                      {t("extensions-remove-confirm")}
+                    </button>
+                  </div>
+                </AlertDialog.Content>
+              )}
+            </Show>
+          </AlertDialog.Portal>
+        </AlertDialog>
       </div>
     </section>
   );
