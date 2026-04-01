@@ -459,7 +459,7 @@ export class MockBackendState {
           title: "Route audit for shell parity",
           description:
             "Compared the current Solid preview routes with the Rust browser architecture document and recorded missing runtime data surfaces.",
-          state: "Completed",
+          state: "completed",
           user_id: "mock-user",
           created_at: iso(220),
           started_at: iso(219),

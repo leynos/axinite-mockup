@@ -370,6 +370,7 @@ chat-sidebar-conversations = Rozmowy
 chat-tools-used = { $count ->
     [one] { $count } narzędzie użyte
     [few] { $count } narzędzia użyte
+    [many] { $count } narzędzi użytych
    *[other] { $count } narzędzi użytych
   }
 routines-enabled-label = włączone

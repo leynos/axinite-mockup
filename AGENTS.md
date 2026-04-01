@@ -36,8 +36,8 @@ The front end is a SolidJS SPA built by Vite:
 - **Transport:** JSON over `fetch` for request/response, SSE via `EventSource`
   for live updates (chat, logs).
 - **Styling:** semantic CSS in `axinite/src/styles/semantic.css`.
-- **Localisation:** Fluent (`.ftl`) bundles in `axinite/public/locales/`.
-  Only fully-translated locales are exposed.
+- **Localization:** Fluent (`.ftl`) bundles in `axinite/public/locales/`.
+  Only fully translated locales are exposed.
 
 ## Source of Truth
 
@@ -51,7 +51,7 @@ The front end is a SolidJS SPA built by Vite:
 
 - Accuracy of browser contracts against the Rust backend.
 - CSS, copy, imagery, semantic HTML, and semantic class names.
-- Localisation completeness across all supported locales.
+- Localization completeness across all supported locales.
 - Test coverage (unit, a11y, e2e).
 
 ## What Not to Optimize Yet
@@ -70,7 +70,7 @@ before it is incorporated into the larger Axinite product.
 - The mock API subprocess runs with `--watch`, so it auto-restarts when its
   source files change.
 - When using Playwright for previewing, point it at `http://localhost:2020`.
-- Do not attempt to start the dev server yourself unless the user asks.
+- Do not attempt to start the dev server unless the user asks.
 
 ## Commit Gating
 

@@ -371,6 +371,7 @@ chat-tools-used = { $count ->
     [one] { $count } أداة مستخدمة
     [two] { $count } أداتان مستخدمتان
     [few] { $count } أدوات مستخدمة
+    [many] { $count } أداة مستخدمة
    *[other] { $count } أداة مستخدمة
   }
 routines-enabled-label = مفعّل
