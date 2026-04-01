@@ -70,7 +70,7 @@ before it is incorporated into the larger Axinite product.
 - The mock API subprocess runs with `--watch`, so it auto-restarts when its
   source files change.
 - When using Playwright for previewing, point it at `http://localhost:2020`.
-- Do not attempt to start the dev server unless the user asks.
+- The dev server should not be started unless explicitly requested by the user.
 
 ## Commit Gating
 
