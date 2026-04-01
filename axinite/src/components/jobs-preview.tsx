@@ -173,7 +173,6 @@ export const JobsPreview = () => {
 
       <div class="dashboard-preview">
         <header class="route-preview__intro dashboard-preview__intro">
-          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-jobs-label")}</h2>
           <p class="route-preview__summary">{t("page-jobs-summary")}</p>
         </header>

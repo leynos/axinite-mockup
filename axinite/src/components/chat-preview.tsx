@@ -331,12 +331,6 @@ export const ChatPreview = () => {
         <main class="chat-preview__main">
           <div class="chat-preview__scroll">
             <div class="chat-preview__conversation">
-              <header class="route-preview__intro">
-                <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
-                <h2 class="route-preview__title">{t("route-chat-label")}</h2>
-                <p class="route-preview__summary">{t("page-chat-summary")}</p>
-              </header>
-
               <For each={history.data?.turns ?? []}>
                 {(turn) => (
                   <>

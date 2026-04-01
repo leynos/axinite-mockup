@@ -140,7 +140,6 @@ export const RoutinesPreview = () => {
 
       <div class="dashboard-preview">
         <header class="route-preview__intro dashboard-preview__intro">
-          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-routines-label")}</h2>
           <p class="route-preview__summary">{t("page-routines-summary")}</p>
         </header>
