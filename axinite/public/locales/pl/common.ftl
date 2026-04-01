@@ -366,6 +366,12 @@ chat-response-pending = Oczekiwanie na zakończenie…
 chat-approval-approve = Zatwierdź
 chat-approval-deny = Odrzuć
 chat-upload-unavailable = Podgląd mock backendu nie zachowuje przesłanych plików.
+chat-sidebar-conversations = Rozmowy
+chat-tools-used = { $count } { $count ->
+    [one] narzędzie użyte
+    [few] narzędzia użyte
+   *[other] narzędzi użytych
+  }
 routines-enabled-label = włączone
 routines-disabled-label = wyłączone
 routines-action-enable = Włącz

@@ -368,6 +368,11 @@ chat-response-pending = En attente de complétion…
 chat-approval-approve = Approuver
 chat-approval-deny = Refuser
 chat-upload-unavailable = L’aperçu du backend mock ne conserve pas les fichiers téléversés.
+chat-sidebar-conversations = Conversations
+chat-tools-used = { $count } { $count ->
+    [one] outil utilisé
+   *[other] outils utilisés
+  }
 
 routines-enabled-label = activée
 routines-disabled-label = désactivée

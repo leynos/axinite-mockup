@@ -368,6 +368,11 @@ chat-response-pending = Warte auf Abschluss…
 chat-approval-approve = Genehmigen
 chat-approval-deny = Ablehnen
 chat-upload-unavailable = Die Mock-Backend-Vorschau speichert keine hochgeladenen Dateien.
+chat-sidebar-conversations = Unterhaltungen
+chat-tools-used = { $count } { $count ->
+    [one] Tool verwendet
+   *[other] Tools verwendet
+  }
 
 routines-enabled-label = aktiviert
 routines-disabled-label = deaktiviert

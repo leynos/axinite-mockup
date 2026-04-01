@@ -366,6 +366,13 @@ chat-response-pending = في انتظار الاكتمال…
 chat-approval-approve = موافقة
 chat-approval-deny = رفض
 chat-upload-unavailable = لا تحتفظ معاينة الخلفية التجريبية بالملفات المرفوعة.
+chat-sidebar-conversations = المحادثات
+chat-tools-used = { $count } { $count ->
+    [one] أداة مستخدمة
+    [two] أداتان مستخدمتان
+    [few] أدوات مستخدمة
+   *[other] أداة مستخدمة
+  }
 routines-enabled-label = مفعّل
 routines-disabled-label = معطّل
 routines-action-enable = تفعيل
