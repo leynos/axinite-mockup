@@ -369,9 +369,9 @@ chat-approval-approve = Approve
 chat-approval-deny = Deny
 chat-upload-unavailable = Mock backend preview does not persist file uploads.
 chat-sidebar-conversations = Conversations
-chat-tools-used = { $count } { $count ->
-    [one] tool used
-   *[other] tools used
+chat-tools-used = { $count ->
+    [one] { $count } tool used
+   *[other] { $count } tools used
   }
 
 routines-enabled-label = enabled

@@ -367,10 +367,10 @@ chat-approval-approve = Zatwierdź
 chat-approval-deny = Odrzuć
 chat-upload-unavailable = Podgląd mock backendu nie zachowuje przesłanych plików.
 chat-sidebar-conversations = Rozmowy
-chat-tools-used = { $count } { $count ->
-    [one] narzędzie użyte
-    [few] narzędzia użyte
-   *[other] narzędzi użytych
+chat-tools-used = { $count ->
+    [one] { $count } narzędzie użyte
+    [few] { $count } narzędzia użyte
+   *[other] { $count } narzędzi użytych
   }
 routines-enabled-label = włączone
 routines-disabled-label = wyłączone

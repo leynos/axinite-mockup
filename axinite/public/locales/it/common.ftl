@@ -369,9 +369,9 @@ chat-approval-approve = Approva
 chat-approval-deny = Rifiuta
 chat-upload-unavailable = L’anteprima del backend mock non conserva i file caricati.
 chat-sidebar-conversations = Conversazioni
-chat-tools-used = { $count } { $count ->
-    [one] strumento usato
-   *[other] strumenti usati
+chat-tools-used = { $count ->
+    [one] { $count } strumento usato
+   *[other] { $count } strumenti usati
   }
 
 routines-enabled-label = attivata

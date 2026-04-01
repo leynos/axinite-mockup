@@ -7,6 +7,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  createUniqueId,
   For,
   onCleanup,
   Show,
@@ -44,10 +45,13 @@ const ToolCallsSummary = (props: {
   label: string;
 }) => {
   const [expanded, setExpanded] = createSignal(false);
+  const listId = createUniqueId();
 
   return (
     <div class="chat-preview__tool-summary">
       <button
+        aria-controls={listId}
+        aria-expanded={expanded()}
         class="chat-preview__tool-summary-header"
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
@@ -58,7 +62,7 @@ const ToolCallsSummary = (props: {
         </span>
       </button>
       <Show when={expanded()}>
-        <div class="chat-preview__tool-summary-list">
+        <div class="chat-preview__tool-summary-list" id={listId}>
           <For each={props.toolCalls}>
             {(toolCall) => (
               <div class="chat-preview__tool-call-item">

@@ -367,11 +367,11 @@ chat-approval-approve = موافقة
 chat-approval-deny = رفض
 chat-upload-unavailable = لا تحتفظ معاينة الخلفية التجريبية بالملفات المرفوعة.
 chat-sidebar-conversations = المحادثات
-chat-tools-used = { $count } { $count ->
-    [one] أداة مستخدمة
-    [two] أداتان مستخدمتان
-    [few] أدوات مستخدمة
-   *[other] أداة مستخدمة
+chat-tools-used = { $count ->
+    [one] { $count } أداة مستخدمة
+    [two] { $count } أداتان مستخدمتان
+    [few] { $count } أدوات مستخدمة
+   *[other] { $count } أداة مستخدمة
   }
 routines-enabled-label = مفعّل
 routines-disabled-label = معطّل

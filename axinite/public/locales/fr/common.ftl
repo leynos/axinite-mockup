@@ -369,9 +369,9 @@ chat-approval-approve = Approuver
 chat-approval-deny = Refuser
 chat-upload-unavailable = L’aperçu du backend mock ne conserve pas les fichiers téléversés.
 chat-sidebar-conversations = Conversations
-chat-tools-used = { $count } { $count ->
-    [one] outil utilisé
-   *[other] outils utilisés
+chat-tools-used = { $count ->
+    [one] { $count } outil utilisé
+   *[other] { $count } outils utilisés
   }
 
 routines-enabled-label = activée
