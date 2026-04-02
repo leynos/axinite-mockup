@@ -26,7 +26,6 @@ export function renderMarkdown(source: string): string {
   const lines = escaped.split("\n");
   const html: string[] = [];
   let block: BlockKind = "none";
-  let tableHeaderDone = false;
   let paragraphBuffer: string[] = [];
 
   function closeBlock(): void {
@@ -39,7 +38,6 @@ export function renderMarkdown(source: string): string {
         break;
       case "table":
         html.push("</tbody></table>");
-        tableHeaderDone = false;
         break;
     }
     block = "none";
@@ -99,13 +97,11 @@ export function renderMarkdown(source: string): string {
       );
       html.push("<tbody>");
       block = "table";
-      tableHeaderDone = true;
       return true;
     }
 
-    const tag = tableHeaderDone ? "td" : "th";
     html.push(
-      `<tr>${cells.map((c) => `<${tag}>${inlineMarkup(c)}</${tag}>`).join("")}</tr>`
+      `<tr>${cells.map((c) => `<td>${inlineMarkup(c)}</td>`).join("")}</tr>`
     );
     return true;
   }
