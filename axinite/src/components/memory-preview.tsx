@@ -223,12 +223,6 @@ export const MemoryPreview = () => {
             </div>
           </div>
 
-          <header class="route-preview__intro route-preview__intro--memory">
-            <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
-            <h2 class="route-preview__title">{t("route-memory-label")}</h2>
-            <p class="route-preview__summary">{t("page-memory-summary")}</p>
-          </header>
-
           <Show
             when={!editing()}
             fallback={

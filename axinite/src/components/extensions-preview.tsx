@@ -344,7 +344,6 @@ export const ExtensionsPreview = () => {
 
       <div class="catalogue-preview catalogue-preview--extensions">
         <header class="route-preview__intro catalogue-preview__intro extensions-preview__intro">
-          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-extensions-label")}</h2>
           <p class="route-preview__summary">{t("page-extensions-summary")}</p>
         </header>

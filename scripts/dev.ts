@@ -114,7 +114,7 @@ async function main(): Promise<void> {
   );
 
   const managed = [
-    spawnManaged("mock-api", ["bun", "mock-backend/src/server.ts"], {
+    spawnManaged("mock-api", ["bun", "--watch", "mock-backend/src/server.ts"], {
       ...process.env,
       MOCK_API_PORT: String(apiPort),
     }),

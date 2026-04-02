@@ -50,7 +50,7 @@ beforeEach(async () => {
   chatApiMocks.fetchThreads.mockResolvedValue({
     assistant_thread: {
       id: "thread-1",
-      state: "active",
+      state: "Idle",
       turn_count: 0,
       created_at: "2026-03-26T12:00:00Z",
       updated_at: "2026-03-26T12:00:00Z",

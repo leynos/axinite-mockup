@@ -366,6 +366,11 @@ chat-response-pending = Wacht op voltooiing…
 chat-approval-approve = Goedkeuren
 chat-approval-deny = Weigeren
 chat-upload-unavailable = Mock-backendvoorbeeld bewaart geen bestandsuploads.
+chat-sidebar-conversations = Gesprekken
+chat-tools-used = { $count ->
+    [one] { $count } tool gebruikt
+   *[other] { $count } tools gebruikt
+  }
 routines-enabled-label = ingeschakeld
 routines-disabled-label = uitgeschakeld
 routines-action-enable = Inschakelen

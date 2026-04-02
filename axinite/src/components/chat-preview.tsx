@@ -7,6 +7,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  createUniqueId,
   For,
   onCleanup,
   Show,
@@ -20,8 +21,9 @@ import {
   sendMessage,
   submitApproval,
 } from "@/lib/api/chat";
-import type { ThreadInfo } from "@/lib/api/contracts";
+import type { ToolCallInfo } from "@/lib/api/contracts";
 import { useI18n } from "@/lib/i18n/provider";
+import { renderMarkdown } from "@/lib/markdown";
 
 function formatTimestamp(
   value: string | null | undefined,
@@ -38,6 +40,54 @@ function formatTimestamp(
   }).format(new Date(value));
 }
 
+const ToolCallsSummary = (props: {
+  toolCalls: ToolCallInfo[];
+  label: string;
+}) => {
+  const [expanded, setExpanded] = createSignal(false);
+  const listId = createUniqueId();
+
+  return (
+    <div class="chat-preview__tool-summary">
+      <button
+        aria-controls={listId}
+        aria-expanded={expanded()}
+        class="chat-preview__tool-summary-header"
+        type="button"
+        onClick={() => setExpanded((prev) => !prev)}
+      >
+        <span>{props.label}</span>
+        <span class="chat-preview__tool-summary-chevron" aria-hidden="true">
+          {expanded() ? "\u25B4" : "\u25BE"}
+        </span>
+      </button>
+      <Show when={expanded()}>
+        <div class="chat-preview__tool-summary-list" id={listId}>
+          <For each={props.toolCalls}>
+            {(toolCall) => (
+              <div class="chat-preview__tool-call-item">
+                <span class="chat-preview__tool-call-name">
+                  {toolCall.has_error ? "\u2717" : "\u2713"} {toolCall.name}
+                </span>
+                <Show when={toolCall.result_preview}>
+                  <div class="chat-preview__tool-call-preview">
+                    {toolCall.result_preview}
+                  </div>
+                </Show>
+                <Show when={toolCall.error}>
+                  <div class="chat-preview__tool-call-error">
+                    {toolCall.error}
+                  </div>
+                </Show>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+    </div>
+  );
+};
+
 export const ChatPreview = () => {
   const { t } = useI18n();
   const queryClient = useQueryClient();
@@ -53,14 +103,11 @@ export const ChatPreview = () => {
     queryFn: fetchThreads,
   }));
 
-  const sessionList = createMemo<ThreadInfo[]>(() => {
-    const payload = threads.data;
-    if (!payload) {
-      return [];
-    }
-    const items = payload.assistant_thread ? [payload.assistant_thread] : [];
-    return [...items, ...payload.threads];
-  });
+  const assistantThread = createMemo(
+    () => threads.data?.assistant_thread ?? null
+  );
+
+  const conversationThreads = createMemo(() => threads.data?.threads ?? []);
 
   createEffect(() => {
     const resolvedThreadId =
@@ -207,10 +254,6 @@ export const ChatPreview = () => {
     onCleanup(() => source.close());
   });
 
-  const activeThread = createMemo(
-    () => sessionList().find((thread) => thread.id === activeThreadId()) ?? null
-  );
-
   return (
     <section class="route-preview route-preview--chat">
       <div aria-hidden="true" class="route-preview__watermark">
@@ -232,26 +275,38 @@ export const ChatPreview = () => {
             </button>
           </div>
 
-          <Show when={activeThread()}>
+          <Show when={assistantThread()}>
             {(thread) => (
-              <div class="route-sidebar__session route-sidebar__session--current">
-                <button class="route-sidebar__session-button" type="button">
-                  <span class="route-sidebar__session-name">
-                    {thread().title ?? t("route-chat-label")}
-                  </span>
-                  <span class="route-sidebar__session-time">
-                    {formatTimestamp(
-                      thread().updated_at,
-                      t("timestamp-pending")
-                    )}
-                  </span>
-                </button>
-              </div>
+              <button
+                class={
+                  activeThreadId() === thread().id
+                    ? "route-sidebar__list-item route-sidebar__list-item--active"
+                    : "route-sidebar__list-item"
+                }
+                onClick={() => {
+                  setActiveThreadId(thread().id);
+                  setStreamingResponse("");
+                }}
+                type="button"
+              >
+                <span class="route-sidebar__list-label">
+                  {thread().title ?? t("route-chat-label")}
+                </span>
+                <span class="route-sidebar__list-time">
+                  {formatTimestamp(thread().updated_at, t("timestamp-pending"))}
+                </span>
+              </button>
             )}
           </Show>
 
+          <Show when={conversationThreads().length > 0}>
+            <div class="route-sidebar__section-header">
+              <span>{t("chat-sidebar-conversations")}</span>
+            </div>
+          </Show>
+
           <div class="route-sidebar__session-list">
-            <For each={sessionList()}>
+            <For each={conversationThreads()}>
               {(thread) => (
                 <button
                   class={
@@ -280,12 +335,6 @@ export const ChatPreview = () => {
         <main class="chat-preview__main">
           <div class="chat-preview__scroll">
             <div class="chat-preview__conversation">
-              <header class="route-preview__intro">
-                <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
-                <h2 class="route-preview__title">{t("route-chat-label")}</h2>
-                <p class="route-preview__summary">{t("page-chat-summary")}</p>
-              </header>
-
               <For each={history.data?.turns ?? []}>
                 {(turn) => (
                   <>
@@ -294,20 +343,37 @@ export const ChatPreview = () => {
                         <p>{turn.user_input}</p>
                       </div>
                     </div>
-                    <div class="chat-preview__turn chat-preview__turn--assistant">
-                      <div class="chat-preview__bubble chat-preview__bubble--assistant">
-                        <div class="chat-preview__markdown">
-                          <p>{turn.response ?? t("chat-response-pending")}</p>
-                          <Show when={turn.tool_calls.length > 0}>
-                            <p class="chat-preview__safety-note">
-                              {turn.tool_calls
-                                .map((toolCall) => toolCall.name)
-                                .join(", ")}
-                            </p>
-                          </Show>
+                    <Show when={turn.tool_calls.length > 0}>
+                      <ToolCallsSummary
+                        toolCalls={turn.tool_calls}
+                        label={t("chat-tools-used", {
+                          count: turn.tool_calls.length,
+                        })}
+                      />
+                    </Show>
+                    <Show when={turn.response != null}>
+                      <div class="chat-preview__turn chat-preview__turn--assistant">
+                        <div class="chat-preview__bubble chat-preview__bubble--assistant">
+                          <div
+                            class="chat-preview__markdown"
+                            innerHTML={renderMarkdown(turn.response ?? "")}
+                          />
                         </div>
                       </div>
-                    </div>
+                    </Show>
+                    <Show
+                      when={
+                        turn.response == null && turn.tool_calls.length === 0
+                      }
+                    >
+                      <div class="chat-preview__turn chat-preview__turn--assistant">
+                        <div class="chat-preview__bubble chat-preview__bubble--assistant">
+                          <div class="chat-preview__markdown">
+                            <p>{t("chat-response-pending")}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </Show>
                   </>
                 )}
               </For>

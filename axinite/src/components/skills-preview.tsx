@@ -128,7 +128,6 @@ export const SkillsPreview = () => {
 
       <div class="catalogue-preview catalogue-preview--skills">
         <header class="route-preview__intro catalogue-preview__intro skills-preview__intro">
-          <p class="route-preview__eyebrow">{t("route-hero-eyebrow")}</p>
           <h2 class="route-preview__title">{t("route-skills-label")}</h2>
           <p class="route-preview__summary">{t("page-skills-summary")}</p>
         </header>

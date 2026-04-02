@@ -195,33 +195,107 @@ export class MockBackendState {
         info: {
           id: "thread-assistant",
           state: "Idle",
-          turn_count: 2,
+          turn_count: 3,
           created_at: iso(420),
-          updated_at: iso(32),
-          title: "Daily assistant",
+          updated_at: iso(8),
+          title: "Assistant",
           thread_type: "assistant",
           channel: "gateway",
         },
         turns: [
           {
             turn_number: 1,
-            user_input: "Summarise the current preview branch goals.",
+            user_input:
+              "Do you have access to the Firecrawl MCP? Test it by searching for stories about robot pandas.",
             response:
-              "The preview branch is focused on API-backed route data, static preview serving, and feature-flag continuity.",
-            state: "completed",
+              "Yes, I **do have access to Firecrawl** and the instructions are sufficient for normal use.\n\n### What I did\n1. Used **Firecrawl search** for `robot pandas stories`\n2. Got back plausible results from both **web** and **news**\n3. Used **Firecrawl scrape** on the best result to verify content extraction\n\n### Test result\nThe best hit was a **Forbes** article — *\"This Panda Robot Is Designed To Provide Emotional Support For Seniors\"*. Firecrawl successfully scraped the article about **AnAn**, a panda-cub robot from **Mind with Heart Robotics**.\n\n### Bottom line\n- **Access to Firecrawl:** yes\n- **Able to use it successfully:** yes\n- **Instructions sufficient:** yes, for practical use",
+            state: "Completed",
             started_at: iso(418),
-            completed_at: iso(417),
-            tool_calls: [],
+            completed_at: iso(416),
+            tool_calls: [
+              {
+                name: "memory_search",
+                has_result: true,
+                has_error: false,
+                result_preview: "No relevant memories found.",
+              },
+              {
+                name: "time",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"iso":"2026-03-26T11:12:00+00:00","timezone":"UTC"}',
+              },
+              {
+                name: "firecrawl_firecrawl_search",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"web":[{"url":"https://www.forbes.com/...","title":"This Panda Robot Is Designed To Provide Emotional Support..."}]}',
+              },
+              {
+                name: "firecrawl_firecrawl_scrape",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"markdown":"# This Panda Robot Is Designed To Provide Emotional Support For Seniors\\n\\nBy Prakhar Khanna..."}',
+              },
+              {
+                name: "memory_write",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"path":"daily/2026-03-26.md","status":"written"}',
+              },
+            ],
           },
           {
             turn_number: 2,
-            user_input: "List the routes that still rely on fixtures.",
+            user_input:
+              "Excellent. The improvements to our fork of Ironclaw are working. The fork is named Axinite.",
             response:
-              "Chat, memory, jobs, routines, extensions, and skills all still need runtime-backed data in this mockup baseline.",
-            state: "completed",
+              "That is an excellent name.\n\n**Axinite** sounds sharp, mineral, slightly dangerous, and plausibly capable of puncturing nonsense on contact. Good branding substrate.\n\nI\u2019ve noted:\n- your **Ironclaw fork is named Axinite**\n- the recent **improvements are working**\n\nMy strongest recommendation: **do a regression sweep while the changes are fresh**. That catches sneaky breakage before it grows teeth.",
+            state: "Completed",
             started_at: iso(34),
             completed_at: iso(32),
-            tool_calls: [],
+            tool_calls: [
+              {
+                name: "memory_search",
+                has_result: true,
+                has_error: false,
+              },
+              {
+                name: "memory_write",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"path":"daily/2026-03-26.md","status":"written"}',
+              },
+            ],
+          },
+          {
+            turn_number: 3,
+            user_input:
+              "We haven\u2019t done any work on the WASM catalogue yet. That\u2019s the next step. I\u2019ve also been working on a SolidJS front end.",
+            response:
+              "So the current shape is:\n\n- **Axinite** improvements are landing\n- **WASM catalogue** is the next untouched chunk\n- You\u2019re building a **SolidJS front end**\n\n## My read\n\nYou\u2019re at the point where **catalogue design and front-end design can accidentally drift apart** if they don\u2019t share one canonical model soon.\n\n## Strong recommendation\n\nBefore implementing much more, define the **minimum viable catalogue contract**. Not the whole cathedral. Just the spine:\n\n1. **What is a catalogue entry?** (tool, channel, MCP server, skill, package?)\n2. **What fields are canonical?** (id, kind, name, version, auth, trust)\n3. **What lifecycle states exist?** (discovered, installed, authenticated, active)\n4. **What is the front end actually browsing?** (raw registry records? computed install status?)\n\nIf those are crisp, the SolidJS layer can be elegant instead of becoming a haunted forest of special cases.",
+            state: "Completed",
+            started_at: iso(12),
+            completed_at: iso(8),
+            tool_calls: [
+              {
+                name: "memory_search",
+                has_result: true,
+                has_error: false,
+              },
+              {
+                name: "memory_write",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"path":"daily/2026-03-26.md","status":"written"}',
+              },
+            ],
           },
         ],
       },
@@ -231,8 +305,8 @@ export class MockBackendState {
       {
         info: {
           id: "thread-review",
-          state: "NeedsApproval",
-          turn_count: 3,
+          state: "AwaitingApproval",
+          turn_count: 2,
           created_at: iso(300),
           updated_at: iso(14),
           title: "Review follow-up",
@@ -244,27 +318,25 @@ export class MockBackendState {
             turn_number: 1,
             user_input: "Review the mock backend route plan.",
             response:
-              "I found a transport risk around SSE proxying and a data-source migration dependency.",
-            state: "completed",
+              "I found a transport risk around SSE proxying and a data-source migration dependency.\n\nThe main areas to address:\n1. **SSE proxy lifetime** \u2014 the preview server must keep connections alive\n2. **JSON contract alignment** \u2014 mock DTOs must match Rust `types.rs`\n3. **Thread state machine** \u2014 states need to match the backend enum exactly",
+            state: "Completed",
             started_at: iso(295),
             completed_at: iso(294),
-            tool_calls: [],
+            tool_calls: [
+              {
+                name: "memory_read",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"path":"workspace/AGENTS.md","content":"# Workspace Instructions..."}',
+              },
+            ],
           },
           {
             turn_number: 2,
-            user_input: "What should we validate first?",
-            response:
-              "Prove the static preview can proxy JSON and SSE before moving route components off local fixtures.",
-            state: "completed",
-            started_at: iso(290),
-            completed_at: iso(289),
-            tool_calls: [],
-          },
-          {
-            turn_number: 3,
             user_input: "Apply the approved mock-backend implementation plan.",
             response: null,
-            state: "waiting_approval",
+            state: "AwaitingApproval",
             started_at: iso(18),
             completed_at: null,
             tool_calls: [
@@ -272,8 +344,6 @@ export class MockBackendState {
                 name: "write_files",
                 has_result: false,
                 has_error: false,
-                result_preview: undefined,
-                error: undefined,
               },
             ],
           },
@@ -282,9 +352,9 @@ export class MockBackendState {
           request_id: "approval-review-1",
           tool_name: "write_files",
           description:
-            "Allow the preview agent to update source files for the approved mock backend rollout.",
+            "Update source files for the approved mock backend rollout.",
           parameters:
-            '{"paths":["mock-backend/*","axinite/src/lib/api/*","axinite/src/components/*"]}',
+            '{"paths":["mock-backend/src/state.ts","axinite/src/lib/api/contracts.ts","axinite/src/components/chat-preview.tsx"]}',
         },
       },
     ],
@@ -306,18 +376,26 @@ export class MockBackendState {
             turn_number: 1,
             user_input: "Find the browser-facing Rust gateway endpoints.",
             response:
-              "The main browser routes include chat, memory, jobs, routines, extensions, skills, logs, and gateway status.",
-            state: "completed",
+              "The main browser routes include:\n\n| Area | Endpoints |\n|------|----------|\n| Chat | `/api/chat/send`, `/api/chat/threads`, `/api/chat/history`, `/api/chat/events` |\n| Memory | `/api/memory/tree`, `/api/memory/list`, `/api/memory/read`, `/api/memory/write` |\n| Jobs | `/api/jobs`, `/api/jobs/:id`, `/api/jobs/:id/events` |\n| Routines | `/api/routines`, `/api/routines/:id` |\n| Extensions | `/api/extensions`, `/api/extensions/:name/setup` |\n| Skills | `/api/skills`, `/api/skills/search` |",
+            state: "Completed",
             started_at: iso(1_438),
             completed_at: iso(1_437),
-            tool_calls: [],
+            tool_calls: [
+              {
+                name: "firecrawl_firecrawl_scrape",
+                has_result: true,
+                has_error: false,
+                result_preview:
+                  '{"markdown":"# Axinite Gateway API\\n\\n43 endpoints documented..."}',
+              },
+            ],
           },
           {
             turn_number: 2,
             user_input: "Extract the route list for the mock server.",
             response:
               "Forty-three endpoints are in scope for the in-memory Bun gateway, plus logs and gateway status support.",
-            state: "completed",
+            state: "Completed",
             started_at: iso(1_122),
             completed_at: iso(1_120),
             tool_calls: [],
@@ -1180,7 +1258,7 @@ export class MockBackendState {
       turn_number: targetThread.turns.length + 1,
       user_input: request.content,
       response: null,
-      state: "running",
+      state: "Processing",
       started_at,
       completed_at: null,
       tool_calls: [],
@@ -1191,7 +1269,7 @@ export class MockBackendState {
       ...targetThread.info,
       turn_count: targetThread.turns.length,
       updated_at: started_at,
-      state: "Running",
+      state: "Processing",
     };
     this.threads.set(targetThread.info.id, targetThread);
     this.activeThreadId = targetThread.info.id;
@@ -1248,6 +1326,15 @@ export class MockBackendState {
       ];
     }, 260);
 
+    setTimeout(() => {
+      this.publishChatEvent({
+        type: "tool_completed",
+        name: toolName,
+        success: true,
+        thread_id: targetThread.info.id,
+      });
+    }, 340);
+
     const fullResponse = `Mock backend response for "${request.content}": the preview is now wired to typed JSON and SSE routes instead of local screen fixture arrays.`;
     const chunks = [
       "Mock backend response for ",
@@ -1263,12 +1350,12 @@ export class MockBackendState {
           content,
           thread_id: targetThread.info.id,
         });
-      }, 340 + index * 70);
+      }, 420 + index * 70);
     });
 
     setTimeout(() => {
       turn.response = fullResponse;
-      turn.state = "completed";
+      turn.state = "Completed";
       turn.completed_at = nowIso();
       targetThread.info = {
         ...targetThread.info,
@@ -1276,12 +1363,6 @@ export class MockBackendState {
         turn_count: targetThread.turns.length,
         updated_at: turn.completed_at,
       };
-      this.publishChatEvent({
-        type: "tool_completed",
-        name: toolName,
-        success: true,
-        thread_id: targetThread.info.id,
-      });
       this.publishChatEvent({
         type: "response",
         content: fullResponse,
@@ -1291,7 +1372,7 @@ export class MockBackendState {
         `Completed streamed response for ${targetThread.info.id}.`,
         "chat"
       );
-    }, 740);
+    }, 820);
 
     return {
       message_id,
@@ -1318,13 +1399,13 @@ export class MockBackendState {
     thread.pendingApproval = undefined;
     thread.info = {
       ...thread.info,
-      state: request.action === "deny" ? "Denied" : "Idle",
+      state: "Idle",
       updated_at: nowIso(),
     };
 
     const latestTurn = thread.turns.at(-1);
     if (latestTurn) {
-      latestTurn.state = request.action === "deny" ? "denied" : "completed";
+      latestTurn.state = request.action === "deny" ? "Failed" : "Completed";
       latestTurn.completed_at = nowIso();
       if (request.action === "deny") {
         latestTurn.response =

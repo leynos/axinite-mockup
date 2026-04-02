@@ -186,14 +186,6 @@
   z-index: 1;
 }
 
-.route-preview__eyebrow {
-  margin: 0 0 0.2rem;
-  color: #00ff41;
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
 .route-preview__title {
   margin: 0;
   color: #fff;
@@ -1467,6 +1459,150 @@
   font-size: 0.65rem;
 }
 
+.route-sidebar__section-header {
+  padding: 0.75rem 0.75rem 0.25rem;
+  color: #71717a;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.chat-preview__tool-summary {
+  margin-bottom: 1rem;
+  margin-left: 0;
+  max-width: 75%;
+}
+
+.chat-preview__tool-summary-header {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.03);
+  color: #71717a;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.chat-preview__tool-summary-header:hover {
+  border-color: rgb(255 255 255 / 0.12);
+  color: #a1a1aa;
+}
+
+.chat-preview__tool-summary-chevron {
+  font-size: 0.6rem;
+}
+
+.chat-preview__tool-summary-list {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.02);
+}
+
+.chat-preview__tool-call-item {
+  padding: 0.25rem 0;
+}
+
+.chat-preview__tool-call-item + .chat-preview__tool-call-item {
+  border-top: 1px solid rgb(255 255 255 / 0.04);
+}
+
+.chat-preview__tool-call-name {
+  color: #a1a1aa;
+  font-size: 0.8rem;
+}
+
+.chat-preview__tool-call-preview {
+  margin-top: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.25rem;
+  background: rgb(255 255 255 / 0.03);
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.chat-preview__tool-call-error {
+  margin-top: 0.25rem;
+  color: #ef4444;
+  font-size: 0.75rem;
+}
+
+.chat-preview__markdown h1,
+.chat-preview__markdown h2 {
+  margin: 1rem 0 0.5rem;
+  color: #fff;
+  font-family: var(--font-serif);
+}
+
+.chat-preview__markdown h1 {
+  font-size: 1.25rem;
+}
+
+.chat-preview__markdown h2 {
+  font-size: 1.1rem;
+}
+
+.chat-preview__markdown ul,
+.chat-preview__markdown ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+  color: #a1a1aa;
+  line-height: 1.6;
+}
+
+.chat-preview__markdown li {
+  margin-bottom: 0.25rem;
+}
+
+.chat-preview__markdown strong {
+  color: #e4e4e7;
+  font-weight: 600;
+}
+
+.chat-preview__markdown em {
+  font-style: italic;
+}
+
+.chat-preview__markdown code {
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  background: rgb(255 255 255 / 0.06);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.chat-preview__markdown table {
+  width: 100%;
+  margin: 0 0 1rem;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.chat-preview__markdown th,
+.chat-preview__markdown td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  color: #a1a1aa;
+  text-align: left;
+}
+
+.chat-preview__markdown th {
+  background: rgb(255 255 255 / 0.04);
+  color: #d4d4d8;
+  font-weight: 600;
+}
+
 @keyframes chat-preview-spin {
   to {
     transform: rotate(360deg);
@@ -1522,10 +1658,6 @@
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
-}
-
-.route-preview__intro--memory {
-  padding: 1.5rem 1.5rem 0;
 }
 
 .memory-preview__document {

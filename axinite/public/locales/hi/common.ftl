@@ -366,6 +366,11 @@ chat-response-pending = पूर्णता की प्रतीक्षा
 chat-approval-approve = स्वीकृत करें
 chat-approval-deny = अस्वीकार करें
 chat-upload-unavailable = Mock बैकएंड पूर्वावलोकन फ़ाइल अपलोड सहेजता नहीं है।
+chat-sidebar-conversations = वार्तालाप
+chat-tools-used = { $count ->
+    [one] { $count } टूल उपयोग किया गया
+   *[other] { $count } टूल उपयोग किए गए
+  }
 routines-enabled-label = सक्षम
 routines-disabled-label = अक्षम
 routines-action-enable = सक्षम करें
