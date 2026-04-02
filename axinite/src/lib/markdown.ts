@@ -60,10 +60,10 @@ export function renderMarkdown(source: string): string {
     const formatted = withPlaceholders
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>");
-    return formatted.replace(
-      /\uFFFDCODE(\d+)\uFFFD/g,
-      (_, index) => `<code>${codeSpans[Number(index)]}</code>`
-    );
+    return formatted.replace(/\uFFFDCODE(\d+)\uFFFD/g, (match, indexStr) => {
+      const span = codeSpans[Number(indexStr)];
+      return span !== undefined ? `<code>${span}</code>` : match;
+    });
   }
 
   function flushParagraph(): void {
