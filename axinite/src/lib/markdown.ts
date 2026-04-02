@@ -53,10 +53,19 @@ export function renderMarkdown(source: string): string {
   }
 
   function inlineMarkup(text: string): string {
-    return text
-      .replace(/`([^`]+)`/g, "<code>$1</code>")
+    const codeSpans: string[] = [];
+    const withPlaceholders = text.replace(/`([^`]+)`/g, (_, content) => {
+      const index = codeSpans.length;
+      codeSpans.push(content);
+      return `\uFFFDCODE${index}\uFFFD`;
+    });
+    const formatted = withPlaceholders
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>");
+    return formatted.replace(
+      /\uFFFDCODE(\d+)\uFFFD/g,
+      (_, index) => `<code>${codeSpans[Number(index)]}</code>`
+    );
   }
 
   function flushParagraph(): void {
