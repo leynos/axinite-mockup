@@ -3,8 +3,8 @@
 ## Scope
 
 This repository contains the new SolidJS-based front end for Axinite, a
-Rust-based autonomous AI agent. It is a standalone browser application backed by
-a Bun mock backend for local preview.
+Rust-based autonomous AI agent. It is a standalone browser application backed
+by a Bun mock backend for local preview.
 
 For the full architectural rationale, see
 [`docs/axinite-v2a-frontend-architecture.md`](docs/axinite-v2a-frontend-architecture.md).
@@ -96,3 +96,14 @@ the computed and de-duped CSS cascade for the site. See the `$css-view` skill.
 ## Imagery
 
 Use the `$nanobanana` skill for generation of non-SVG imagery.
+
+## Markdown formatting
+
+`make fmt` and `make check-fmt` run `mdtablefix` 0.6.1 or later over the
+Markdown files Git tracks plus untracked files it does not ignore, with
+`--wrap --renumber --breaks --ellipsis --fences`. Install it with
+`cargo binstall --no-confirm mdtablefix@0.6.1` or
+`cargo install --locked mdtablefix@0.6.1`. `make fmt` then runs
+`markdownlint-cli2 --fix`, and the `markdownlint` workflow lints `**/*.md` with
+the pinned markdownlint-cli2-action. Concordat's `markdown-formatting-baseline`
+rule audits this wiring.

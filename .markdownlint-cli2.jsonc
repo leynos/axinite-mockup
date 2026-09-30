@@ -1,6 +1,4 @@
 {
-  // Ignore MD013 (line length) inside tables since reflowing
-  // Markdown tables often breaks formatting and readability.
   "config": {
     "MD013": {
       "line_length": 80,
@@ -8,10 +6,24 @@
       "tables": false,
       "headings": false
     },
-    "MD029": {
-      "style": "ordered"
-    },
-    "MD036": false
+    "MD029": { "style": "ordered" },
+    "MD036": false,
+    "MD004": { "style": "dash" },
+    "MD010": { "code_blocks": false }
   },
-  "ignores": ["**/.venv/**", "**/node_modules/**", "**/.terraform/**", "**/.terraform.lock.hcl", "./target/**", ".bun_tmp/**", ".uv-cache/**", "config/shared/**"]
+  "ignores": [
+    "**/.venv/**",
+    "**/node_modules/**",
+    "**/.terraform/**",
+    "**/.terraform.lock.hcl",
+    "./target/**",
+    ".bun_tmp/**",
+    ".uv-cache/**",
+    "config/shared/**",
+    ".vtcode/**",
+    "**/target/**",
+    ".terraform/**",
+    "memories/**",
+    "CRUSH.md"
+  ]
 }
